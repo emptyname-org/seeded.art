@@ -1,0 +1,12 @@
+{% match card.render_url %}{% when Some with (render_url) %}
+<div class="artwork-player" role="group" aria-label="{{ card.title }} playback" data-player data-autoplay="{{ card.autoplay }}" data-render-url="{{ render_url }}" data-title="{{ card.title }}" data-state="preview">
+  <div class="player-stage"><div class="player-poster">{% match card.preview %}{% when Some with (image) %}<img src="{{ image }}" width="800" height="800" alt="{{ card.title }} static token preview" fetchpriority="high">{% when None %}<span class="missing-preview">Preview not yet indexed</span>{% endmatch %}</div><div class="player-frame-host"></div></div>
+  <div class="player-controls" hidden><button type="button" data-action="play">Replay</button><button type="button" data-action="reset" class="secondary-button" hidden disabled>Replay</button><button type="button" data-action="stop" class="secondary-button" disabled>Stop</button>{% if card.fullscreen %}<a class="button-link secondary-button" href="{{ card.url }}">NFT details</a>{% endif %}</div>
+  {% if !card.fullscreen %}<a class="player-preview-link" href="{{ card.fullsize_url }}" target="_blank" rel="nofollow noopener noreferrer">Full screen</a>{% endif %}
+  <p class="player-status" role="status" aria-live="polite">Static preview.</p>
+  <noscript><p>Enable JavaScript to play the NFT.</p></noscript>
+</div>
+{% when None %}
+{% match card.preview %}{% when Some with (image) %}<a class="nft-artwork-frame" href="{{ image }}" aria-label="Open full preview of {{ card.title }}"><img src="{{ image }}" width="800" height="800" alt="{{ card.title }} static token preview" fetchpriority="high"><span>Open preview ↗</span></a>{% when None %}<div class="nft-artwork-frame"><span class="missing-preview">Preview not yet indexed</span></div>{% endmatch %}
+<p class="preview-notice">Static preview. Playback is not available.</p>
+{% endmatch %}

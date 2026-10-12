@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block content %}
+{% if !header.own_profile %}<a class="back-link" href="/artists">← All artists</a>{% endif %}
+{% include "profile_header.html" %}
+<section id="generative-work" aria-label="{% if collected %}Collected NFTs{% else %}Projects{% endif %}">{% if !articles.is_empty() %}<div class="section-title-row profile-section-links"><a class="text-link" href="#profile-articles">Articles</a></div>{% endif %}
+{% if collected %}<p class="profile-scope">Ownership snapshot {{ meta.snapshot }}{% if listed > 0 %}. Includes {{ listed }} listing{% if listed != 1 %}s{% endif %}{% endif %}.</p>{% endif %}
+{% if (collected && header.token_count > 1) || (!collected && header.project_count > 1) || search.filtered %}{% include "collection_search.html" %}{% endif %}
+{% if search.filtered %}<p class="collection-status">{{ result_count }} result{% if result_count != 1 %}s{% endif %}</p>{% endif %}
+{% if collected %}{% if tokens.is_empty() %}{% if search.filtered %}{% call ui::empty_state("No matching NFTs", "", "", "") %}{% else %}{% call ui::empty_state("No collected NFTs", "", "", "") %}{% endif %}{% else %}{% let cards = tokens %}{% let load_more_region = "profile-collected" %}{% include "token_cards.html" %}{% endif %}
+{% else %}{% if cards.is_empty() %}{% if search.filtered %}{% call ui::empty_state("No matching projects", "", "", "") %}{% else %}{% call ui::empty_state("No projects", "", collected_url, "View collected NFTs") %}{% endif %}{% else %}{% let load_more_region = "profile-projects" %}{% include "project_cards.html" %}{% endif %}{% endif %}</section>
+{% if collected %}{% call ui::pagination(pagination, "profile-collected", "Collected NFTs pages") %}{% else %}{% call ui::pagination(pagination, "profile-projects", "Projects pages") %}{% endif %}
+{{ articles|safe }}
+{% endblock %}

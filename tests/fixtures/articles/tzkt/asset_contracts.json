@@ -1,0 +1,47 @@
+[
+ {
+  "active": true,
+  "firstLevel": 2698964,
+  "hash": "exprtZBwZUeYYYfUs9B9Rg2ywHezVHnCCnmF9WsDQVrs582dSK63dC",
+  "id": 33056470,
+  "key": "0",
+  "lastLevel": 2698964,
+  "updates": 1,
+  "value": {
+   "enabled": false,
+   "fa2": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+   "multi": false,
+   "views": "KT1WRpPyXHSCbTfDQFWVXbMpxxvf7Y7KChxc"
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2698964,
+  "hash": "expru2dKqDfZG8hu4wNGkiyunvq2hdSKuVYtcKta7BWP6Q18oNxKjS",
+  "id": 33056471,
+  "key": "1",
+  "lastLevel": 2698964,
+  "updates": 1,
+  "value": {
+   "enabled": false,
+   "fa2": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+   "multi": false,
+   "views": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi"
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2698964,
+  "hash": "expruDuAZnFKqmLoisJqUGqrNzXTvw7PJM2rYk97JErM5FHCerQqgn",
+  "id": 33056472,
+  "key": "2",
+  "lastLevel": 2698964,
+  "updates": 1,
+  "value": {
+   "enabled": true,
+   "fa2": "KT1GtbuswcNMGhHF2TSuH1Yfaqn16do8Qtva",
+   "multi": true,
+   "views": "KT1GtbuswcNMGhHF2TSuH1Yfaqn16do8Qtva"
+  }
+ }
+]

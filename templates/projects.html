@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block content %}
+<div class="page-title-row"><h1>Projects</h1>{% call ui::project_sort("project-sort", "/projects", "Sort projects", "artist", artist, sort) %}</div>
+<script type="module" src="/static/project_sort.js"></script>
+<div class="results-row"><span>{{ total }} project{% if total != 1 %}s{% endif %}</span>{% if !artist.is_empty() && !cards.is_empty() %}<a class="reset-link" href="/projects">Clear filters</a>{% endif %}</div>
+{% if cards.is_empty() %}{% if total == 0 %}{% call ui::empty_state("No matching projects", "", "/projects", "Show all projects") %}{% else %}{% call ui::empty_state("No projects on this page", "", "/projects", "Show all projects") %}{% endif %}{% else %}{% let load_more_region = "projects" %}{% include "project_cards.html" %}{% endif %}
+{% call ui::pagination(pagination, "projects", "Projects pages") %}
+{% endblock %}

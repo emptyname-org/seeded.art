@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/articles.css">
+<article class="article-reader">
+  <nav aria-label="Breadcrumb"><a href="/articles">Articles</a> / #{{ id }}</nav>
+  <header><p class="article-date">Published {{ date }}</p><h1>{{ title }}</h1><p>By <a href="/profile/{{ address }}">{{ author }}</a></p></header>
+  {% if !image.is_empty() %}<figure class="article-hero">{% if !image_link.is_empty() %}<a href="{{ image_link }}">{% endif %}<img src="{{ image }}" alt="{% if caption.is_empty() %}{{ title }}{% else %}{{ caption }}{% endif %}" referrerpolicy="no-referrer">{% if !image_link.is_empty() %}</a>{% endif %}{% if !caption.is_empty() %}<figcaption>{{ caption }}</figcaption>{% endif %}</figure>{% endif %}
+  <div class="article-prose">{{ body|safe }}</div>
+  {% if !media.is_empty() %}<section class="article-prose"><h2>Embedded media</h2>{{ media|safe }}</section>{% endif %}
+  <footer class="article-record"><h2>Article record</h2><p class="subtle">{{ as_of }}</p><dl><dt>Minted NFTs</dt><dd>{{ editions }}</dd><dt>Holders</dt><dd>{{ held }}</dd><dt>Listed NFTs</dt><dd>{{ listed }}</dd><dt>Body verification</dt><dd>{{ verification }}</dd><dt>Metadata revisions</dt><dd>{{ revisions }}</dd></dl></footer>
+</article>
+{% endblock %}

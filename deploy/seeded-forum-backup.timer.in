@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily private forum database backup
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+RandomizedDelaySec=10min
+AccuracySec=1min
+Persistent=true
+Unit=seeded-forum-backup.service
+
+[Install]
+WantedBy=timers.target

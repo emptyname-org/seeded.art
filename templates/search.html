@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block content %}
+<h1 class="sr-only">Search</h1>
+{% if projects_total == 0 && artists_total == 0 && collectors_total == 0 && articles_total == 0 %}
+{% if articles_available %}{% call ui::empty_state("No results", "Try another title, name or address.", "", "") %}{% else %}{% call ui::empty_state("No matches in available results", "Try another title, name or address.", "", "") %}{% endif %}
+{% else %}
+<nav class="search-result-nav" aria-label="Search result sections">
+  {% if projects_total > 0 %}<a href="#search-projects">Projects <span>{{ projects_total }}</span></a>{% endif %}
+  {% if artists_total > 0 %}<a href="#search-artists">Artists <span>{{ artists_total }}</span></a>{% endif %}
+  {% if collectors_total > 0 %}<a href="#search-collectors">Collectors <span>{{ collectors_total }}</span></a>{% endif %}
+  {% if articles_total > 0 %}<a href="#search-articles">Articles <span>{{ articles_total }}</span></a>{% endif %}
+</nav>
+
+{% if projects_total > 0 %}<section id="search-projects" class="search-section" aria-labelledby="search-projects-heading">
+  <div class="section-title-row"><h2 id="search-projects-heading">Projects <span class="section-count">{{ projects_total }}</span></h2>{% if projects_total > 1 %}{% call ui::project_sort("search-sort", "/search", "Sort matching projects", "q", query, sort) %}{% endif %}</div>
+  {% if cards.is_empty() %}{% call ui::empty_state("No projects on this page", "", "", "") %}{% else %}{% let load_more_region = "search-projects" %}{% include "project_cards.html" %}{% endif %}
+  {% call ui::pagination(projects_pagination, "search-projects", "Projects pages") %}
+</section>{% endif %}
+
+{% if artists_total > 0 %}<section id="search-artists" class="search-section" aria-labelledby="search-artists-heading">
+  <div class="section-title-row"><h2 id="search-artists-heading">Artists <span class="section-count">{{ artists_total }}</span></h2></div>
+  {% if artists.is_empty() %}{% call ui::empty_state("No artists on this page", "", "", "") %}{% else %}{% let people = artists %}{% let load_more_region = "search-artists" %}{% include "person_cards.html" %}{% endif %}
+  {% call ui::pagination(artists_pagination, "search-artists", "Artists pages") %}
+</section>{% endif %}
+
+{% if collectors_total > 0 %}<section id="search-collectors" class="search-section" aria-labelledby="search-collectors-heading">
+  <div class="section-title-row"><h2 id="search-collectors-heading">Collectors <span class="section-count">{{ collectors_total }}</span></h2></div>
+  {% if collectors.is_empty() %}{% call ui::empty_state("No collectors on this page", "", "", "") %}{% else %}{% let people = collectors %}{% let load_more_region = "search-collectors" %}{% include "person_cards.html" %}{% endif %}
+  {% call ui::pagination(collectors_pagination, "search-collectors", "Collectors pages") %}
+</section>{% endif %}
+{% if articles_total > 0 %}{{ articles_html|safe }}{% endif %}
+{% endif %}
+{% if !articles_available %}<p class="subtle">Article search is temporarily unavailable.</p>{% endif %}
+<script type="module" src="/static/project_sort.js"></script>
+{% endblock %}

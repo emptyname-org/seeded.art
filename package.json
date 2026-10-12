@@ -1,0 +1,16 @@
+{
+  "name": "seeded-browser-checks",
+  "private": true,
+  "version": "0.1.0",
+  "devDependencies": {
+    "@ecadlabs/beacon-sdk": "4.8.4-ecad",
+    "buffer": "6.0.3",
+    "esbuild": "0.28.2",
+    "playwright-core": "1.62.1"
+  },
+  "overrides": {
+    "@walletconnect/sign-client": "2.25.0",
+    "@walletconnect/types": "2.25.0",
+    "@walletconnect/utils": "2.25.0"
+  }
+}

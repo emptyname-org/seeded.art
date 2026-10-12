@@ -1,0 +1,673 @@
+[
+ {
+  "_contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+  "id": 117481919217664,
+  "level": 1876448,
+  "timestamp": "2021-11-19T09:28:12Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens issuer Old",
+   "address": "KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1gLNb49fErXUiYdreLAAV6twp4v3Lm8V4H",
+    "metadata": {
+     "": "697066733a2f2f516d614168423165577270556461685a5a687457684c707034777a71396734756e686550396f7a3448656e704c51"
+    },
+    "token_id": "34558",
+    "issuer_id": "382",
+    "iteration": "1",
+    "royalties": "150"
+   }
+  }
+ },
+ {
+  "_contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+  "id": 117503684509696,
+  "level": 1876490,
+  "timestamp": "2021-11-19T09:49:12Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens issuer Old",
+   "address": "KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1PkLH6efZifS8NtKiZBWFWgDoHDmDwN9f1",
+    "metadata": {
+     "": "697066733a2f2f516d614168423165577270556461685a5a687457684c707034777a71396734756e686550396f7a3448656e704c51"
+    },
+    "token_id": "36174",
+    "issuer_id": "382",
+    "iteration": "2",
+    "royalties": "150"
+   }
+  }
+ },
+ {
+  "_contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+  "id": 117510054608896,
+  "level": 1876501,
+  "timestamp": "2021-11-19T09:54:42Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens issuer Old",
+   "address": "KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1PkLH6efZifS8NtKiZBWFWgDoHDmDwN9f1",
+    "metadata": {
+     "": "697066733a2f2f516d614168423165577270556461685a5a687457684c707034777a71396734756e686550396f7a3448656e704c51"
+    },
+    "token_id": "36463",
+    "issuer_id": "382",
+    "iteration": "3",
+    "royalties": "150"
+   }
+  }
+ },
+ {
+  "_contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+  "id": 117746252644352,
+  "level": 1877676,
+  "timestamp": "2021-11-19T19:48:02Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens issuer Old",
+   "address": "KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1PkLH6efZifS8NtKiZBWFWgDoHDmDwN9f1",
+    "metadata": {
+     "": "697066733a2f2f516d614168423165577270556461685a5a687457684c707034777a71396734756e686550396f7a3448656e704c51"
+    },
+    "token_id": "43308",
+    "issuer_id": "554",
+    "iteration": "1",
+    "royalties": "110"
+   }
+  }
+ },
+ {
+  "_contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+  "id": 127324746940416,
+  "level": 1931388,
+  "timestamp": "2021-12-09T18:13:00Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens issuer Old",
+   "address": "KT1AEVuykWeuuFX7QkEAMNtffzwhe1Z98hJS"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1PkLH6efZifS8NtKiZBWFWgDoHDmDwN9f1",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "143479",
+    "issuer_id": "554",
+    "iteration": "2",
+    "royalties": "110"
+   }
+  }
+ },
+ {
+  "_contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+  "id": 194794601054208,
+  "level": 2286238,
+  "timestamp": "2022-04-16T15:36:59Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens v2",
+   "address": "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1hQ8BzTVwssUGQFinLQGfc7TKuMdeX6uQW",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "599001",
+    "issuer_id": "11003",
+    "iteration": "1",
+    "royalties": "250",
+    "royalties_split": [
+     {
+      "pct": "1000",
+      "address": "tz2EuD6C8CixQYfDNYoetkdJSt9MMev3YsnU"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+  "id": 194806366076928,
+  "level": 2286260,
+  "timestamp": "2022-04-16T15:47:59Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens v2",
+   "address": "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1Kq8NtEjSXkpswLmgod1tPFPVH2TZc8dwM",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "599588",
+    "issuer_id": "11003",
+    "iteration": "2",
+    "royalties": "250",
+    "royalties_split": [
+     {
+      "pct": "1000",
+      "address": "tz2EuD6C8CixQYfDNYoetkdJSt9MMev3YsnU"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+  "id": 199056615800832,
+  "level": 2299836,
+  "timestamp": "2022-04-21T12:48:44Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens v2",
+   "address": "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1To7j5MHj4vjquGYdbASX4tZnstNgpsE9x",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "634808",
+    "issuer_id": "11003",
+    "iteration": "3",
+    "royalties": "250",
+    "royalties_split": [
+     {
+      "pct": "1000",
+      "address": "tz2EuD6C8CixQYfDNYoetkdJSt9MMev3YsnU"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+  "id": 294029168214016,
+  "level": 2602931,
+  "timestamp": "2022-08-08T03:01:29Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens v2",
+   "address": "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd",
+    "metadata": {
+     "": "697066733a2f2f516d525a79796a54654b534159686f7a5a4c76486752506278636d4a51323367704b4b33514e77586b437851436d"
+    },
+    "token_id": "1072702",
+    "issuer_id": "15755",
+    "iteration": "1",
+    "royalties": "180",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E"
+     },
+     {
+      "pct": "500",
+      "address": "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+  "id": 294029714522112,
+  "level": 2602933,
+  "timestamp": "2022-08-08T03:02:29Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens v2",
+   "address": "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E",
+    "metadata": {
+     "": "697066733a2f2f516d525a79796a54654b534159686f7a5a4c76486752506278636d4a51323367704b4b33514e77586b437851436d"
+    },
+    "token_id": "1072705",
+    "issuer_id": "15755",
+    "iteration": "2",
+    "royalties": "180",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E"
+     },
+     {
+      "pct": "500",
+      "address": "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+  "id": 2832845009584128,
+  "level": 14486088,
+  "timestamp": "2026-08-13T16:02:49Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens v2",
+   "address": "KT1BJC12dG17CVvPKJ1VYaNnaT5mzfnUTwXv"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1LYrMpZxUmmFArhgt49UHcLDEDjcvs6gQZ",
+    "metadata": {
+     "": "697066733a2f2f516d525a79796a54654b534159686f7a5a4c76486752506278636d4a51323367704b4b33514e77586b437851436d"
+    },
+    "token_id": "1619286",
+    "issuer_id": "11229",
+    "iteration": "297",
+    "royalties": "100",
+    "royalties_split": [
+     {
+      "pct": "1000",
+      "address": "tz1bDn9tU2SjWjr64g2r4jhgos4rE6AssyUb"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 832215373053952,
+  "level": 4556678,
+  "timestamp": "2023-11-10T23:40:48Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1YJoT4wT65hm9yrrCQU7Vr2CtzTMhBmfQR",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133459",
+    "issuer_id": "29437",
+    "iteration": "1",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 832242316214272,
+  "level": 4556791,
+  "timestamp": "2023-11-11T00:09:03Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133460",
+    "issuer_id": "29437",
+    "iteration": "2",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 832900864933888,
+  "level": 4559491,
+  "timestamp": "2023-11-11T11:27:07Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1SvbBSv2oNmZNrQFdvYUzXstkEMnWh47sw",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133562",
+    "issuer_id": "29437",
+    "iteration": "3",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 833173847015424,
+  "level": 4560571,
+  "timestamp": "2023-11-11T15:59:10Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1N64TWNCZR3yJZmmzBE4DRidN1tCaZCw8Q",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133603",
+    "issuer_id": "29437",
+    "iteration": "4",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 833174555852800,
+  "level": 4560574,
+  "timestamp": "2023-11-11T15:59:55Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1N64TWNCZR3yJZmmzBE4DRidN1tCaZCw8Q",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133604",
+    "issuer_id": "29437",
+    "iteration": "5",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 833175059169280,
+  "level": 4560576,
+  "timestamp": "2023-11-11T16:00:25Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1N64TWNCZR3yJZmmzBE4DRidN1tCaZCw8Q",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133605",
+    "issuer_id": "29437",
+    "iteration": "6",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 835508470022144,
+  "level": 4569648,
+  "timestamp": "2023-11-13T06:11:51Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1iEzucUm7VZtyeSKpKCGwWqPFqAtVn412u",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133848",
+    "issuer_id": "29437",
+    "iteration": "7",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 835825811062784,
+  "level": 4570921,
+  "timestamp": "2023-11-13T11:31:23Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1Sraf86MCmQkwUUB9WorqcAkuY6QGyib85",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "133861",
+    "issuer_id": "29437",
+    "iteration": "8",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 868996671864832,
+  "level": 4702647,
+  "timestamp": "2023-12-06T19:09:23Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1YnuVaS6mFDwBMC58krtU6BNQ1s5cGnVZR",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "150042",
+    "issuer_id": "29632",
+    "iteration": "6",
+    "royalties": "100",
+    "input_bytes": "4048800000000000404880000000000040000000000000000100a68e771cb33600ffa2fff1ff",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1YnuVaS6mFDwBMC58krtU6BNQ1s5cGnVZR"
+     },
+     {
+      "pct": "500",
+      "address": "tz1iEiZBsrbDWWq5E4RzmWgZUyJfad3r4WEn"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 1007517108797440,
+  "level": 5246948,
+  "timestamp": "2024-03-12T21:55:51Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1N64TWNCZR3yJZmmzBE4DRidN1tCaZCw8Q",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "185776",
+    "issuer_id": "29437",
+    "iteration": "9",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "_contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+  "id": 1026091939528704,
+  "level": 5319306,
+  "timestamp": "2024-03-25T15:54:25Z",
+  "sender": {
+   "alias": "FXHASH Generative Tokens Issuer v3",
+   "address": "KT1Xpmp15KfqoePNW9HczFmqaGNHwadV2a3b"
+  },
+  "parameter": {
+   "entrypoint": "mint",
+   "value": {
+    "address": "tz1NpUTYsVB2Hdci6ycdWdTz66GvR5oLqQp8",
+    "metadata": {
+     "": "697066733a2f2f516d5a5a56424b617044673277587a77704478646d4c39416836363568395a7a654a3967596462545a3447427a66"
+    },
+    "token_id": "188628",
+    "issuer_id": "29437",
+    "iteration": "10",
+    "royalties": "150",
+    "input_bytes": "",
+    "royalties_split": [
+     {
+      "pct": "500",
+      "address": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL"
+     },
+     {
+      "pct": "500",
+      "address": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2"
+     }
+    ]
+   }
+  }
+ }
+]

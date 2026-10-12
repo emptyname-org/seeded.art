@@ -1,0 +1,12 @@
+[Unit]
+Description=seeded.art daily online backup (optional)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=10min
+AccuracySec=1min
+Persistent=true
+Unit=seeded-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,1 @@
+<div class="article-embed">{% let load_more_region = "" %}{% if !projects.is_empty() %}{% let cards = projects %}{% include "project_cards.html" %}{% else %}{% let cards = tokens %}{% include "token_cards.html" %}{% endif %}</div>

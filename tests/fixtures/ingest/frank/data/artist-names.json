@@ -1,0 +1,13 @@
+{
+ "_readme": [
+  "Test fixture in the format of data/artist-names.json."
+ ],
+ "names": {
+  "tz1WKNUBMpEDT9yXt3BMAFJXdx1YMCakUKh7": {
+   "name": "Plasma Renamed",
+   "was": "RJArt",
+   "requested": "2026-10-03",
+   "note": "fixture"
+  }
+ }
+}

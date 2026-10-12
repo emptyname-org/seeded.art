@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block content %}
+<link rel="stylesheet" href="/static/player.css">
+<script src="/static/player.js" defer></script>
+<section class="nft-detail-header"><a class="back-link" href="{{ project_url }}">← {{ project_title }}</a><div class="nft-title-row"><div><h1>{{ card.title }}</h1><p class="artist-line">by {% call ui::byline(artists) %}</p></div><nav class="nft-navigation" aria-label="NFT navigation">{% match previous %}{% when Some with (edition) %}<a class="button-link secondary-button" href="{{ edition.url }}" rel="prev" aria-label="Previous NFT: {{ edition.title }}">← #{{ edition.iteration }}</a>{% when None %}{% endmatch %}{% match next %}{% when Some with (edition) %}<a class="button-link secondary-button" href="{{ edition.url }}" rel="next" aria-label="Next NFT: {{ edition.title }}">#{{ edition.iteration }} →</a>{% when None %}{% endmatch %}</nav></div></section>
+<section class="nft-view-layout" aria-label="NFT and details"><div class="nft-art-column">{% include "player.html" %}</div>
+<aside class="nft-sidebar" aria-label="NFT details"><div class="nft-owner"><span>Owner</span><strong>{% call ui::owner(card) %}</strong>{% if !card.owner_address.is_empty() && card.owner != card.owner_address %}<code class="owner-address">{{ card.owner_address }}</code>{% endif %}</div>
+<div class="nft-seed"><span>Seed</span><code>{{ card.seed }}</code></div><dl class="nft-metadata"><div><dt>Token ID</dt><dd>{{ token.token_id }}</dd></div><div><dt>Iteration</dt><dd>{{ token.iteration }}</dd></div><div><dt>Minted</dt><dd>{{ card.minted }}</dd></div><div><dt>Network</dt><dd>Tezos</dd></div></dl><div class="nft-minter"><span>Minter</span><code>{{ token.minter }}</code></div><a class="nft-source" href="{{ source }}" target="_blank" rel="noopener noreferrer">View token on objkt ↗</a><details class="nft-provenance"><summary>Artifact &amp; contract</summary><dl><div><dt>Artifact URI</dt><dd><code>{{ token.artifact_uri }}</code></dd></div><div><dt>Record source</dt><dd>{{ record_source }}</dd></div><div><dt>Verification</dt><dd>{{ verification }}</dd></div><div><dt>Token contract</dt><dd><code>{{ token.contract }}</code></dd></div></dl></details></aside></section>
+{% if !description.is_empty() || !instructions.is_empty() %}<section class="token-project-text"><h2>Project</h2><div class="markup">{{ description|safe }}</div>{% if !instructions.is_empty() %}<h3>Instructions</h3><div class="markup">{{ instructions|safe }}</div>{% endif %}</section>{% endif %}
+<section class="nft-traits-section"><div class="section-title-row"><h2>Traits</h2></div><dl class="trait-grid">{% for item in traits %}<div><dt>{{ item.name }}</dt><dd>{{ item.value }}<span class="trait-share">{{ item.share }}</span></dd></div>{% else %}<div><dt>Recorded features</dt><dd>Not yet indexed</dd></div>{% endfor %}</dl></section>
+{{ history|safe }}
+
+{% endblock %}

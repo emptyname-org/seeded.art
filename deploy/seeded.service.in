@@ -1,0 +1,57 @@
+[Unit]
+Description=seeded.art archive and isolated artwork resolver
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=seeded
+Group=seeded
+WorkingDirectory=/var/lib/seeded
+EnvironmentFile=/etc/seeded/seeded.env
+ExecStartPre=/usr/bin/mkdir -p /var/lib/seeded/tmp
+ExecStart=/opt/seeded/current/seeded_archive serve
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=90
+StateDirectory=seeded
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+__FORUM_PRIVATE_PATHS__
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictNamespaces=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+RemoveIPC=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+MemoryAccounting=true
+MemoryHigh=__APP_MEMORY_HIGH__
+MemoryMax=__APP_MEMORY_MAX__
+CPUQuota=__APP_CPU_QUOTA__
+TasksMax=__APP_TASKS_MAX__
+LimitNOFILE=__APP_OPEN_FILES__
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+.article-reader { max-width: 780px; margin: 0 auto; padding: 0 0 24px; }
+.article-reader > nav { margin-bottom: 36px; font-size: 14px; color: var(--muted); }
+.article-reader header { margin: 0 0 36px; }
+.article-reader header p { font-size: 15px; }
+.article-date { color: var(--muted); }
+.article-hero { margin: 30px 0 40px; }
+.article-hero img { display: block; width: 100%; max-height: 600px; object-fit: contain; }
+.article-hero figcaption { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.article-prose { font-size: 18px; line-height: 1.75; overflow-wrap: anywhere; }
+/* Prose rules skip embedded cards, which keep the listing card style. */
+.article-prose :is(h1, h2, h3):not(.article-embed *) { margin-top: 1.7em; line-height: 1.25; }
+.article-prose h2:not(.article-embed *) { font-size: 29px; }
+.article-prose h3:not(.article-embed *) { font-size: 24px; }
+.article-prose p:not(.article-embed *) { margin: 1em 0; }
+.article-prose img:not(.article-embed *) { display: block; max-width: 100%; height: auto; margin: 28px auto; }
+.article-embed { margin: 28px 0; font-size: 16px; line-height: 1.5; }
+.article-embed .project-grid, .article-embed .artwork-grid { grid-template-columns: minmax(0, 360px); }
+.article-prose pre { overflow: auto; padding: 20px; background: var(--panel-raised); }
+.article-prose blockquote { margin-left: 0; padding-left: 24px; border-left: 3px solid var(--accent); }
+.article-prose table { display: block; overflow: auto; }
+.article-prose video, .article-prose audio { display: block; max-width: 100%; margin: 24px 0; }
+.article-record { margin-top: 52px; padding-top: 28px; border-top: 1px solid var(--line); }
+.article-record h2 { font-size: 24px; }
+.article-record dl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; font-size: 14px; }
+.article-record > p { color: var(--muted); font-size: 13px; }
+@media (max-width: 540px) {
+  .article-reader > nav { margin-bottom: 26px; }
+  .article-reader header { margin-bottom: 24px; }
+  .article-prose { font-size: 17px; }
+  .article-prose h2:not(.article-embed *) { font-size: 26px; }
+  .article-prose h3:not(.article-embed *) { font-size: 22px; }
+}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="about-page">
+<h1>About seeded.art</h1>
+<p class="about-lead">Seeded.art is an archive of NFTs rescued from fxhash after its shutdown. It preserves the platform’s projects, NFTs, artist and collector profiles, and articles. Each NFT runs the artist’s original code in a browser, using the seed recorded when it was minted. Please use the <a href="https://forum.seeded.art">forum</a> for all communication.</p>
+<dl class="archive-counts"><div><dt>Projects</dt><dd>{{ status.projects_total }}</dd></div><div><dt>NFTs</dt><dd>{{ status.tokens_total }}</dd></div></dl>
+<section class="about-archive"><h2>Available now</h2><div><ul>
+<li>Browsing and searching projects, NFTs, seeds, artists, collectors, sales history, and articles from fxhash.</li>
+<li>Running NFTs from their original code. Seeded.art stores a verified copy of each project’s code so the works can continue to run even if fxhash or IPFS gateways become unavailable.</li>
+<li>Managing your profile. Signing in with a Tezos wallet to add or edit your name, bio, and links.</li>
+<li>Managing existing offers. Accepting or cancelling offers made on fxhash before it shut down.</li>
+</ul></div></section>
+<section class="about-archive"><h2>What’s next</h2><div><p>The plan is for Seeded.art to grow into a full marketplace for generative NFTs, built around seeds. It will probably use a blockchain other than Tezos, but that hasn’t been decided.</p><p>A migration path for fxhash projects and NFTs is also planned. Only an NFT’s current owner would be able to initiate its migration to Seeded.art.</p><p>These plans are still evolving, and the details will change during development.</p></div></section>
+<section class="about-archive"><h2>Credits</h2><div><ul>
+<li>Developed by <a href="https://emptyname.org" target="_blank" rel="noopener noreferrer">Emptyname</a>. To get in touch, send a private message on the <a href="https://forum.seeded.art/u/master">forum</a>.</li>
+<li>Based on <a href="https://github.com/KilledByAPixel/fxhashArchive" target="_blank" rel="noopener noreferrer">Frank Force’s fxhashArchive</a> (MIT license).</li>
+<li><a href="https://github.com/emptyname-org" target="_blank" rel="noopener noreferrer">Seeded.art on GitHub</a></li>
+<li>Snapshot date: {{ meta.snapshot }}</li>
+<li>Not affiliated with fxhash or objkt. Artwork rights remain with the creators.</li>
+</ul></div></section>
+</div>
+{% endblock %}

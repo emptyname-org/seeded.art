@@ -1,0 +1,13 @@
+[Unit]
+Description=seeded.art token and marketplace update every 10 minutes (optional)
+
+[Timer]
+# Minutes 05, 15, …: clear of the jobs that start on the hour or half hour.
+OnCalendar=*-*-* *:05/10:00
+RandomizedDelaySec=30s
+AccuracySec=1s
+Persistent=true
+Unit=seeded-sync.service
+
+[Install]
+WantedBy=timers.target

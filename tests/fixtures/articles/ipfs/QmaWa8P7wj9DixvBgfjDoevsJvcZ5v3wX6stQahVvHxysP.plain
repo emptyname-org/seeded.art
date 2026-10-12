@@ -1,0 +1,82 @@
+# Create writing NFTs
+
+When you publish an article using fx(text), you create an [FA2 NFT](https://assets.tqtezos.com/docs/token-contracts/fa2/2-fa2-nft-tutorial/). However, the rationale behind the decision to build a system where articles are minted as writing NFTs might not be readily apparent, so we’ll unpack our thought process.
+
+The web, as we know it, is primarily owned and centralized by a small number of entities despite being used by billions of globally dispersed people who create its content. But what happens when people who use the web become its owners and benefactors?
+
+That’s called decentralization — a core fxhash principle shared by all web3 builders.
+
+If you create content, you, not the platform it’s made on, should own and decide how that content is used. In other words, a platform should empower your creativity and potential without diluting or taking ownership of it.
+
+NFTs are the best technology for creating, distributing, and preserving decentralized content. They enable us to trustlessly verify an artwork’s provenance, e.g., who created, owns and has claims to digital content. And they also ensure a direct connection between creators and audiences — a paradigm in which people can collect and support big, new ideas.
+
+Artistic practices like painting, poetry, and generative art have been transformed by NFTs. Writing has played a central role in discussing these transformations, but a simple fact has been largely ignored — writing is also art, and it deserves web3 tooling on par with the best.
+
+## Semi-fungible tokens
+
+The specific implementation used to mint articles on fx(text) is the semi-fungible token. Whereas non-fungible tokens are unique 1/1 assets, semi-fungible tokens are exchangeable with other tokens from the same set but not tokens from different sets, thus making editioned writing possible. This is similar to how multi-edition artworks on [objkt.com](https://objkt.com), [Versum](https://versum.xyz), and [Teia](https://teia.art) work today.
+
+The semi-fungible token structure makes it possible for you, as a publisher, to mint as many editions of an article as you see fit. Editioned writing NFTs help you receive support from a broad base of reader-collectors and establish a market for your writing.
+
+## Mutable metadata
+
+While NFTs are usually designed to be immutable by default, we believe this paradigm shouldn't apply to fx(text) articles. The pace at which our world changes makes immutable articles, i.e., unchangeable articles, the equivalent of creating time capsules, whereas we’re interested in creating living documents. As such, fx(text) articles can be edited and updated at any time, including after minting.
+
+This brings a question about ownership: what do you own if the metadata of your token can be edited by its minter at any time ? Because blockchains are an **history of operations**, your token will also be defined as the history of its metadata. While we will mainly display the latest version, we will keep track of the revisions, with the blockchain.
+
+We’ve also included an option for publishers to permanently lock token metadata just in case there’s a circumstance where immutability is desired.
+
+# Dynamic content & Tezos interoperability
+
+We designed fx(text) articles by thinking of them as interoperable modular blocks that might one day serve the entire Tezos ecosystem. So, instead of implementing a solution tailored explicitly for fxhash content, we built a robust platform that can be integrated by our neighbors, regardless of whether they’re connected to fxhash.
+
+We wanted fx(text) content to have the ability to point to data stored in Tezos Smart Contracts. To accomplish this, we created a specification to point to any content in the storage of a smart contract called [Tezos Storage Pointer](https://github.com/fxhash/specifications/blob/main/general/tezos-storage-pointers.md).
+
+A Tezos Storage Pointer is a list of key-value properties which points to any data stored in a Smart Contract. This specification was primarily designed to point to some NFT metadata, but it can also be used for other purposes.
+
+This is an example of a Tezos Storage Pointer pointing to the first token ever minted on fxhash:
+
+::tezos-storage-pointer[]{contract="KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE" path="token_metadata::0"}
+
+## Extended markdown
+
+Articles are stored on IPFS as a markdown string, with an extension to the markdown specification. Markdown is a lightweight markup language which allows defining headings, links, quotes, ... etc, in a very simple way. We use the widely used [Github Flavored Markdown](https://github.github.com/gfm/) specification as a base layer, which allows inserting more complex blocks such as tables and math formulas.
+
+To add custom blocks to the markdown (such as Tezos Storage Pointers), we decided to use the directives specification extension ([proposal](https://talk.commonmark.org/t/generic-directives-plugins-syntax/444), [syntax](https://github.com/micromark/micromark-extension-directive#syntax)) because it provides a very high level of modularity, and many markdown parsers have a plugin for this spec. We hope that it will facilitate its integration into other applications.
+
+This is an example of a Tezos Storage Pointer in a markdown string:
+
+```plain
+# Super title without inspiration
+
+Phasellus ut augue in quam facilisis congue consequat ut nibh. In pellentesque erat eget ex pretium, eu tristique nibh pretium.
+
+::tezos-storage-pointer[Some comment on this token]{contract="KT1NkZho1yRkDdQnN4Mz93sDYyY2pPrEHTNs" path="token_metadata::880"}
+
+*Phasellus ut augue in quam facilisis congue consequat ut nibh. In pellentesque erat eget ex pretium, eu tristique nibh pretium. Nullam tristique...*
+```
+
+By using this design, we leave the implementation of a viewer to the discretion of application developers. Because these are declarative pointers to some blockchain content, the data can be fetched on-the-fly from the blockchain. This is **dynamic content**. Moreover, pointers are not limited to fxhash, which means that this framework can be used to describe any content on Tezos.
+
+This is the document describing our markdown specification. Our specification also supports:
+
+*   Embedding YouTube, Spotify, and Twitter
+*   Embedding fxhash generative tokens
+*   URLs pointing to an IPFS resource
+*   Audio & video content
+
+# Building a writing platform for the web3 era
+
+Writers deserve a seamless experience to facilitate the expression of great ideas. To make fx(text) as intuitive as possible, we've built a custom [WYSIWYG](https://en.wikipedia.org/wiki/WYSIWYG) text editor.
+
+However, we understand that building a flawless user experience can only happen by listening to your valuable feedback. We want fx(text) to fit your needs and be robust enough to support a quickly evolving web3 space — so we’ll keep iterating on the platform according to your comments.
+
+# Writing NFTs enrich the Tezos art ecosystem
+
+At well over [1,000,000 minted tokens](https://twitter.com/fx_hash_/status/1548838714503155712), fxhash is one of the world's largest repository for generative art. Still, we need a permanent way to document the vital conversation, culture, and insights around not only generative art but *all* art, and not only on fxhash but on *all* tezos platforms.
+
+This release provides building blocks for this ecosystem. We've been working very hard to provide interoperable specifications. Moreover, we will be slowly releasing open-source tools (such as our text editor) to facilitate the integration of fx(text) into any tezos platform.
+
+We would like to give special thanks to a few members of the Tezos community (*objkt.com, teia, versum, tz1and*) for reviewing and helping us improve these specifications so that they can be properly used by the whole ecosystem in due time.
+
+> Writing is evolving — let a new age begin.

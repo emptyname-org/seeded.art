@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="back-link" href="/projects">← Projects</a>
+<h1>Collectors</h1>
+<form class="collector-search" action="/collectors" method="get" role="search"><label for="collector-address">Tezos address<input id="collector-address" name="address" type="search" placeholder="tz1… or KT1…" required maxlength="36" spellcheck="false"></label><button type="submit">View collection</button></form>
+{% endblock %}

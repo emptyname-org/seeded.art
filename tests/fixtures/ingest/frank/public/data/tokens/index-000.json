@@ -1,0 +1,204 @@
+[
+ {
+  "id": 382,
+  "slug": "plasma-sphere",
+  "name": "Plasma Sphere",
+  "flag": "NONE",
+  "supply": 3,
+  "iterationsCount": 0,
+  "createdAt": "2021-11-19T09:14:02.000Z",
+  "mintOpensAt": "2021-11-19T09:14:02.000Z",
+  "thumbnailUri": "ipfs://QmbxPnVKYwQDSQRaLrnHcJgNuVQmxApdyZiZoHwsojn2uD",
+  "displayUri": "ipfs://QmVXT6bsqG2BRdkdGWmSjcyhZannPQq8FwDVxVm3Bq9bDW",
+  "generativeUri": "ipfs://QmPLUH1E4LVwrDuwj1yHvfBMM9L17TTDSVEETfpgSkZx8c",
+  "tags": [
+   "space",
+   "animated",
+   "hypnotic"
+  ],
+  "author": {
+   "id": "tz1WKNUBMpEDT9yXt3BMAFJXdx1YMCakUKh7",
+   "name": "RJArt",
+   "avatarUri": "ipfs://QmTLeGz5CmPa8PaWn7SStewmnk6uvgxejg6URxzbK23Dog"
+  }
+ },
+ {
+  "id": 554,
+  "slug": "3d-pipes-win",
+  "name": "3D pipes W#I#N",
+  "flag": "MALICIOUS",
+  "supply": 2,
+  "iterationsCount": 0,
+  "createdAt": "2021-11-19T19:16:32.000Z",
+  "mintOpensAt": "2021-11-19T19:16:32.000Z",
+  "thumbnailUri": "ipfs://Qmc6NuDHu19XNTzgyqK6kKqwR9E6L3tnddAHqdPyaApfHg",
+  "displayUri": "ipfs://QmayJu7ziP8X6JgHPHWewobyfRPyHyw7bkDVSWipYHQKbT",
+  "generativeUri": "ipfs://QmSAdFjrzRy2PMhGJ11biJ6tR1bTDq5VfarBgJh9rBPJNj",
+  "tags": [
+   "pipes"
+  ],
+  "author": {
+   "id": "tz1VE1gFxMZ5TVCwWaYpXGANcfhyjgiUGkpg",
+   "name": "ordure",
+   "avatarUri": "ipfs://QmVAVdGY6FSwskaMnZjbaKMdQcrqNfBCEXxxk5uSQGiVM6"
+  }
+ },
+ {
+  "id": 3245,
+  "slug": "avoid",
+  "name": "Avoid",
+  "flag": "NONE",
+  "supply": 0,
+  "iterationsCount": 0,
+  "createdAt": "2021-12-12T16:38:16.000Z",
+  "mintOpensAt": "2021-12-12T16:38:16.000Z",
+  "thumbnailUri": "ipfs://QmNgXbNm58Gjf3HdLxKn9WFzgQGRbMAQmLodnxUpu6i5S9",
+  "displayUri": "ipfs://QmeatZPgzwLvHMc5QEtwb6niHdM6wSPyDg3eoAWh5YYP4U",
+  "generativeUri": "ipfs://Qme5xubCvYF4pKpnx5FqeNzAe1rLyCoXQwdro63zHNPS8t",
+  "tags": [
+   "2d",
+   "art",
+   "spiral",
+   "lines",
+   "circles",
+   "shape",
+   "black",
+   "white"
+  ],
+  "author": {
+   "id": "tz1igEhzCfn34qnwJmKBQb24pnDAAYTYux3m",
+   "name": "liet",
+   "avatarUri": null
+  }
+ },
+ {
+  "id": 11003,
+  "slug": "autumn-composition",
+  "name": "AUTUMN COMPOSITION",
+  "flag": "NONE",
+  "supply": 3,
+  "iterationsCount": 0,
+  "createdAt": "2022-04-16T12:35:59.000Z",
+  "mintOpensAt": "2022-04-16T15:35:59.000Z",
+  "thumbnailUri": "ipfs://QmaN1bYPHDai4f41LamYSyGR6WKEYPAUe8aneXSULUuTL4",
+  "displayUri": "ipfs://QmNW3U3prkjv5CaBrjGDXYTbdrxdK7kXzuUqrMocYr4jgd",
+  "generativeUri": "ipfs://QmSceg8NqmVQzfm7fYP1EBk7AoUZFatFCqRFZ21Kxcc2TW",
+  "tags": [
+   "p5js",
+   "Processing",
+   "creativecoding",
+   "japan",
+   "generative",
+   "art",
+   "graphics",
+   "JavaScript",
+   "programming",
+   "E.C.H"
+  ],
+  "author": {
+   "id": "tz2EuD6C8CixQYfDNYoetkdJSt9MMev3YsnU",
+   "name": "E.C.H",
+   "avatarUri": "ipfs://QmcrJtidBGUfn985mmPCRRbzydhK1SgVwgKRoBen24fbxe"
+  }
+ },
+ {
+  "id": 11229,
+  "slug": "complementary-dot-logic",
+  "name": "Complementary Dot Logic",
+  "flag": "NONE",
+  "supply": 512,
+  "iterationsCount": 0,
+  "createdAt": "2022-04-16T19:34:14.000Z",
+  "mintOpensAt": "2022-04-16T22:34:14.000Z",
+  "thumbnailUri": "ipfs://QmdHY8fVk4W864NJxjiFxnPstnC6eJu82rPsg9cioWNF9w",
+  "displayUri": "ipfs://QmcJQWR2Y15x2JbCS55xVWsr9By6reLXoVbu3WTnPpyKJF",
+  "generativeUri": "ipfs://QmdAdk142Wvu4Nw44rqWG43MafyT3g1k6PYioohSXg5JZS",
+  "tags": [
+   "Tessellation",
+   "Op Art",
+   "Vasarely",
+   "Randomness",
+   "Dr. Bill Kolomyjec",
+   "Generative Art",
+   "OG"
+  ],
+  "author": {
+   "id": "tz1bDn9tU2SjWjr64g2r4jhgos4rE6AssyUb",
+   "name": "Dr. Bill Kolomyjec",
+   "avatarUri": "ipfs://QmVN6Am5LNedP1roLVWC9kvWppfDutrEomn29eqDnyhnha"
+  }
+ },
+ {
+  "id": 15755,
+  "slug": "sysgen2.bat",
+  "name": "sysgen2.bat",
+  "flag": "NONE",
+  "supply": 2,
+  "iterationsCount": 0,
+  "createdAt": "2022-07-02T08:54:14.000Z",
+  "mintOpensAt": "2022-07-02T11:54:14.000Z",
+  "thumbnailUri": "ipfs://QmVuGG19Yn96rdLveD4eYcUFu4UmTms6SyfWUMCgcrpc95",
+  "displayUri": "ipfs://QmYFttfbfRzhoRFqKE4G6SjsKTbppp45hPJhChAmYpfg8V",
+  "generativeUri": "ipfs://QmTupwu3Qp89rcSk6Q1aEQ2ZVuo5Ka8yZuiAwcxeYYSyVt",
+  "tags": [
+   "solar",
+   "system",
+   "sun",
+   "planets",
+   "orbits"
+  ],
+  "author": {
+   "id": "KT1XHYGLP3CnnJVpXxki7pd6GLH9BFisrzsh",
+   "name": null,
+   "avatarUri": null
+  }
+ },
+ {
+  "id": 29437,
+  "slug": "arboreal",
+  "name": "Arboreal",
+  "flag": "NONE",
+  "supply": 320,
+  "iterationsCount": 10,
+  "createdAt": "2023-11-10T22:40:40.000Z",
+  "mintOpensAt": "2023-11-10T23:40:40.000Z",
+  "thumbnailUri": "ipfs://QmPAsF4zoaGBmmT9qkjMpuTsqJf8Dm64C1Cqjnbv8jVwfh",
+  "displayUri": "ipfs://QmbfHW3azUhcKFjAGMu3Grtf6tC78pdSu1uBLuSsw8AxcS",
+  "generativeUri": "onchfs://a71e98fced01c865f33be138100b5ea5486f32fc333ad1503f814b201234130c",
+  "tags": [
+   "trees",
+   "black and white",
+   "wind",
+   "human condition",
+   "mindscape"
+  ],
+  "author": {
+   "id": "KT1LZwGQgbi341zPAu1YmAd8EWvUeRLxrQLr",
+   "name": null,
+   "avatarUri": null
+  }
+ },
+ {
+  "id": 29632,
+  "slug": "the-cycle-of-collatz",
+  "name": "The cycle of Collatz",
+  "flag": "NONE",
+  "supply": 50,
+  "iterationsCount": 45,
+  "createdAt": "2023-12-05T03:27:04.000Z",
+  "mintOpensAt": "2023-12-06T18:00:00.000Z",
+  "thumbnailUri": "ipfs://QmZw6rjde1rvzGp4XKMCTwsVvsaPYujv4a9jpuBAey5tvo",
+  "displayUri": "ipfs://QmVyG9Ya6pvs8KsFsPJjegKneL9iit2NAapSjD56jAJMC3",
+  "generativeUri": "ipfs://QmRq9ZhyAPBRt5zpp4o83st7BXnddYue6xZoujcd7HYuqt",
+  "tags": [
+   "collatz",
+   "conjoncture",
+   "mathematics"
+  ],
+  "author": {
+   "id": "tz1iEiZBsrbDWWq5E4RzmWgZUyJfad3r4WEn",
+   "name": "PetiShaMiaou",
+   "avatarUri": "ipfs://QmYQ7tJYEMJMGhnjmoJDFSq26fX3HHdHp4NVbZxZCUru4o"
+  }
+ }
+]

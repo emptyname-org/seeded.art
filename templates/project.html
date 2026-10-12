@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% import "macros.html" as ui %}
+{% block content %}
+<a class="back-link" href="/projects">← All projects</a>
+<section class="project-hero"><div class="project-hero-grid"><div><h1>{{ project.title }}</h1><p class="artist-line">by {% call ui::byline(artists) %}</p></div>
+<dl class="project-summary"><div><dt>Minted</dt><dd>{{ minted }}</dd></div><div><dt>Published</dt><dd>{{ published }}</dd></div></dl></div>
+<div class="artist-description markup" data-read-more>{{ description|safe }}</div></section>
+<script type="module" src="/static/read_more.js"></script>
+<details class="technical-details"><summary>Project information</summary>
+  <div class="project-information"><dl>
+    <div><dt>fxhash project ID</dt><dd>{{ project.id }}</dd></div>
+    <div><dt>Runtime</dt><dd>{{ runtime }}</dd></div><div><dt>Network</dt><dd>Tezos</dd></div>
+    <div><dt>Token contract</dt><dd><code>{{ contract }}</code></dd></div>
+    <div><dt>Issuer (mint) contract</dt><dd><code>{{ issuer }}</code></dd></div>
+    <div><dt>Artist addresses</dt><dd>{% for artist in artist_addresses %}{% if !artist.url.is_empty() %}<a href="{{ artist.url }}"><code>{{ artist.name }}</code></a>{% else %}<code>{{ artist.name }}</code>{% endif %}{% else %}Not yet indexed{% endfor %}</dd></div>
+    <div><dt>Generator URI</dt><dd><code>{{ artifact }}</code></dd></div>
+    <div class="project-tags"><dt>Tags</dt><dd>{% for tag in tags %}<span>{{ tag }}</span>{% else %}Not yet indexed{% endfor %}</dd></div>
+  </dl>{% if indexed %}<a href="{{ source }}" rel="noopener noreferrer" target="_blank">View project on objkt ↗</a>{% endif %}</div>
+</details>
+{% if !articles.is_empty() %}<p><a class="text-link" href="#project-articles">Related articles</a></p>{% endif %}
+{% if indexed %}
+<section id="editions" class="project-collection">
+  <div class="section-title-row"><h2>NFTs <span class="section-count">{{ total }}</span></h2><span class="collection-status">Ownership snapshot {{ meta.snapshot }}</span></div>
+  {% include "collection_search.html" %}
+  {% if cards.is_empty() %}{% call ui::empty_state("No matching NFTs", "", "", "") %}{% else %}{% let load_more_region = "editions" %}{% include "token_cards.html" %}{% endif %}
+</section>
+{% call ui::pagination(pagination, "editions", "NFTs pages") %}
+{% else %}
+<section class="unindexed-project"><h2>NFTs not yet indexed</h2>{% match preview %}{% when Some with (image) %}<img class="unindexed-preview" src="{{ image }}" width="800" height="800" alt="{{ project.title }} static project preview">{% when None %}{% endmatch %}<a class="button-link" href="{{ source }}" rel="noopener noreferrer" target="_blank">View project on objkt ↗</a></section>
+{% endif %}
+{{ release|safe }}
+{{ articles|safe }}
+{{ history|safe }}
+{% endblock %}

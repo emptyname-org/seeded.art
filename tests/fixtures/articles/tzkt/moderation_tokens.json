@@ -1,0 +1,41 @@
+[
+ {
+  "active": true,
+  "firstLevel": 2670560,
+  "hash": "exprthfHPfxFHhm9wAy26hRabmjdU9E1pUDsE1SAcTjTf9neo9NuGz",
+  "id": 32512084,
+  "key": "279",
+  "lastLevel": 2670560,
+  "updates": 1,
+  "value": {
+   "reason": "1",
+   "state": "4"
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2670774,
+  "hash": "exprtuutMChiodMY46UwhpiTw4CBYmA7Ht7kU4Bq6SPvtDijfu2QSJ",
+  "id": 32517033,
+  "key": "143",
+  "lastLevel": 2932716,
+  "updates": 2,
+  "value": {
+   "reason": null,
+   "state": "0"
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2670836,
+  "hash": "exprusqRbkYHRQvwJQEtNPWn12FHLPUy82TWFJzUZs1pqRTCpwZtFL",
+  "id": 32518387,
+  "key": "100",
+  "lastLevel": 2670836,
+  "updates": 1,
+  "value": {
+   "reason": "1",
+   "state": "4"
+  }
+ }
+]

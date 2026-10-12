@@ -1,0 +1,61 @@
+[Unit]
+Description=seeded.art Caddy TLS reverse proxy
+# No Wants= on an app unit: pulling in seeded.service would stop the split units.
+Wants=network-online.target
+After=network-online.target seeded.service seeded-app.service seeded-content.service
+Conflicts=caddy.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=seeded-proxy
+Group=seeded-proxy
+__FORUM_SERVICE__
+Environment=XDG_DATA_HOME=/var/lib/seeded-proxy
+Environment=XDG_CONFIG_HOME=/var/lib/seeded-proxy/config
+ExecStartPre=/usr/bin/caddy validate --config /etc/seeded/Caddyfile --adapter caddyfile
+ExecStart=/usr/bin/caddy run --config /etc/seeded/Caddyfile --adapter caddyfile
+KillSignal=SIGTERM
+TimeoutStopSec=90
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=seeded-proxy
+RuntimeDirectoryMode=0700
+StateDirectory=seeded-proxy
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+ProtectSystem=strict
+ProtectHome=true
+__FORUM_PRIVATE_PATHS__
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictNamespaces=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+RemoveIPC=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+MemoryAccounting=true
+MemoryDenyWriteExecute=true
+MemoryMax=__PROXY_MEMORY_MAX__
+TasksMax=128
+LimitNOFILE=__PROXY_OPEN_FILES__
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

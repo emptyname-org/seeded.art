@@ -1,0 +1,10 @@
+[Unit]
+Description=seeded.art token and marketplace update after a confirmed trade (optional)
+
+[Path]
+# The app writes this file on each confirmed trade; the sync removes it when it starts.
+PathExists=/var/lib/seeded/sync.request
+Unit=seeded-sync.service
+
+[Install]
+WantedBy=paths.target

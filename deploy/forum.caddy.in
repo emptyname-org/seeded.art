@@ -1,0 +1,28 @@
+__FORUM_HOST__ {
+	import site_policy
+	header {
+		>X-Frame-Options DENY
+		>Content-Security-Policy "frame-ancestors 'none'"
+		-X-Powered-By
+	}
+	root * __FORUM_ROOT__
+	encode zstd gzip
+	route {
+		# Agents look for /llms.txt on the host they use; the guide lives on the app host.
+		redir /llms.txt https://__APP_HOST__/llms.txt 302
+		__FORUM_SEARCH_ROUTES__
+		@private path /vendor /vendor/* /storage /storage/* /composer.* /config.php /config.php/* /flarum /flarum/* /site.php /site.php/* /extend.php /extend.php/*
+		respond @private 404
+		@stray {
+			path_regexp stray (?i)(^|/)[.]|[.]php(/|$)|(^|/)web[.]config(/|$)
+			not path /index.php
+		}
+		respond @stray 404
+		php_fastcgi unix/__FORUM_PHP_SOCKET__ {
+			dial_timeout 2s
+			read_timeout 65s
+			write_timeout 10s
+		}
+		file_server
+	}
+}

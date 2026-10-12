@@ -1,0 +1,82 @@
+[
+ {
+  "active": true,
+  "firstLevel": 2670551,
+  "hash": "exprtZBwZUeYYYfUs9B9Rg2ywHezVHnCCnmF9WsDQVrs582dSK63dC",
+  "id": 32511204,
+  "key": "0",
+  "lastLevel": 2670551,
+  "updates": 1,
+  "value": "Slig-sitting"
+ },
+ {
+  "active": true,
+  "firstLevel": 2670554,
+  "hash": "expru2dKqDfZG8hu4wNGkiyunvq2hdSKuVYtcKta7BWP6Q18oNxKjS",
+  "id": 32511565,
+  "key": "1",
+  "lastLevel": 2670554,
+  "updates": 1,
+  "value": "Slug-sitting"
+ },
+ {
+  "active": true,
+  "firstLevel": 2743674,
+  "hash": "expruDuAZnFKqmLoisJqUGqrNzXTvw7PJM2rYk97JErM5FHCerQqgn",
+  "id": 33836229,
+  "key": "2",
+  "lastLevel": 2743674,
+  "updates": 1,
+  "value": "Pen testing"
+ },
+ {
+  "active": true,
+  "firstLevel": 2753164,
+  "hash": "exprujyHLX2vacVy6AcFmAt5K3Y93aMtccrbNtcsCRik6fjxR8wL6x",
+  "id": 33983262,
+  "key": "3",
+  "lastLevel": 2753164,
+  "updates": 1,
+  "value": "Spam"
+ },
+ {
+  "active": true,
+  "firstLevel": 2772583,
+  "hash": "exprtkcv5vD1Ct4y91FvZFgXVHCxebKhorSVs8hFmXYgmGsEMo4qdp",
+  "id": 34315232,
+  "key": "4",
+  "lastLevel": 2772583,
+  "updates": 1,
+  "value": "Plagiarism"
+ },
+ {
+  "active": true,
+  "firstLevel": 2783826,
+  "hash": "exprtqoNj2hRg8PsPMaXLcy3dXjMM3B7nHKrRNqpfjbYpMbULbRj8k",
+  "id": 34471831,
+  "key": "5",
+  "lastLevel": 2783826,
+  "updates": 1,
+  "value": "Empty Article Shell"
+ },
+ {
+  "active": true,
+  "firstLevel": 3065485,
+  "hash": "expruhrcC4osJigCeAywh27e6iYerzr5LnhYDwnWJc7VrLg7SxJbtm",
+  "id": 41812811,
+  "key": "6",
+  "lastLevel": 3065485,
+  "updates": 1,
+  "value": "hidden on artist request"
+ },
+ {
+  "active": true,
+  "firstLevel": 5332203,
+  "hash": "exprufunBN3FAVpZ21WXquoqiNyWB2PvYy1njkP4wHGtMexdKtcJEM",
+  "id": 59362001,
+  "key": "7",
+  "lastLevel": 5332203,
+  "updates": 1,
+  "value": "Misusing fxtext for publishing non-text content that would not be allowed on fxhash"
+ }
+]

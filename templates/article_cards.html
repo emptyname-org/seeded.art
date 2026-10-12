@@ -1,0 +1,6 @@
+<div class="article-grid" data-load-more-region="{{ load_more_region }}">{% for card in cards %}<article class="article-card" data-article-id="{{ card.id }}">
+  {% if !card.image.is_empty() %}<a class="article-card-image" href="/article/{{ card.id }}" tabindex="-1" aria-hidden="true"><img src="{{ card.image }}" alt="" loading="lazy" referrerpolicy="no-referrer"></a>{% endif %}
+  <div class="article-card-body">{% if embedded %}<h3><a href="/article/{{ card.id }}">{{ card.title }}</a></h3>{% else %}<h2><a href="/article/{{ card.id }}">{{ card.title }}</a></h2>{% endif %}<p>By <a href="/profile/{{ card.address }}">{{ card.author }}</a></p><p class="article-excerpt">{{ card.description }}</p>
+  <dl class="project-metrics"><div><dt>Published</dt><dd>{{ card.date }}</dd></div><div><dt>Minted NFTs</dt><dd>{{ card.editions }}</dd></div></dl>
+  {% if !card.holding.is_empty() %}<p class="article-holding">{{ card.holding }}</p>{% endif %}
+</div></article>{% endfor %}</div>

@@ -1,0 +1,166 @@
+[
+ {
+  "active": true,
+  "firstLevel": 2667426,
+  "hash": "exprtZBwZUeYYYfUs9B9Rg2ywHezVHnCCnmF9WsDQVrs582dSK63dC",
+  "id": 32433549,
+  "key": "0",
+  "lastLevel": 2667426,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1fepn7jZsCYBqCDhpM63hzh9g2Ytqk4Tpv",
+   "royalties": "100",
+   "royalties_split": [
+    {
+     "address": "tz1fepn7jZsCYBqCDhpM63hzh9g2Ytqk4Tpv",
+     "pct": "1000"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2667537,
+  "hash": "expru2dKqDfZG8hu4wNGkiyunvq2hdSKuVYtcKta7BWP6Q18oNxKjS",
+  "id": 32436620,
+  "key": "1",
+  "lastLevel": 2667537,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1cNakLoctaqaCtBZSQGZs5RgAciYqB7cNf",
+   "royalties": "160",
+   "royalties_split": [
+    {
+     "address": "tz1cNakLoctaqaCtBZSQGZs5RgAciYqB7cNf",
+     "pct": "500"
+    },
+    {
+     "address": "tz1QgjmhrUD3X7kgS9mMHbUz4cS6uDiFGhAU",
+     "pct": "500"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2667545,
+  "hash": "exprtkcv5vD1Ct4y91FvZFgXVHCxebKhorSVs8hFmXYgmGsEMo4qdp",
+  "id": 32436933,
+  "key": "4",
+  "lastLevel": 2667545,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1TSdoeS5udkYmVr1cEpErTqxGVrC3Kcd2J",
+   "royalties": "150",
+   "royalties_split": [
+    {
+     "address": "tz1TSdoeS5udkYmVr1cEpErTqxGVrC3Kcd2J",
+     "pct": "1000"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2667617,
+  "hash": "exprutEDSQUwyxo81jG2M2XUQ5BZ392Ca8SDU3BcD1MTfwtGzbKSjd",
+  "id": 32439511,
+  "key": "21",
+  "lastLevel": 2667617,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1YqZRkYSzHaHL22CS7x5tyjC3PR6XHQPAA",
+   "royalties": "110",
+   "royalties_split": [
+    {
+     "address": "tz1YqZRkYSzHaHL22CS7x5tyjC3PR6XHQPAA",
+     "pct": "1000"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2668073,
+  "hash": "exprusqRbkYHRQvwJQEtNPWn12FHLPUy82TWFJzUZs1pqRTCpwZtFL",
+  "id": 32450803,
+  "key": "100",
+  "lastLevel": 2668073,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1RcQM4Vgi1fkNTFTJtgBAxf7zqaJCStXt4",
+   "royalties": "250",
+   "royalties_split": [
+    {
+     "address": "tz1RcQM4Vgi1fkNTFTJtgBAxf7zqaJCStXt4",
+     "pct": "1000"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2668143,
+  "hash": "exprtuutMChiodMY46UwhpiTw4CBYmA7Ht7kU4Bq6SPvtDijfu2QSJ",
+  "id": 32455593,
+  "key": "143",
+  "lastLevel": 2668143,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1Twz3EaEcAwkBkXV5YQwLNbLruErA5TV8k",
+   "royalties": "100",
+   "royalties_split": [
+    {
+     "address": "tz1Twz3EaEcAwkBkXV5YQwLNbLruErA5TV8k",
+     "pct": "1000"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2669570,
+  "hash": "exprthfHPfxFHhm9wAy26hRabmjdU9E1pUDsE1SAcTjTf9neo9NuGz",
+  "id": 32486891,
+  "key": "279",
+  "lastLevel": 2669570,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1RcQM4Vgi1fkNTFTJtgBAxf7zqaJCStXt4",
+   "royalties": "250",
+   "royalties_split": [
+    {
+     "address": "tz1RcQM4Vgi1fkNTFTJtgBAxf7zqaJCStXt4",
+     "pct": "1000"
+    }
+   ]
+  }
+ },
+ {
+  "active": true,
+  "firstLevel": 2986861,
+  "hash": "exprtxMHZzpCtNqY4MXGoRaiNdEGmDgAiXaT6mVgWd9N7SKu6Q8mSJ",
+  "id": 40278294,
+  "key": "835",
+  "lastLevel": 2986861,
+  "updates": 1,
+  "value": {
+   "metadata_locked": false,
+   "minter": "tz1MqNDsm9mJGaN4x9V8XXAM5xzbw3hHwTZi",
+   "royalties": "150",
+   "royalties_split": [
+    {
+     "address": "tz1MqNDsm9mJGaN4x9V8XXAM5xzbw3hHwTZi",
+     "pct": "1000"
+    }
+   ]
+  }
+ }
+]

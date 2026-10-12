@@ -1,0 +1,604 @@
+[
+ {
+  "account.address": "tz1fepn7jZsCYBqCDhpM63hzh9g2Ytqk4Tpv",
+  "balance": "22",
+  "id": 314093143588866,
+  "lastLevel": 2884026,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1TSdoeS5udkYmVr1cEpErTqxGVrC3Kcd2J",
+  "balance": "10",
+  "id": 314131514130434,
+  "lastLevel": 2721190,
+  "token.tokenId": "4"
+ },
+ {
+  "account.address": "tz1YqZRkYSzHaHL22CS7x5tyjC3PR6XHQPAA",
+  "balance": "330",
+  "id": 314155886182402,
+  "lastLevel": 2667617,
+  "token.tokenId": "21"
+ },
+ {
+  "account.address": "tz1RcQM4Vgi1fkNTFTJtgBAxf7zqaJCStXt4",
+  "balance": "1000",
+  "id": 314295270244354,
+  "lastLevel": 2668073,
+  "token.tokenId": "100"
+ },
+ {
+  "account.address": "tz1RcQM4Vgi1fkNTFTJtgBAxf7zqaJCStXt4",
+  "balance": "1000",
+  "id": 314711173234690,
+  "lastLevel": 2669570,
+  "token.tokenId": "279"
+ },
+ {
+  "account.address": "KT1M1NyU9X4usEimt2f3kDaijZnDMNBu42Ja",
+  "balance": "109",
+  "id": 323993336807425,
+  "lastLevel": 2722724,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1Z7QsjQSMeoQdDZ4CeZRbY1hWZb2FXwpYH",
+  "balance": "1",
+  "id": 323994198736897,
+  "lastLevel": 2699556,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1fGiwg6RdPFw4MCo5MJxn3VMBjJd3xXhmS",
+  "balance": "1",
+  "id": 324000555204609,
+  "lastLevel": 2699578,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1QgjmhrUD3X7kgS9mMHbUz4cS6uDiFGhAU",
+  "balance": "1",
+  "id": 324008098660353,
+  "lastLevel": 2699607,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1VZrkBPdGjdS1mBHnr6Msu61GszRMGXFYf",
+  "balance": "1",
+  "id": 324017825251329,
+  "lastLevel": 2699644,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1a4Kj5Xe3qrgFRp7XQngSy9GgSQBkEmGgw",
+  "balance": "2",
+  "id": 324065446330369,
+  "lastLevel": 2707200,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1SLRzGqX9fuKPx1PAkrDxCvaetr524is11",
+  "balance": "1",
+  "id": 324090336378881,
+  "lastLevel": 2699913,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1W75eqnJ1wZMZ8ha1GTyD1gjHX3siwnr9n",
+  "balance": "1",
+  "id": 324116077871105,
+  "lastLevel": 2700010,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz2FsA93XsovbPwPJY88mJ3Zg6PsYoeERaM1",
+  "balance": "1",
+  "id": 324132809998337,
+  "lastLevel": 2700073,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1byAtNvJ7WBvAqDevsqcfnhYbSB2jF6H82",
+  "balance": "1",
+  "id": 324218242727937,
+  "lastLevel": 2700388,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1dTrkbcktTFm6RTTAYCp4S3bHns7oyetn7",
+  "balance": "1",
+  "id": 324221112680449,
+  "lastLevel": 2700397,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1V99mr8Yk2mhrKvwer5amwcxcjWduTdCzA",
+  "balance": "1",
+  "id": 324339906904065,
+  "lastLevel": 2700815,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "KT1M1NyU9X4usEimt2f3kDaijZnDMNBu42Ja",
+  "balance": "89",
+  "id": 324478590517249,
+  "lastLevel": 3052108,
+  "token.tokenId": "4"
+ },
+ {
+  "account.address": "tz2GdrGNEcQXQpBdDdmRyJiYzi9wgkpnQEW4",
+  "balance": "1",
+  "id": 324680897527809,
+  "lastLevel": 2701917,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1RB3poJD9r5cLXjzZPJ2RuR8eeLYWXMLDN",
+  "balance": "1",
+  "id": 324690523455489,
+  "lastLevel": 2701948,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1NMvVB48fNzrG3rPZS58Eo1nSJ6p3RjRyz",
+  "balance": "1",
+  "id": 324701871144961,
+  "lastLevel": 2701985,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1RBcq5HWsj57NXDgcjFH9y2RcCDjQBQcSm",
+  "balance": "1",
+  "id": 325892639293441,
+  "lastLevel": 2705730,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1gQyvkV8ofzcRjUhancM47wK8MuHz6Thzf",
+  "balance": "1",
+  "id": 331087520727041,
+  "lastLevel": 2722724,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "KT1M1NyU9X4usEimt2f3kDaijZnDMNBu42Ja",
+  "balance": "1940",
+  "id": 379561610051585,
+  "lastLevel": 5167063,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1fZnD7uw6d9sfJuZmTH83hwaFXTAW9RUkq",
+  "balance": "2",
+  "id": 379575729127425,
+  "lastLevel": 2884070,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1VZrkBPdGjdS1mBHnr6Msu61GszRMGXFYf",
+  "balance": "2",
+  "id": 379578029703169,
+  "lastLevel": 2884066,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1aX6EVSuKi37LwCsfvEEmkcsyPf6wBeKqt",
+  "balance": "1",
+  "id": 379614533779457,
+  "lastLevel": 3162951,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1fxxFotZ2CnMxa5h7CnwRQ4d9zia9W6nWn",
+  "balance": "1",
+  "id": 379731115507713,
+  "lastLevel": 2884505,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1cbhmVZuFTKHcACSFpg5ER1bGVGkanhrbW",
+  "balance": "1",
+  "id": 379886047854593,
+  "lastLevel": 2885033,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1RPZp6NLzn7x4g7jhqHtCkhCQVnhbVMj8y",
+  "balance": "2",
+  "id": 379891017056257,
+  "lastLevel": 2885057,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1dxJQUkh3uaFy1bPgeCV3jJMwPnBwmZSHn",
+  "balance": "1",
+  "id": 380582337970177,
+  "lastLevel": 2887057,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1ffnw6qqjWuNLXTz9V71n3VEy87RMC94qX",
+  "balance": "1",
+  "id": 382864799563777,
+  "lastLevel": 2894001,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1TG5zhJNRjjwDZDB32pJnfGQeYGEYjonzT",
+  "balance": "1",
+  "id": 388920716034049,
+  "lastLevel": 2913638,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1UAMUaeyDJiW1HWCMxXFPiwdbsaFhrbrUZ",
+  "balance": "1",
+  "id": 400190125113345,
+  "lastLevel": 2950855,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Z4tGLNW4kf9KK1ErSG1b3wuBu9pP4DipN",
+  "balance": "1",
+  "id": 406095704096769,
+  "lastLevel": 2970888,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1eZ3qA4J6raJwzbyvoj7eB5cZwJxQ2qkto",
+  "balance": "1",
+  "id": 406856206909441,
+  "lastLevel": 2973528,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Xe4p5cC7U8qR1vJTkrnCmduzUGpsLqNop",
+  "balance": "1",
+  "id": 406858325032961,
+  "lastLevel": 2973536,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1hMK7EPcHvqTrXoSD8DitJAtq6PrPLsMva",
+  "balance": "1",
+  "id": 406860327813121,
+  "lastLevel": 2973544,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1ZBz84K5qdF9FwYLQDFtY8UT2mFjHZSo11",
+  "balance": "1",
+  "id": 406883229761537,
+  "lastLevel": 2973622,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1PPYN795fjQAWHJoKCfsR8HHgEgm1c5518",
+  "balance": "1",
+  "id": 406884826742785,
+  "lastLevel": 2973628,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1XXE86wyS2A4bnXo17CQtKs3Ch6vjWcs3k",
+  "balance": "1",
+  "id": 406886973177857,
+  "lastLevel": 2973636,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1akx5YsMwxUwuDm5QZ6B1XtehaA273aKBL",
+  "balance": "1",
+  "id": 406888089911297,
+  "lastLevel": 2973640,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Xm8uy9xCSgdfNJhyP5uGa6UibvNMxvuf7",
+  "balance": "1",
+  "id": 406888852226049,
+  "lastLevel": 2973643,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Xm44n8seorh4LXtk9kPNtvTrKT95847pG",
+  "balance": "1",
+  "id": 406889986785281,
+  "lastLevel": 2973647,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1ap68MiS5xWYCabZYceeCideJK7YhpSGcK",
+  "balance": "1",
+  "id": 406890995515393,
+  "lastLevel": 2973651,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1NdcQymNRWFe6MQPfK15HTy1cAc7yFH7ze",
+  "balance": "1",
+  "id": 406892124831745,
+  "lastLevel": 2973655,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Q4FMwRbxD3PGnW5b6gFeqH6wYssBujTbn",
+  "balance": "1",
+  "id": 406893666238465,
+  "lastLevel": 2973661,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1ieTsayHHXY7sahR5nZ5h9t9UKhcfTvPsT",
+  "balance": "1",
+  "id": 406894766194689,
+  "lastLevel": 2973665,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Rkyn7q9cXqEPZ9VkG4TBACfmJ4UZm1LUG",
+  "balance": "1",
+  "id": 406896429236225,
+  "lastLevel": 2973671,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1Xh1kqoTXQ6Ef6SayECzCZDxP9dnBd7PDA",
+  "balance": "1",
+  "id": 406897455792129,
+  "lastLevel": 2973675,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1TBFsNQuS845pTBu6qTT68dZFzD5atNvYQ",
+  "balance": "1",
+  "id": 406898476056577,
+  "lastLevel": 2973679,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1UVk4jKc5av2T41mdrEomn7BizWMYs7DF7",
+  "balance": "1",
+  "id": 406899578109953,
+  "lastLevel": 2973683,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1iiSMG4UgN4skhgMXZM4WvXy9myZ3PBbr2",
+  "balance": "1",
+  "id": 406900437942273,
+  "lastLevel": 2973686,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1aopBHfmHiqP9rsQ9T6u8xeRdrfrioD8wK",
+  "balance": "1",
+  "id": 406901253734401,
+  "lastLevel": 2973689,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1XnW4Y9Ryt8PGM7Kjct5yPDNHmRVs13WAG",
+  "balance": "1",
+  "id": 406902031777793,
+  "lastLevel": 2973692,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1TSnewR5PkkJLDLFNdCAQjiCri7kYABzoc",
+  "balance": "1",
+  "id": 406902939844609,
+  "lastLevel": 2973695,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1MiJ4RtTvsuPFpVPgGxxg4JrUu8WxpEKFX",
+  "balance": "1",
+  "id": 406911973326849,
+  "lastLevel": 2973700,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1VELLxzsXotsiUhjrGzYGCWNXhpS7V5afg",
+  "balance": "1",
+  "id": 406919014514689,
+  "lastLevel": 2973707,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1du4bYLuXqEqVDTfVdmCAieKeSwZ16PidT",
+  "balance": "1",
+  "id": 406923479351297,
+  "lastLevel": 2973717,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1NcCUh9s3Ho7Hdkb2rLE8DYdCazdfGrEJX",
+  "balance": "1",
+  "id": 406924277317633,
+  "lastLevel": 2973720,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1TsothByBYuoH2UhdwvUZU8Z8N44CnE9yk",
+  "balance": "1",
+  "id": 406925319602177,
+  "lastLevel": 2973724,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1gFT2AbC5x6hmSjaDwFjM1Fk12Njs5eMGp",
+  "balance": "1",
+  "id": 406927717695489,
+  "lastLevel": 2973730,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1LMChvoHmSDmecqin9zNdf4gAq24JChWgh",
+  "balance": "1",
+  "id": 406929285316609,
+  "lastLevel": 2973736,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1dZ51EB6YYswBtwMLEBg2PWFqkppQYLBFt",
+  "balance": "1",
+  "id": 406932263272449,
+  "lastLevel": 2973747,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1PfU8qiQAbwhPd9debymtkpHqkCGgLbvba",
+  "balance": "1",
+  "id": 406933959868417,
+  "lastLevel": 2973751,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1h4VtPgLY1VqBUxUBPSxiANiQJJct9f3zm",
+  "balance": "1",
+  "id": 406934967549953,
+  "lastLevel": 2973754,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1MqNDsm9mJGaN4x9V8XXAM5xzbw3hHwTZi",
+  "balance": "1",
+  "id": 412670699241474,
+  "lastLevel": 2987004,
+  "token.tokenId": "835"
+ },
+ {
+  "account.address": "tz1hncfmM4AZ8LaNeBuDkoepYzcgYfzCapTv",
+  "balance": "1",
+  "id": 419340512919553,
+  "lastLevel": 3008348,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1dbpHK7b2SsiZg8ZBNHGK5uvMhad8MAnrF",
+  "balance": "1",
+  "id": 420576951795713,
+  "lastLevel": 3012475,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1hDMLTPJMmy5KgFTM8wjR7pZz8bvnvkUKd",
+  "balance": "1",
+  "id": 422021067440129,
+  "lastLevel": 3017134,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1ReePsBegAeR7v8Dz7bvqDB8VuoVdzpLYz",
+  "balance": "1",
+  "id": 426293423243265,
+  "lastLevel": 3031344,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1RkRQ6PZAwC56DKm759HFMUgsCs5GdoD5t",
+  "balance": "1",
+  "id": 432424804679681,
+  "lastLevel": 3050564,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1McypcjprAei2zwdfTDQhu6SZ9TvGFrxQY",
+  "balance": "1",
+  "id": 432697112526849,
+  "lastLevel": 3051434,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1duKQQ1k3PJp5K5QD3cwSHF6i8ReTQEvDL",
+  "balance": "1",
+  "id": 432928912834561,
+  "lastLevel": 3052108,
+  "token.tokenId": "4"
+ },
+ {
+  "account.address": "tz1b6ycFQd7RPW86mGKqBCmTfG6YniABW3Fa",
+  "balance": "1",
+  "id": 445809387634689,
+  "lastLevel": 3092091,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1gEDmW51C7F3ncNxK2vbeD4m5fKL2mg9D4",
+  "balance": "1",
+  "id": 449300347748353,
+  "lastLevel": 3103712,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1VdEvYG8gRfDjnVgY3Pg62zBAL4FrS2SG8",
+  "balance": "1",
+  "id": 468198857113601,
+  "lastLevel": 3162951,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1a13TNm4dTTJxJhoK9VscovjAgjwhPpK6S",
+  "balance": "1",
+  "id": 471148901957633,
+  "lastLevel": 3172433,
+  "token.tokenId": "1"
+ },
+ {
+  "account.address": "tz1Rh9MSnqpMNT7Ekypvz9mrBZBpJ6ew3HWA",
+  "balance": "1",
+  "id": 480554034135041,
+  "lastLevel": 3204372,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1burnburnburnburnburnburnburjAYjjX",
+  "balance": "1000",
+  "id": 703011086139393,
+  "lastLevel": 4051094,
+  "token.tokenId": "143"
+ },
+ {
+  "account.address": "tz2U6TMNUR4msS4YHrFu76ZD22j4JK6pMb64",
+  "balance": "1",
+  "id": 826799777906689,
+  "lastLevel": 4535406,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1N9n3brQ1ho5qGHqoe5g2LEDLUeQN4uqdR",
+  "balance": "1",
+  "id": 830896448995329,
+  "lastLevel": 4551538,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz2VkTjemDqtB3genRCET5DVCPCpFBWzsC7J",
+  "balance": "1",
+  "id": 849731629613057,
+  "lastLevel": 4626207,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1ZCfBhm4ifPy4kv7K2eczShCXJkLdaXxAS",
+  "balance": "1",
+  "id": 913024880738305,
+  "lastLevel": 4874644,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1XQsjnxmTu1MzEnbJQFvDzw1aKkg2qdLbv",
+  "balance": "1",
+  "id": 986759271809025,
+  "lastLevel": 5167063,
+  "token.tokenId": "0"
+ },
+ {
+  "account.address": "tz1burnburnburnburnburnburnburjAYjjX",
+  "balance": "1",
+  "id": 2729918305665033,
+  "lastLevel": 13824203,
+  "token.tokenId": "1"
+ }
+]

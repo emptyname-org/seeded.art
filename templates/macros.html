@@ -1,0 +1,17 @@
+{% macro avatar(url, initial, size) %}{% match url %}{% when Some with (src) %}<img class="profile-avatar" src="{{ src }}" width="{{ size }}" height="{{ size }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">{% when None %}<span class="profile-avatar" aria-hidden="true">{{ initial }}</span>{% endmatch %}{% endmacro %}
+
+{% macro byline(artists) %}{% for artist in artists %}{% if !loop.first %}, {% endif %}{% if artist.url.is_empty() %}<span>{{ artist.name }}</span>{% else %}<a href="{{ artist.url }}">{{ artist.name }}</a>{% endif %}{% else %}Artist not yet indexed{% endfor %}{% endmacro %}
+
+{% macro owner(card) %}{% match card.owner_url %}{% when Some with (url) %}<a href="{{ url }}">{{ card.owner }}</a>{% when None %}{{ card.owner }}{% endmatch %}{% endmacro %}
+
+{% macro pagination(pages, region, label) %}{% if pages.previous.is_some() || pages.next.is_some() %}<nav class="pagination" aria-label="{{ label }}" data-load-more="{{ region }}">
+  {% match pages.previous %}{% when Some with (url) %}<a class="button-link secondary-button" href="{{ url }}" rel="first">First page</a>{% when None %}<span></span>{% endmatch %}
+  <span></span>
+  {% match pages.next %}{% when Some with (url) %}<a class="button-link secondary-button" href="{{ url }}" rel="next">Next page</a>{% when None %}<span></span>{% endmatch %}
+</nav>{% endif %}{% endmacro %}
+
+{% macro empty_state(title, text, link_url, link_text) %}<div class="empty-state"><p class="empty-state-title">{{ title }}</p>{% if !text.is_empty() %}<p>{{ text }}</p>{% endif %}{% if !link_url.is_empty() %}<a class="text-link" href="{{ link_url }}">{{ link_text }}</a>{% endif %}</div>{% endmacro %}
+
+{% macro index_coverage(lines) %}<details class="index-coverage"><summary>Index coverage</summary>{% for line in lines %}<p class="subtle">{{ line }}</p>{% endfor %}</details>{% endmacro %}
+
+{% macro project_sort(form_id, action, label, hidden_name, hidden_value, sort) %}<form id="{{ form_id }}" class="catalogue-controls" action="{{ action }}" method="get" aria-label="{{ label }}">{% if !hidden_value.is_empty() %}<input type="hidden" name="{{ hidden_name }}" value="{{ hidden_value }}">{% endif %}<label>Sort projects<select name="sort" data-autosubmit><option value="volume" {% if sort == "volume" %}selected{% endif %}>Highest volume</option><option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option><option value="oldest" {% if sort == "oldest" %}selected{% endif %}>Oldest</option></select></label><noscript><button type="submit">Apply</button></noscript></form>{% endmacro %}

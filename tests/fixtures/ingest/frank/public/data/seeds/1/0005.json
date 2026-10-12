@@ -1,0 +1,13 @@
+{
+ "contract": 1,
+ "address": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+ "from": 1619286,
+ "size": 1,
+ "present": 0,
+ "seeds": [
+  null
+ ],
+ "artifacts": [
+  "ipfs://QmdGV3UqJqX4v5x9nFcDYeekCEAm3SDXUG5SHdjKQKn4Pe"
+ ]
+}

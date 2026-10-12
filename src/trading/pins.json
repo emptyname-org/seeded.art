@@ -1,0 +1,22 @@
+{
+  "5": {
+    "level": 5368739,
+    "sha256": "c4382986ac5682ef902c13623bd398de85e163678d2bca5c2e20331ba6b70161"
+  },
+  "9": {
+    "level": 2280663,
+    "sha256": "3a8c137b83a6ab5ba476f71c66c5d302c06fc2f8d3dd070ecdeeac3bf8702d91"
+  },
+  "12": {
+    "level": 2280663,
+    "sha256": "aee96b2fd652a2d7594e95a7fed6e45554cf0fe58602b600d63c5b5732e70c77"
+  },
+  "11": {
+    "level": 5368743,
+    "sha256": "1ff2b9ebe3a317596d73457a0052cb1a355658d42db089218e721e1bd583cb08"
+  },
+  "6": {
+    "level": 2280663,
+    "sha256": "98edfb41c71f1bd0bbedb0c976b515d541d83ff70ecef3248362d263438ac01a"
+  }
+}

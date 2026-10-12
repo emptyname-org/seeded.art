@@ -1,0 +1,26 @@
+[
+ {
+  "_escrow": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+  "_path": "listings",
+  "id": 32383230,
+  "active": true,
+  "hash": "exprtzPRxdKR7gb9js1SkBLCv9XwLKiWKYv8qUjDswWbmLQYY9Z7tW",
+  "key": "459588",
+  "value": {"gentk": {"id": "1072705", "version": "1"}, "price": "7100000", "seller": "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E"},
+  "firstLevel": 2664789,
+  "lastLevel": 2664789,
+  "updates": 1
+ },
+ {
+  "_escrow": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+  "_path": "listings",
+  "id": 63478273,
+  "active": true,
+  "hash": "exprvMkn3CbxSvLW9Fup6rmMasQwN6QPKPhJgnCSqQ4iNfccDnG7gR",
+  "key": "1106836",
+  "value": {"gentk": {"id": "188628", "version": "2"}, "price": "18000000", "seller": "tz1Vkoqo2ZQsVXBniYJDfX6F2NMfH5RoEuGn"},
+  "firstLevel": 7300296,
+  "lastLevel": 7300296,
+  "updates": 1
+ }
+]

@@ -1,0 +1,241 @@
+# Standard Caddy >= 2.11.7; only seeded-proxy.service owns these listeners.
+{
+	admin off
+	persist_config off
+	cert_issuer acme {
+		dir https://acme-v02.api.letsencrypt.org/directory
+		__ACME_EMAIL_DIRECTIVE__
+	}
+	grace_period 45s
+	servers {
+		protocols h1 h2
+		strict_sni_host on
+		max_header_size 128KiB
+		timeouts {
+			read_header 5s
+			read_body 10s
+			write 180s
+			write_idle 30s
+			idle 15s
+		}
+	}
+	log {
+		level WARN
+		exclude http.log.access http.log.error
+		format filter {
+			wrap json
+			fields {
+				request delete
+			}
+		}
+	}
+	log upstream_errors {
+		level DEBUG
+		include http.log.error
+		format filter {
+			wrap json
+			fields {
+				request delete
+			}
+		}
+	}
+
+}
+
+(site_policy) {
+	header {
+		>Strict-Transport-Security "max-age=31536000"
+		>X-Content-Type-Options nosniff
+		>Referrer-Policy no-referrer
+		?Cache-Control no-store
+		-Server
+	}
+	handle_errors {
+		header {
+			Cache-Control no-store
+			Strict-Transport-Security "max-age=31536000"
+			X-Content-Type-Options nosniff
+			Referrer-Policy no-referrer
+			-Server
+		}
+		__FORUM_ERROR_HEADERS__
+		@content_upstream expression `{err.status_code} in [502, 503, 504] && {http.request.host} == "__CONTENT_HOST__"`
+		handle @content_upstream {
+			header Access-Control-Allow-Origin *
+			header Retry-After 2
+			respond "Service temporarily unavailable." 503
+		}
+		@upstream expression `{err.status_code} in [502, 503, 504]`
+		handle @upstream {
+			header Retry-After 2
+			respond "Service temporarily unavailable." 503
+		}
+		handle {
+			respond "Request refused." {err.status_code}
+		}
+	}
+}
+
+(proxy_transport) {
+	header_up -Forwarded
+	header_down -Server
+	header_down -Expires
+	transport http {
+		versions 1.1
+		compression off
+		network_proxy none
+		dial_timeout 2s
+		response_header_timeout 65s
+		read_timeout 65s
+		write_timeout 10s
+		max_response_header 128KiB
+		keepalive off
+	}
+}
+
+__HTTP_HOSTS__ {
+	import site_policy
+	redir https://{host}{uri} 308
+}
+
+__APP_HOST__ {
+	import site_policy
+	route {
+		@health path /health /health/*
+		respond @health 404
+		@unknown_api {
+			path /api/*
+			not path /api/auth/session /api/auth/challenge /api/auth/verify /api/auth/logout /api/auth/profile /api/market/prepare /api/market/check /api/market/confirm /api/market/submitted /api/market/discard
+		}
+		respond @unknown_api 404
+		@oauth_token {
+			method POST
+			path /oauth/token
+		}
+		handle @oauth_token {
+			@oversized_oauth expression `{http.request.header.Content-Length} != "" && int({http.request.header.Content-Length}) > 4096`
+			respond @oversized_oauth 413
+			request_body {
+				max_size 4KiB
+			}
+			reverse_proxy 127.0.0.1:3918 {
+				import proxy_transport
+				request_buffers 5KiB
+				header_down Cache-Control no-store
+			}
+		}
+		@api_post {
+			method POST
+			path /api/auth/challenge /api/auth/verify /api/auth/logout /api/auth/profile /api/market/prepare /api/market/check /api/market/confirm /api/market/submitted /api/market/discard
+		}
+		handle @api_post {
+			@oversized expression `{http.request.header.Content-Length} != "" && int({http.request.header.Content-Length}) > 32768`
+			respond @oversized 413
+			request_body {
+				max_size 32KiB
+			}
+			reverse_proxy 127.0.0.1:3918 {
+				import proxy_transport
+				# Streamed bodies still require complete validation in the app.
+				request_buffers 33KiB
+				header_down Cache-Control no-store
+			}
+		}
+		@wrong_method not method GET HEAD
+		respond @wrong_method 405
+		@wrong_api {
+			path /api/*
+			not path /api/auth/session
+		}
+		respond @wrong_api 405
+		@oversized_read expression `{http.request.header.Content-Length} != "" && int({http.request.header.Content-Length}) > 1024`
+		respond @oversized_read 413
+		request_body {
+			max_size 1KiB
+		}
+		@sitemap path /sitemap.xml /sitemap/*
+		__APP_SEARCH_ROUTES__
+		handle @sitemap {
+			reverse_proxy 127.0.0.1:3918 {
+				import proxy_transport
+				request_buffers 2KiB
+			}
+		}
+		@static path /static/* /fixtures/*
+		handle @static {
+			encode zstd gzip
+			reverse_proxy 127.0.0.1:3918 {
+				import proxy_transport
+				request_buffers 2KiB
+				@cacheable {
+					status 200 304
+					header Cache-Control "public, max-age=0, must-revalidate"
+				}
+				handle_response @cacheable {
+					copy_response
+				}
+				handle_response {
+					header >Cache-Control no-store
+					copy_response
+				}
+			}
+		}
+		reverse_proxy 127.0.0.1:3918 {
+			import proxy_transport
+			request_buffers 2KiB
+			header_down Cache-Control no-store
+		}
+	}
+}
+
+__FORUM_BLOCK__
+
+__CONTENT_HOST__ {
+	import site_policy
+	@health path /health /health/*
+	respond @health 404
+	@wrong_method not method GET HEAD
+	respond @wrong_method 405
+	@oversized_read expression `{http.request.header.Content-Length} != "" && int({http.request.header.Content-Length}) > 1024`
+	respond @oversized_read 413
+	# Not a bare path matcher, which Caddy would sort ahead of the method check.
+	@robots {
+		method GET HEAD
+		path /robots.txt
+	}
+	respond @robots "User-agent: *
+Disallow: /render/
+Disallow: /playback-status/
+" 200
+	request_body {
+		max_size 1KiB
+	}
+	reverse_proxy 127.0.0.1:3919 {
+		import proxy_transport
+		request_buffers 2KiB
+		header_up -Cookie
+		header_up -Authorization
+		header_down -Set-Cookie
+		@retryable status 429 503
+		handle_response @retryable {
+			header >Access-Control-Allow-Origin *
+			header ?Retry-After 2
+			header >Cache-Control no-store
+			copy_response
+		}
+		@verified {
+			status 200 206 304
+			header X-Seeded-Verification onchfs-keccak
+			header X-Seeded-Verification ipfs-car
+			header X-Seeded-Verification ipfs-kubo
+			header Cache-Control *immutable*
+		}
+		handle_response @verified {
+			copy_response
+		}
+		handle_response {
+			header >Cache-Control no-store
+			copy_response
+		}
+	}
+}__CONTENT_REDIRECT_BLOCKS__

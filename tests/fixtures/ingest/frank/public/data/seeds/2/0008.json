@@ -1,0 +1,13 @@
+{
+ "contract": 2,
+ "address": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+ "from": 150042,
+ "size": 1,
+ "present": 1,
+ "seeds": [
+  "oo3WSUHEZzmBvxyM9tVWNs13u69dN2PivN7kajMChd6Mbc47AT8"
+ ],
+ "artifacts": [
+  "ipfs://QmRq9ZhyAPBRt5zpp4o83st7BXnddYue6xZoujcd7HYuqt/?fxhash=oo3WSUHEZzmBvxyM9tVWNs13u69dN2PivN7kajMChd6Mbc47AT8&fxiteration=6&fxminter=tz1YnuVaS6mFDwBMC58krtU6BNQ1s5cGnVZR#0x4048800000000000404880000000000040000000000000000100a68e771cb33600ffa2fff1ff"
+ ]
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=seeded.art weekly articles update (optional)
+
+[Timer]
+OnCalendar=Mon *-*-* 00:50:00
+RandomizedDelaySec=30s
+AccuracySec=1s
+Persistent=true
+Unit=seeded-articles.service
+
+[Install]
+WantedBy=timers.target

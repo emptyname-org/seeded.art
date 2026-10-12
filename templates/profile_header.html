@@ -1,0 +1,6 @@
+{% import "macros.html" as ui %}
+<header class="profile-header">{% call ui::avatar(header.avatar, header.initial, 80) %}
+<div>{% if header.kind != "Profile" %}<p class="page-intro">{{ header.kind }}</p>{% endif %}<h1>{{ header.name }}</h1><code class="profile-address" title="{{ header.name_source }}">{{ header.address }}</code>
+{% if !header.bio.is_empty() %}<div class="profile-bio markup">{{ header.bio|safe }}</div>{% endif %}
+<div class="profile-links">{% for link in header.links %}<a class="profile-website" href="{{ link }}" target="_blank" rel="nofollow ugc noopener noreferrer">{{ link }}</a>{% endfor %}</div></div></header>
+<nav class="profile-view-nav" aria-label="Profile views"><a href="{{ header.url }}?view=projects" {% if header.tab == "projects" %}aria-current="page"{% endif %}>Projects <span>{{ header.project_count }}</span></a><a href="{{ header.url }}?view=collected" {% if header.tab == "collected" %}aria-current="page"{% endif %}>Collected <span>{{ header.token_count }}</span></a>{% if header.own_profile %}<a href="{{ header.url }}/market" {% if header.tab == "market" %}aria-current="page"{% endif %}>Listings and offers <span>{{ header.market_count }}</span></a><a href="/auth/profile" {% if header.tab == "edit" %}aria-current="page"{% endif %}>Edit profile</a>{% endif %}</nav>

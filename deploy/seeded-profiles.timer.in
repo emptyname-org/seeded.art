@@ -1,0 +1,12 @@
+[Unit]
+Description=seeded.art daily profile refresh (optional)
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+RandomizedDelaySec=10min
+AccuracySec=1min
+Persistent=true
+Unit=seeded-profiles.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=seeded.art daily sales update (optional)
+
+[Timer]
+OnCalendar=*-*-* 00:30:00
+RandomizedDelaySec=30s
+AccuracySec=1s
+Persistent=true
+Unit=seeded-sales.service
+
+[Install]
+WantedBy=timers.target

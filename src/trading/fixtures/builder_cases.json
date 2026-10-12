@@ -1,0 +1,718 @@
+[
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "cancel",
+      "marketplace": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+      "kind": "listing",
+      "id": 9
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "listing_cancel",
+          "value": {
+            "int": "9"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "cancel",
+      "marketplace": "KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9",
+      "kind": "listing",
+      "id": 3
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9",
+        "parameters": {
+          "entrypoint": "cancel_offer",
+          "value": {
+            "int": "3"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1P719ymGCtNwavZKh2LmhMs53dGsEMzjnm",
+    "action": {
+      "action": "cancel",
+      "marketplace": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+      "kind": "token",
+      "id": 7
+    },
+    "calls": [
+      {
+        "source": "tz1P719ymGCtNwavZKh2LmhMs53dGsEMzjnm",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "offer_cancel",
+          "value": {
+            "int": "7"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1P719ymGCtNwavZKh2LmhMs53dGsEMzjnm",
+    "action": {
+      "action": "cancel",
+      "marketplace": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+      "kind": "collection",
+      "id": 8
+    },
+    "calls": [
+      {
+        "source": "tz1P719ymGCtNwavZKh2LmhMs53dGsEMzjnm",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "collection_offer_cancel",
+          "value": {
+            "int": "8"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "accept",
+      "kind": "token",
+      "id": 7,
+      "token": {
+        "contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+        "token_id": 1
+      }
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Left",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "offer_accept",
+          "value": {
+            "int": "7"
+          }
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Right",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "accept",
+      "kind": "collection",
+      "id": 8,
+      "token": {
+        "contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+        "token_id": 1
+      }
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Left",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "collection_offer_accept",
+          "value": {
+            "prim": "Pair",
+            "args": [
+              {
+                "prim": "Pair",
+                "args": [
+                  {
+                    "int": "1"
+                  },
+                  {
+                    "int": "0"
+                  }
+                ]
+              },
+              {
+                "int": "8"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Right",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "accept",
+      "kind": "token",
+      "id": 7,
+      "token": {
+        "contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+        "token_id": 1
+      }
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Left",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "offer_accept",
+          "value": {
+            "int": "7"
+          }
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Right",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "accept",
+      "kind": "collection",
+      "id": 8,
+      "token": {
+        "contract": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+        "token_id": 1
+      }
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Left",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "collection_offer_accept",
+          "value": {
+            "prim": "Pair",
+            "args": [
+              {
+                "prim": "Pair",
+                "args": [
+                  {
+                    "int": "1"
+                  },
+                  {
+                    "int": "1"
+                  }
+                ]
+              },
+              {
+                "int": "8"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Right",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "accept",
+      "kind": "token",
+      "id": 7,
+      "token": {
+        "contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+        "token_id": 1
+      }
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Left",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "offer_accept",
+          "value": {
+            "int": "7"
+          }
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Right",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "actor": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+    "action": {
+      "action": "accept",
+      "kind": "collection",
+      "id": 8,
+      "token": {
+        "contract": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+        "token_id": 1
+      }
+    },
+    "calls": [
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Left",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u",
+        "parameters": {
+          "entrypoint": "collection_offer_accept",
+          "value": {
+            "prim": "Pair",
+            "args": [
+              {
+                "prim": "Pair",
+                "args": [
+                  {
+                    "int": "1"
+                  },
+                  {
+                    "int": "2"
+                  }
+                ]
+              },
+              {
+                "int": "8"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "source": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z",
+        "kind": "transaction",
+        "amount": "0",
+        "destination": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+        "parameters": {
+          "entrypoint": "update_operators",
+          "value": [
+            {
+              "prim": "Right",
+              "args": [
+                {
+                  "prim": "Pair",
+                  "args": [
+                    {
+                      "string": "tz1ewF2P3erZJSP8m35QiNEKGtwj7qsBhF8z"
+                    },
+                    {
+                      "prim": "Pair",
+                      "args": [
+                        {
+                          "string": "KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u"
+                        },
+                        {
+                          "int": "1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

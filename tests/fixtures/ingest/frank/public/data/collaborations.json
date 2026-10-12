@@ -1,0 +1,54 @@
+{
+ "generatedAt": "2026-08-19T16:04:17.990Z",
+ "note": "fxhash collaboration contracts and the artists behind them, read from each contract's on-chain storage via TzKT. A project whose catalog author is a KT1 address was made by these people; fxhash showed their names, and this is where that attribution comes from now.",
+ "counts": {
+  "contracts": 2,
+  "projects": 2
+ },
+ "byProject": {
+  "15755": {
+   "contract": "KT1XHYGLP3CnnJVpXxki7pd6GLH9BFisrzsh",
+   "collaborators": [
+    {
+     "id": "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E",
+     "name": "KetiTaki",
+     "share": 1
+    },
+    {
+     "id": "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd",
+     "name": "Pixel",
+     "share": 1
+    }
+   ]
+  },
+  "29437": {
+   "contract": "KT1LZwGQgbi341zPAu1YmAd8EWvUeRLxrQLr",
+   "collaborators": [
+    {
+     "id": "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2",
+     "name": "Doppelganger",
+     "share": 1
+    },
+    {
+     "id": "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL",
+     "name": null,
+     "share": 1
+    }
+   ]
+  }
+ },
+ "byArtist": {
+  "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E": [
+   15755
+  ],
+  "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd": [
+   15755
+  ],
+  "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2": [
+   29437
+  ],
+  "tz1gL9H53BzjDqmMi2JkKALeCzT7UAoopzEL": [
+   29437
+  ]
+ }
+}

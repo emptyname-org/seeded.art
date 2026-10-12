@@ -1,0 +1,29 @@
+{
+ "generatedAt": "2026-08-19T15:48:10.399Z",
+ "note": "fxhash usernames, read from the on-chain FXHASH User Registery (KT1Ezht4PDKZri7aVppVGT4Jkw39sesaFnww, users_name bigmap) via TzKT. Address -> display name.",
+ "count": 22,
+ "names": {
+  "tz1Kq8NtEjSXkpswLmgod1tPFPVH2TZc8dwM": "Mint Eastwood",
+  "tz1LYrMpZxUmmFArhgt49UHcLDEDjcvs6gQZ": "21BE",
+  "tz1N64TWNCZR3yJZmmzBE4DRidN1tCaZCw8Q": "quadrado",
+  "tz1NpUTYsVB2Hdci6ycdWdTz66GvR5oLqQp8": "iRyanBell",
+  "tz1PkLH6efZifS8NtKiZBWFWgDoHDmDwN9f1": "Honest",
+  "tz1To7j5MHj4vjquGYdbASX4tZnstNgpsE9x": "Billy McSmithers",
+  "tz1VE1gFxMZ5TVCwWaYpXGANcfhyjgiUGkpg": "ordure",
+  "tz1WKNUBMpEDT9yXt3BMAFJXdx1YMCakUKh7": "RJArt",
+  "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E": "KetiTaki",
+  "tz1XnUuqs7A8vbS2YWR7UeqVkvJxgE7mzekH": "spacedebris.tez",
+  "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd": "Pixel",
+  "tz1YnuVaS6mFDwBMC58krtU6BNQ1s5cGnVZR": "Kusamehewa",
+  "tz1bDn9tU2SjWjr64g2r4jhgos4rE6AssyUb": "Dr. Bill Kolomyjec",
+  "tz1carrwoVAkoxsEJuYRUjaqk3qUtMHxo4zP": "dglitch0us_v",
+  "tz1exYBh5zHhf7LKyJSKAQqm89ZYZmTwsBz2": "Doppelganger",
+  "tz1gLNb49fErXUiYdreLAAV6twp4v3Lm8V4H": "leonidas",
+  "tz1hQ8BzTVwssUGQFinLQGfc7TKuMdeX6uQW": "@nftartcards",
+  "tz1iEiZBsrbDWWq5E4RzmWgZUyJfad3r4WEn": "PetiShaMiaou",
+  "tz1iEzucUm7VZtyeSKpKCGwWqPFqAtVn412u": "dglitch0us.tez",
+  "tz1igEhzCfn34qnwJmKBQb24pnDAAYTYux3m": "liet",
+  "tz2EuD6C8CixQYfDNYoetkdJSt9MMev3YsnU": "E.C.H",
+  "tz2RXosjAZdS85oCrguy7Eom757144dcU1FT": "looksdope.art"
+ }
+}

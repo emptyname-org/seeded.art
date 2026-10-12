@@ -1,0 +1,5 @@
+{% import "macros.html" as ui %}
+{% let load_more_region = region %}{% include "article_cards.html" %}
+{% if cards.is_empty() %}{% if total == 0 %}{% call ui::empty_state("No matching articles", "", "", "") %}{% else %}{% call ui::empty_state("No articles on this page", "", "", "") %}{% endif %}{% endif %}
+{% call ui::pagination(pages, region, "Article pages") %}
+{% call ui::index_coverage(coverage) %}

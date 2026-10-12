@@ -1,0 +1,566 @@
+parameter (or
+            (or
+              (or
+                (or
+                  (pair %auction (pair (nat %bid_increment_table_id) (nat %bid_time_increment))
+                                 (pair (pair %gentk (nat %id) (nat %version))
+                                       (pair (nat %min_duration) (mutez %reserve_price))))
+                  (or (nat %auction_bid) (nat %auction_cancel)))
+                (or
+                  (or (nat %auction_fulfill)
+                      (pair %collection_offer (nat %amount) (pair (nat %collection) (mutez %price))))
+                  (or
+                    (pair %collection_offer_accept (pair %gentk (nat %id) (nat %version))
+                                                   (nat %offer_id))
+                    (nat %collection_offer_cancel))))
+              (or
+                (or
+                  (or (pair %listing (pair %gentk (nat %id) (nat %version)) (mutez %price))
+                      (nat %listing_accept))
+                  (or (nat %listing_cancel)
+                      (pair %offer (pair %gentk (nat %id) (nat %version)) (mutez %price))))
+                (or (or (nat %offer_accept) (nat %offer_cancel))
+                    (or
+                      (pair %set_bid_increment_table (nat %id)
+                                                     (list %increments_table (pair
+                                                                              (mutez %current_bid)
+                                                                              (mutez %increment))))
+                      (pair %set_gentk_contract (pair %contract (address %fa2) (address %views))
+                                                (nat %version))))))
+            (or
+              (or (or (pair %ep_set_enabled (bool %enabled) (string %name)) (unit %lock_eps))
+                  (or (address %set_administrator) (big_map %set_metadata string bytes)))
+              (or (or (bool %set_pause) (mutez %transfer_xtz_treasury))
+                  (or
+                    (pair %update_ep
+                      (lambda %code
+                        (pair
+                          (or
+                            (or
+                              (or
+                                (pair %auction
+                                  (pair (nat %bid_increment_table_id) (nat %bid_time_increment))
+                                  (pair (pair %gentk (nat %id) (nat %version))
+                                        (pair (nat %min_duration) (mutez %reserve_price))))
+                                (or (nat %auction_bid) (nat %auction_cancel)))
+                              (or
+                                (or (nat %auction_fulfill)
+                                    (pair %collection_offer (nat %amount)
+                                                            (pair (nat %collection) (mutez %price))))
+                                (or
+                                  (pair %collection_offer_accept
+                                    (pair %gentk (nat %id) (nat %version))
+                                    (nat %offer_id))
+                                  (nat %collection_offer_cancel))))
+                            (or
+                              (or
+                                (or
+                                  (pair %listing (pair %gentk (nat %id) (nat %version))
+                                                 (mutez %price))
+                                  (nat %listing_accept))
+                                (or (nat %listing_cancel)
+                                    (pair %offer (pair %gentk (nat %id) (nat %version))
+                                                 (mutez %price))))
+                              (or (or (nat %offer_accept) (nat %offer_cancel))
+                                  (or
+                                    (pair %set_bid_increment_table (nat %id)
+                                                                   (list %increments_table (pair
+                                                                                            (mutez %current_bid)
+                                                                                            (mutez %increment))))
+                                    (pair %set_gentk_contract
+                                      (pair %contract (address %fa2) (address %views))
+                                      (nat %version))))))
+                          (pair
+                            (pair
+                              (pair
+                                (pair (address %admin)
+                                      (big_map %auctions nat
+                                                         (pair
+                                                           (pair (nat %bid_increment_table_id)
+                                                                 (pair (nat %bid_time_increment)
+                                                                       (option %ends_at timestamp)))
+                                                           (pair
+                                                             (pair
+                                                               (pair %gentk (nat %id) (nat %version))
+                                                               (nat %min_duration))
+                                                             (pair (address %seller)
+                                                                   (pair %top_bid (address %bidder)
+                                                                                  (mutez %price)))))))
+                                (pair
+                                  (big_map %auctions_bid_increments nat
+                                                                    (list (pair (mutez %current_bid)
+                                                                               (mutez %increment))))
+                                  (nat %auctions_count)))
+                              (pair
+                                (pair
+                                  (big_map %collection_offers nat
+                                                              (pair
+                                                                (pair (nat %amount) (address %buyer))
+                                                                (pair (nat %collection)
+                                                                      (mutez %price))))
+                                  (nat %collection_offers_count))
+                                (pair (big_map %entrypoints_enabled string bool)
+                                      (pair (big_map %extended_storage bytes bytes) (nat %fees)))))
+                            (pair
+                              (pair
+                                (pair
+                                  (big_map %gentk_contracts nat
+                                                            (pair (address %fa2) (address %views)))
+                                  (big_map %listings nat
+                                                     (pair (pair %gentk (nat %id) (nat %version))
+                                                           (pair (mutez %price) (address %seller)))))
+                                (pair (nat %listings_count) (bool %locked_eps)))
+                              (pair
+                                (pair (big_map %metadata string bytes)
+                                      (big_map %offers nat
+                                                       (pair (address %buyer)
+                                                             (pair
+                                                               (pair %gentk (nat %id) (nat %version))
+                                                               (mutez %price)))))
+                                (pair (nat %offers_count) (pair (bool %paused) (address %treasury)))))))
+                        (pair (list operation)
+                              (pair
+                                (pair
+                                  (pair
+                                    (pair (address %admin)
+                                          (big_map %auctions nat
+                                                             (pair
+                                                               (pair (nat %bid_increment_table_id)
+                                                                     (pair (nat %bid_time_increment)
+                                                                           (option %ends_at timestamp)))
+                                                               (pair
+                                                                 (pair
+                                                                   (pair %gentk (nat %id)
+                                                                                (nat %version))
+                                                                   (nat %min_duration))
+                                                                 (pair (address %seller)
+                                                                       (pair %top_bid
+                                                                         (address %bidder)
+                                                                         (mutez %price)))))))
+                                    (pair
+                                      (big_map %auctions_bid_increments nat
+                                                                        (list (pair
+                                                                               (mutez %current_bid)
+                                                                               (mutez %increment))))
+                                      (nat %auctions_count)))
+                                  (pair
+                                    (pair
+                                      (big_map %collection_offers nat
+                                                                  (pair
+                                                                    (pair (nat %amount)
+                                                                          (address %buyer))
+                                                                    (pair (nat %collection)
+                                                                          (mutez %price))))
+                                      (nat %collection_offers_count))
+                                    (pair (big_map %entrypoints_enabled string bool)
+                                          (pair (big_map %extended_storage bytes bytes) (nat %fees)))))
+                                (pair
+                                  (pair
+                                    (pair
+                                      (big_map %gentk_contracts nat
+                                                                (pair (address %fa2)
+                                                                      (address %views)))
+                                      (big_map %listings nat
+                                                         (pair
+                                                           (pair %gentk (nat %id) (nat %version))
+                                                           (pair (mutez %price) (address %seller)))))
+                                    (pair (nat %listings_count) (bool %locked_eps)))
+                                  (pair
+                                    (pair (big_map %metadata string bytes)
+                                          (big_map %offers nat
+                                                           (pair (address %buyer)
+                                                                 (pair
+                                                                   (pair %gentk (nat %id)
+                                                                                (nat %version))
+                                                                   (mutez %price)))))
+                                    (pair (nat %offers_count)
+                                          (pair (bool %paused) (address %treasury))))))))
+                      (or %ep_name
+                        (or (or (unit %auction) (or (unit %auction_bid) (unit %auction_cancel)))
+                            (or (unit %auction_fulfill)
+                                (or (unit %collection_offer) (unit %collection_offer_accept))))
+                        (or
+                          (or (unit %collection_offer_cancel)
+                              (or (unit %listing) (unit %listing_accept)))
+                          (or (or (unit %listing_cancel) (unit %offer))
+                              (or (unit %offer_accept) (unit %offer_cancel))))))
+                    (or (nat %update_fees) (address %update_treasury))))));
+storage (pair
+          (pair
+            (pair
+              (pair
+                (pair (address %admin)
+                      (big_map %auctions nat
+                                         (pair
+                                           (pair (nat %bid_increment_table_id)
+                                                 (pair (nat %bid_time_increment)
+                                                       (option %ends_at timestamp)))
+                                           (pair
+                                             (pair (pair %gentk (nat %id) (nat %version))
+                                                   (nat %min_duration))
+                                             (pair (address %seller)
+                                                   (pair %top_bid (address %bidder) (mutez %price)))))))
+                (pair
+                  (big_map %auctions_bid_increments nat
+                                                    (list (pair (mutez %current_bid)
+                                                               (mutez %increment))))
+                  (nat %auctions_count)))
+              (pair
+                (pair
+                  (big_map %collection_offers nat
+                                              (pair (pair (nat %amount) (address %buyer))
+                                                    (pair (nat %collection) (mutez %price))))
+                  (nat %collection_offers_count))
+                (pair (big_map %entrypoints_enabled string bool)
+                      (pair (big_map %extended_storage bytes bytes) (nat %fees)))))
+            (pair
+              (pair
+                (pair (big_map %gentk_contracts nat (pair (address %fa2) (address %views)))
+                      (big_map %listings nat
+                                         (pair (pair %gentk (nat %id) (nat %version))
+                                               (pair (mutez %price) (address %seller)))))
+                (pair (nat %listings_count) (bool %locked_eps)))
+              (pair
+                (pair (big_map %metadata string bytes)
+                      (big_map %offers nat
+                                       (pair (address %buyer)
+                                             (pair (pair %gentk (nat %id) (nat %version))
+                                                   (mutez %price)))))
+                (pair (nat %offers_count) (pair (bool %paused) (address %treasury))))))
+          (big_map nat
+                   (lambda
+                     (pair
+                       (or
+                         (or
+                           (or (pair (pair nat nat) (pair (pair nat nat) (pair nat mutez)))
+                               (or nat nat))
+                           (or (or nat (pair nat (pair nat mutez)))
+                               (or (pair (pair nat nat) nat) nat)))
+                         (or
+                           (or (or (pair (pair nat nat) mutez) nat)
+                               (or nat (pair (pair nat nat) mutez)))
+                           (or (or nat nat)
+                               (or (pair nat (list (pair mutez mutez)))
+                                   (pair (pair address address) nat)))))
+                       (pair
+                         (pair
+                           (pair
+                             (pair address
+                                   (big_map nat
+                                            (pair (pair nat (pair nat (option timestamp)))
+                                                  (pair (pair (pair nat nat) nat)
+                                                        (pair address (pair address mutez))))))
+                             (pair (big_map nat (list (pair mutez mutez))) nat))
+                           (pair (pair (big_map nat (pair (pair nat address) (pair nat mutez))) nat)
+                                 (pair (big_map string bool) (pair (big_map bytes bytes) nat))))
+                         (pair
+                           (pair
+                             (pair (big_map nat (pair address address))
+                                   (big_map nat (pair (pair nat nat) (pair mutez address))))
+                             (pair nat bool))
+                           (pair
+                             (pair (big_map string bytes)
+                                   (big_map nat (pair address (pair (pair nat nat) mutez))))
+                             (pair nat (pair bool address))))))
+                     (pair (list operation)
+                           (pair
+                             (pair
+                               (pair
+                                 (pair address
+                                       (big_map nat
+                                                (pair (pair nat (pair nat (option timestamp)))
+                                                      (pair (pair (pair nat nat) nat)
+                                                            (pair address (pair address mutez))))))
+                                 (pair (big_map nat (list (pair mutez mutez))) nat))
+                               (pair
+                                 (pair (big_map nat (pair (pair nat address) (pair nat mutez))) nat)
+                                 (pair (big_map string bool) (pair (big_map bytes bytes) nat))))
+                             (pair
+                               (pair
+                                 (pair (big_map nat (pair address address))
+                                       (big_map nat (pair (pair nat nat) (pair mutez address))))
+                                 (pair nat bool))
+                               (pair
+                                 (pair (big_map string bytes)
+                                       (big_map nat (pair address (pair (pair nat nat) mutez))))
+                                 (pair nat (pair bool address)))))))));
+view "get_extended_storage" bytes bytes
+      { UNPAIR 3 ; DIG 2 ; DROP ; SWAP ; CAR ; GET 7 ; SWAP ; GET ; IF_NONE { PUSH int 29 ; FAILWITH } {} };
+code { UNPAIR 3 ;
+       IF_LEFT
+         { DUP ;
+           IF_LEFT
+             { IF_LEFT
+                 { IF_LEFT
+                     { DROP ; PUSH nat 0 }
+                     { IF_LEFT { DROP ; PUSH nat 1 } { DROP ; PUSH nat 2 } } }
+                 { IF_LEFT
+                     { IF_LEFT { DROP ; PUSH nat 3 } { DROP ; PUSH nat 4 } }
+                     { IF_LEFT { DROP ; PUSH nat 5 } { DROP ; PUSH nat 6 } } } }
+             { IF_LEFT
+                 { IF_LEFT
+                     { IF_LEFT { DROP ; PUSH nat 7 } { DROP ; PUSH nat 8 } }
+                     { IF_LEFT { DROP ; PUSH nat 9 } { DROP ; PUSH nat 10 } } }
+                 { IF_LEFT
+                     { IF_LEFT { DROP ; PUSH nat 11 } { DROP ; PUSH nat 12 } }
+                     { IF_LEFT { DROP ; PUSH nat 13 } { DROP ; PUSH nat 14 } } } } ;
+           DUP 4 ;
+           SWAP ;
+           GET ;
+           IF_NONE { PUSH int -1 ; FAILWITH } {} ;
+           DUG 2 ;
+           PAIR ;
+           EXEC ;
+           UNPAIR }
+         { IF_LEFT
+             { IF_LEFT
+                 { IF_LEFT
+                     { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       GET 5 ;
+                       SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CDR ;
+                       MEM ;
+                       IF {} { PUSH string "EP_DOESNT_EXIST" ; FAILWITH } ;
+                       SWAP ;
+                       UNPAIR ;
+                       UNPAIR ;
+                       SWAP ;
+                       UNPAIR ;
+                       SWAP ;
+                       UNPAIR ;
+                       DUP 6 ;
+                       CAR ;
+                       SOME ;
+                       DIG 6 ;
+                       CDR ;
+                       UPDATE ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR }
+                     { DROP ;
+                       DUP ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       UNPAIR ;
+                       SWAP ;
+                       UNPAIR ;
+                       UNPAIR ;
+                       SWAP ;
+                       CAR ;
+                       PUSH bool True ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR } }
+                 { IF_LEFT
+                     { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       SWAP ;
+                       UNPAIR ;
+                       UNPAIR ;
+                       UNPAIR ;
+                       CDR ;
+                       DIG 4 ;
+                       PAIR ;
+                       PAIR ;
+                       PAIR ;
+                       PAIR }
+                     { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       SWAP ;
+                       UNPAIR ;
+                       SWAP ;
+                       UNPAIR ;
+                       SWAP ;
+                       UNPAIR ;
+                       CDR ;
+                       DIG 4 ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR } } ;
+               NIL operation }
+             { IF_LEFT
+                 { IF_LEFT
+                     { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       UPDATE 9 ;
+                       NIL operation }
+                     { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       DUP ;
+                       BALANCE ;
+                       COMPARE ;
+                       GE ;
+                       IF {} { PUSH string "INSUFFISCIENT_BALANCE" ; FAILWITH } ;
+                       NIL operation ;
+                       DUP 3 ;
+                       GET 10 ;
+                       CONTRACT unit ;
+                       IF_NONE { PUSH string "XTZ_TRANSFER_FAILED" ; FAILWITH } {} ;
+                       DIG 2 ;
+                       UNIT ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                 { IF_LEFT
+                     { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       CAR ;
+                       SENDER ;
+                       COMPARE ;
+                       EQ ;
+                       IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                       SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       GET 3 ;
+                       GET 4 ;
+                       IF { PUSH string "EPS_LOCKED" ; FAILWITH } {} ;
+                       DUP ;
+                       CDR ;
+                       IF_LEFT
+                         { IF_LEFT
+                             { IF_LEFT
+                                 { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 0 ; UPDATE ; SWAP }
+                                 { IF_LEFT
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 1 ; UPDATE ; SWAP }
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 2 ; UPDATE ; SWAP } } }
+                             { IF_LEFT
+                                 { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 3 ; UPDATE ; SWAP }
+                                 { IF_LEFT
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 4 ; UPDATE ; SWAP }
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 5 ; UPDATE ; SWAP } } } }
+                         { IF_LEFT
+                             { IF_LEFT
+                                 { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 6 ; UPDATE ; SWAP }
+                                 { IF_LEFT
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 7 ; UPDATE ; SWAP }
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 8 ; UPDATE ; SWAP } } }
+                             { IF_LEFT
+                                 { IF_LEFT
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 9 ; UPDATE ; SWAP }
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 10 ; UPDATE ; SWAP } }
+                                 { IF_LEFT
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 11 ; UPDATE ; SWAP }
+                                     { DROP ; DIG 2 ; SWAP ; CAR ; SOME ; PUSH nat 12 ; UPDATE ; SWAP } } } } }
+                     { IF_LEFT
+                         { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CAR ;
+                           CAR ;
+                           CAR ;
+                           CAR ;
+                           SENDER ;
+                           COMPARE ;
+                           EQ ;
+                           IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                           SWAP ;
+                           UNPAIR ;
+                           UNPAIR ;
+                           SWAP ;
+                           UNPAIR ;
+                           SWAP ;
+                           UNPAIR ;
+                           SWAP ;
+                           CAR ;
+                           DIG 5 ;
+                           SWAP ;
+                           PAIR ;
+                           SWAP ;
+                           PAIR ;
+                           SWAP ;
+                           PAIR ;
+                           SWAP ;
+                           PAIR ;
+                           PAIR }
+                         { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CAR ;
+                           CAR ;
+                           CAR ;
+                           CAR ;
+                           SENDER ;
+                           COMPARE ;
+                           EQ ;
+                           IF {} { PUSH string "NOT_ADMIN" ; FAILWITH } ;
+                           UPDATE 10 } } ;
+                   NIL operation } } } ;
+       NIL operation ;
+       SWAP ;
+       ITER { CONS } ;
+       DUG 2 ;
+       PAIR ;
+       SWAP ;
+       PAIR }

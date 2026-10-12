@@ -1,0 +1,6 @@
+<form id="global-search-form" class="global-search" action="/search" method="get" role="search">
+        <label class="sr-only" for="global-search">Search the archive</label>
+        <div class="search-input"><input id="global-search" name="q" type="search" value="{{ meta.query }}" placeholder="Search" maxlength="200" required></div>
+        {% if !meta.scope.is_empty() %}<input type="hidden" name="scope" value="{{ meta.scope }}">{% endif %}
+        <button class="search-submit" type="submit">Search</button>
+      </form>

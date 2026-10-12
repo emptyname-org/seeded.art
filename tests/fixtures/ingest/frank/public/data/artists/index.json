@@ -1,0 +1,73 @@
+[
+ {
+  "id": "tz1bDn9tU2SjWjr64g2r4jhgos4rE6AssyUb",
+  "name": "Dr. Bill Kolomyjec",
+  "avatarUri": "ipfs://QmVN6Am5LNedP1roLVWC9kvWppfDutrEomn29eqDnyhnha",
+  "description": "I've been involved in making art with the computer since the early 1970's. I’m one of the few early pioneers who’s still  practicing Generative Art today.",
+  "tokenCount": 92,
+  "avatar": true
+ },
+ {
+  "id": "tz1YnuVaS6mFDwBMC58krtU6BNQ1s5cGnVZR",
+  "name": "Kusamehewa",
+  "avatarUri": "ipfs://Qmc9HBg2JnPFAPTw94F4XogDFqHCsomNLrsGTHKz2WGSsQ",
+  "description": "We are artists and mathematicians. We have always been fascinated by the relationship between mathematics and art and what they can create together to surprise and delight us. ",
+  "tokenCount": 61,
+  "avatar": true
+ },
+ {
+  "id": "tz2EuD6C8CixQYfDNYoetkdJSt9MMev3YsnU",
+  "name": "E.C.H",
+  "avatarUri": "ipfs://QmcrJtidBGUfn985mmPCRRbzydhK1SgVwgKRoBen24fbxe",
+  "description": "Artist, Creative Coder. Yamaguchi, Japan.\r\nI create graphic works by coding with p5.js.",
+  "tokenCount": 55,
+  "avatar": true
+ },
+ {
+  "id": "tz1iEiZBsrbDWWq5E4RzmWgZUyJfad3r4WEn",
+  "name": "PetiShaMiaou",
+  "avatarUri": "ipfs://QmYQ7tJYEMJMGhnjmoJDFSq26fX3HHdHp4NVbZxZCUru4o",
+  "description": "Genius mad scientist experimenting on non orientable wormholes to make everybody left handed.",
+  "tokenCount": 27,
+  "avatar": true
+ },
+ {
+  "id": "tz1WMa1cAKk4JjFGZCpXNkTDi5o5AqCsFF6E",
+  "name": "KetiTaki",
+  "avatarUri": "ipfs://QmWt6XFsDMLNQrT8iTb6iUVzHKBnMThh3uYNMZtVK6V13C",
+  "description": "Experimental Generative Coding.",
+  "tokenCount": 18,
+  "avatar": true
+ },
+ {
+  "id": "tz1NpUTYsVB2Hdci6ycdWdTz66GvR5oLqQp8",
+  "name": "iRyanBell",
+  "avatarUri": "ipfs://QmWQUqBNxDyGHhMKGH7f7MJyP9TPeHRPX411knUXbmUKnv",
+  "description": null,
+  "tokenCount": 13,
+  "avatar": true
+ },
+ {
+  "id": "tz1igEhzCfn34qnwJmKBQb24pnDAAYTYux3m",
+  "name": "liet",
+  "avatarUri": null,
+  "description": null,
+  "tokenCount": 10
+ },
+ {
+  "id": "tz1YgYy8P9orNKvhbvoT2suV3upRCTAxXvnd",
+  "name": "Pixel",
+  "avatarUri": "ipfs://QmXv11TkhHYXmP48Z1bEWrjNsR2AL4Ngqbhob1KoNHQtP6",
+  "description": "Cryptoartist\r\nhttps://www.fxhash.xyz/u/Pixelartistez\r\nhttps://www.teia.art/cyberhens",
+  "tokenCount": 6,
+  "avatar": true
+ },
+ {
+  "id": "tz1WKNUBMpEDT9yXt3BMAFJXdx1YMCakUKh7",
+  "name": "RJArt",
+  "avatarUri": "ipfs://QmTLeGz5CmPa8PaWn7SStewmnk6uvgxejg6URxzbK23Dog",
+  "description": null,
+  "tokenCount": 5,
+  "avatar": true
+ }
+]

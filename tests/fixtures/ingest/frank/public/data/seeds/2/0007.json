@@ -1,0 +1,13 @@
+{
+ "contract": 2,
+ "address": "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr",
+ "from": 133861,
+ "size": 1,
+ "present": 1,
+ "seeds": [
+  "opTkejLzHgKx9yHPBZQSoSetYTtJriBNpfCZxM7RvSU5BSbSp9Q"
+ ],
+ "artifacts": [
+  "onchfs://a71e98fced01c865f33be138100b5ea5486f32fc333ad1503f814b201234130c/?fxhash=opTkejLzHgKx9yHPBZQSoSetYTtJriBNpfCZxM7RvSU5BSbSp9Q&fxiteration=8&fxminter=tz1Sraf86MCmQkwUUB9WorqcAkuY6QGyib85"
+ ]
+}

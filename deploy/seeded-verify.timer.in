@@ -1,0 +1,12 @@
+[Unit]
+Description=seeded.art weekly verification (optional)
+
+[Timer]
+OnCalendar=Mon *-*-* 02:00:00
+RandomizedDelaySec=10min
+AccuracySec=1min
+Persistent=true
+Unit=seeded-verify.service
+
+[Install]
+WantedBy=timers.target

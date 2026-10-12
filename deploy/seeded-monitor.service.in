@@ -1,0 +1,47 @@
+[Unit]
+Description=seeded.art resource monitor
+After=seeded.service seeded-app.service seeded-content.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+# Static user: a DynamicUser cannot reach the system bus when NSS lacks the systemd module.
+User=seeded-monitor
+Group=seeded-monitor
+ExecStart=/usr/bin/python3 /opt/seeded/current/deploy/monitor.py run --state /var/lib/seeded-monitor --interval 15
+Restart=always
+RestartSec=10
+StateDirectory=seeded-monitor
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+RemoveIPC=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+MemoryAccounting=true
+MemoryMax=128M
+TasksMax=32
+LimitNOFILE=256
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

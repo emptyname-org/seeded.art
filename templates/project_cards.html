@@ -1,0 +1,14 @@
+{% import "macros.html" as ui %}
+<div class="project-grid" data-load-more-region="{{ load_more_region }}">
+{% for card in cards %}
+  <article class="project-card" data-project-id="{{ card.id }}">
+    <a class="project-visual" href="{{ card.url }}" aria-label="Open {{ card.title }}">
+      {% match card.preview %}{% when Some with (image) %}<img src="{{ image }}" alt="{{ card.title }} project preview" width="800" height="800"{% if load_more_region.is_empty() || loop.index0 >= 3 %} loading="lazy"{% else if loop.index0 == 0 %} fetchpriority="high"{% endif %}>{% when None %}<span class="missing-preview">Preview not yet indexed</span>{% endmatch %}
+    </a>
+    <div class="project-card-body">
+      <div class="project-card-heading"><div><h2><a href="{{ card.url }}">{{ card.title }}</a></h2><p class="project-card-artists">{% call ui::byline(card.artists.as_slice()) %}</p></div></div>
+      <dl class="project-metrics"><div><dt>Published</dt><dd>{{ card.published }}</dd></div><div><dt>Minted NFTs</dt><dd>{{ card.editions }}</dd></div>{% match card.volume %}{% when Some with (volume) %}<div><dt>Volume</dt><dd title="Includes tez and wXTZ">{{ volume }}</dd></div>{% when None %}{% endmatch %}</dl>
+    </div>
+  </article>
+{% endfor %}
+</div>

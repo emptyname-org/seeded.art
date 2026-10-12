@@ -1,0 +1,27 @@
+{
+ "382": {
+  "d": "A sphere of plasma traveling through the infinite Aether void\n\nThe colors and movement of the sphere are chosen randomly"
+ },
+ "554": {
+  "d": "How long ago did you have your pipes cleaned? It's time to revisit the past! Relax and give in to nostalgia!\n\nEveryone gets a unique screen saver!"
+ },
+ "3245": {
+  "d": "Generative Art created by @lietdesign"
+ },
+ "11003": {
+  "d": "\"AUTUMN COMPOSITION\"\ncode by E.C.H (Eiichi Ishii)\n\nThe color scheme was inspired by autumn."
+ },
+ "11229": {
+  "d": "Complementary Dot Logic was inspired by a series of OP Art paintings done by Victor Vasarely, called Code (Les Bleus). (c. 1967) Vasarely died in 1997 in the early days of computer art. I'm sure he would have embraced this medium. This is the sixth in a series of Vasarely inspired Generative Art pieces I am offering.\n\nI became interested in Victor Vasarely's graphic artworks while I was in art school. As I struggled to learn computer graphics I wondered how do I write a program to produce imagery with a similar aesthetic? I call the process of creating algorithms inspired by other artists: \"Art\"ificial Intelligence.\n\nMy version of the composition has been expanded from the original 3 x 3 to 5 x 5 elements.  However, while there may be a grid of 5 x 5 squares in the composition there is a grid of 9 x 9 circles superimposed over the squares. \n\nFirst a random color is chosen for the overall background. Each square is drawn in its place in a random color and that color value is saved. On a second pass the circles are drawn, if they fall in the middle of a square they are rendered in that squares' complementary color. If the circle falls between the squares it is rendered in the background color appearing to alter the shape of the underlying square.\n\nAgain, there are many Gestalt interactions within this piece. The most prominent being the figure-ground relationship. The in-between background colored squares form a strong unifying structure, as do the other similar shapes. In Gestalt, similar shapes are seen together as a unifying whole.\n\nDr. Bill Generative Art OG @ drbillkolomyjec.com"
+ },
+ "15755": {
+  "d": "Generative 2d solar system v2.0",
+  "c": "what a strange solar system!"
+ },
+ "29437": {
+  "d": "There is no vision without thought, but it is not enough to think in order\nto see. Maurice Merleau-Ponty\n\nThe essence of the tree -- be it grown from earth's womb or coded into being -- is not realized until the viewer's gaze breathes life into its form, defining it's very 'tree-ness.' The tree, algorithmically born, gains meaning only under the scrutiny of the viewer, its binary roots sprawl not in soil, but in the mindscape where the observer's eye grafts meaning onto inert pixels.\n\nEach coded tree is more than an image -- it becomes a witnessed and possessed reality, a node in the ever-expanding forest of binary trees. This forest of possibilities -- each tree a distinct NFT -- fusing the functions and formulas with the interpretative act of minting, yields an arboreal gallery, each token an invitation to witness a singular genesis.\n\nThe fabricated and natural intertwine, revealing reality as a conditioned tapestry of perception. This project is homage to our collective overgrowth, a reminder of the invisible conditions that guide our realities, molding every 'tree' that branches out across our mental landscape.\n\nTo save a high-resolution PNG file, press 's'. Be aware that this may take some time."
+ },
+ "29632": {
+  "d": "The Collatz Conjecture is a sequence defined as follows:\nStart with any positive integer n.\nIf the previous term is even, the next term is one-half of the previous term.\nIf the previous term is odd, the next term is 3 times the previous term plus 1.\n\nThe conjecture is that no matter what value of n you start with, eventually, you will always reach the number 1.\nAs of the time this project is minted, this has not been proven yet.\n\nMaybe you can try to prove it wrong by picking the right number…\n\nThe background is determined by the current iteration.\n\nThe front shape is determined by the number picked by the minter. It will reach a moving point on a circle of a diameter based on the number of the next step."
+ }
+}
