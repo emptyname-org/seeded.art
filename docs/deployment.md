@@ -288,6 +288,10 @@ After checking tables, rows and application grants, restart PHP and the timer. S
 python3 deploy/monitor.py report --state /var/lib/seeded-monitor --since 2026-01-01T12:00:00Z --until 2026-01-01T12:30:00Z
 ```
 
+## Usage statistics
+
+GoatCounter (pinned release binary, checksum-verified) runs as `seeded-stats` on 127.0.0.1:3920 with `-base-path /stats`; Caddy proxies `/stats` and `/stats/*` on the app host to it. Pages load `/stats/count.js`, which reports page views to `/stats/count`; crawlers that run no script are not counted. It stores no IP addresses and sets no cookies on the site. Dashboard: `https://APP_HOST/stats/` (login created with `goatcounter db create site -vhost APP_HOST`). Install: static user `seeded-stats`, binary in `/opt/seeded-stats/` (`goatcounter` symlink to the versioned file), the rendered `seeded-stats.service`, then `systemctl enable --now seeded-stats`.
+
 ## Restart, backup and restore
 
 For a reviewed configuration or release, restart and require readiness. Validate proxy changes before restart:

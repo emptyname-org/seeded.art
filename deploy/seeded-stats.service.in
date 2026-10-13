@@ -1,0 +1,41 @@
+[Unit]
+Description=seeded.art usage statistics (GoatCounter, served under /stats)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=seeded-stats
+Group=seeded-stats
+ExecStart=/opt/seeded-stats/goatcounter serve -listen 127.0.0.1:3920 -tls http -base-path /stats -db sqlite+/var/lib/seeded-stats/db.sqlite3 -automigrate
+Restart=on-failure
+RestartSec=10
+StateDirectory=seeded-stats
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+MemoryMax=512M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

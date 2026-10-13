@@ -1074,6 +1074,8 @@ async fn about_page_lists_available_features_plans_and_credits() {
     let text = about.text();
     for expected in [
         "<h1>About seeded.art</h1>",
+        // Every page loads the usage counter from the same origin.
+        "<script data-goatcounter=\"/stats/count\" async src=\"/stats/count.js\"></script>",
         "Please use the <a href=\"https://forum.seeded.art\">forum</a> for all communication.</p>",
         "<dt>Projects</dt><dd>",
         "<dt>NFTs</dt><dd>",

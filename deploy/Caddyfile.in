@@ -103,6 +103,11 @@ __APP_HOST__ {
 	route {
 		@health path /health /health/*
 		respond @health 404
+		# Usage statistics: GoatCounter on loopback serves its dashboard, script and counts here.
+		@stats path /stats /stats/*
+		reverse_proxy @stats 127.0.0.1:3920 {
+			import proxy_transport
+		}
 		@unknown_api {
 			path /api/*
 			not path /api/auth/session /api/auth/challenge /api/auth/verify /api/auth/logout /api/auth/profile /api/market/prepare /api/market/check /api/market/confirm /api/market/submitted /api/market/discard

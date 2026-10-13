@@ -29,6 +29,8 @@ const server=createServer((req,res)=>{
     res.setHeader('content-type',name.endsWith('.css')?'text/css':'text/javascript');
     res.end(files[name]??'');return;
   }
+  // The page loads the usage-stats script; production serves it from GoatCounter.
+  if(url.pathname==='/stats/count.js'){res.setHeader('content-type','text/javascript');res.end('');return;}
   res.setHeader('content-type','text/html; charset=utf-8');res.end(page_html);
 });
 const origin=await new Promise(done=>server.listen(0,'127.0.0.1',()=>done(`http://127.0.0.1:${server.address().port}`)));

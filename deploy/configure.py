@@ -33,6 +33,7 @@ TEMPLATES = {
     "seeded-backup.service.in": "seeded-backup.service",
     "seeded-backup.timer.in": "seeded-backup.timer",
     "seeded-monitor.service.in": "seeded-monitor.service",
+    "seeded-stats.service.in": "seeded-stats.service",
 }
 FORUM_TEMPLATES = {
     "seeded-forum-backup.service.in": "seeded-forum-backup.service",

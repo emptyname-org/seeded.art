@@ -1030,6 +1030,7 @@ async fn robots_keep_oauth_out_of_search() {
     let archive = Archive::new();
     let robots = get(&archive, "/robots.txt", None).await.text();
     assert!(robots.lines().any(|line| line == "Disallow: /oauth/"));
+    assert!(robots.lines().any(|line| line == "Disallow: /stats/"));
 }
 
 #[tokio::test]

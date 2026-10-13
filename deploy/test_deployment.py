@@ -458,6 +458,14 @@ class DeploymentTests(unittest.TestCase):
         self.assertIn(
             "SuccessExitStatus=75", (rendered / "seeded-sync.service").read_text()
         )
+        # Usage statistics: GoatCounter on loopback, under /stats on the app host.
+        caddy = (rendered / "Caddyfile").read_text()
+        self.assertIn("@stats path /stats /stats/*", caddy)
+        self.assertIn("reverse_proxy @stats 127.0.0.1:3920", caddy)
+        stats = (rendered / "seeded-stats.service").read_text()
+        self.assertIn("-listen 127.0.0.1:3920", stats)
+        self.assertIn("-base-path /stats", stats)
+        self.assertIn("User=seeded-stats", stats)
         # A confirmed trade's request file starts the sync; the sync clears it first.
         self.assertIn(
             "PathExists=/var/lib/seeded/sync.request",
@@ -1502,6 +1510,7 @@ class DeploymentTests(unittest.TestCase):
             "usr/bin/kill",
             "usr/bin/python3",
             "usr/bin/caddy",
+            "opt/seeded-stats/goatcounter",
             "opt/seeded/current/seeded_archive",
         ):
             path = stage / executable

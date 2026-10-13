@@ -323,5 +323,5 @@ async fn articles(
     }).await
 }
 async fn robots(State(state): State<AppState>) -> Response {
-    (StatusCode::OK,[(header::CONTENT_TYPE,"text/plain; charset=utf-8")],format!("# Disallow lines are for crawlers. Agents may sign in with their own address; see {0}/agents.md\nUser-agent: *\nAllow: /\nDisallow: /auth\nDisallow: /api/auth/\nDisallow: /api/market/\nDisallow: /health/\nDisallow: /oauth/\nDisallow: /token/*/full\nSitemap: {0}/sitemap.xml\n",state.app_origin)).into_response()
+    (StatusCode::OK,[(header::CONTENT_TYPE,"text/plain; charset=utf-8")],format!("# Disallow lines are for crawlers. Agents may sign in with their own address; see {0}/agents.md\nUser-agent: *\nAllow: /\nDisallow: /auth\nDisallow: /api/auth/\nDisallow: /api/market/\nDisallow: /health/\nDisallow: /oauth/\nDisallow: /stats/\nDisallow: /token/*/full\nSitemap: {0}/sitemap.xml\n",state.app_origin)).into_response()
 }

@@ -267,6 +267,8 @@ try{
   }
   assert.deepEqual(forms.map(({scope,...form})=>form),Array(4).fill({action:'/search',method:'get',label:'Search the archive',placeholder:'Search'}));
   assert.deepEqual(forms.map(form=>form.scope),[null,'people','people',null]);
+  // Each search below uses its own client address so the page loads above don't spend its rate-limit burst.
+  await context.close();context=await browser.newContext({extraHTTPHeaders:{'x-forwarded-for':'192.0.2.26'}});page=await context.newPage();
   await page.goto(`${app}/artists`);await page.locator('#global-search').fill('zancan');await page.locator('#global-search').press('Enter');
   await page.waitForURL(url=>url.pathname==='/search');
   assert.equal(new URL(page.url()).search,'?q=zancan&scope=people');
@@ -277,6 +279,7 @@ try{
   assert.equal(await page.locator('#search-projects').count(),0);
   await page.goto(`${app}/artists?q=zancan`);
   assert.equal(new URL(page.url()).pathname+new URL(page.url()).search,'/search?q=zancan&scope=people','old in-place links open the same search');
+  await context.close();context=await browser.newContext({extraHTTPHeaders:{'x-forwarded-for':'192.0.2.27'}});page=await context.newPage();
   await page.goto(`${app}/projects`);await page.locator('#global-search').fill('zancan');await page.locator('#global-search').press('Enter');
   await page.waitForURL(url=>url.pathname==='/search');
   assert.equal(new URL(page.url()).search,'?q=zancan');
