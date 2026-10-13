@@ -570,10 +570,7 @@ async fn generated_name_claims_return_a_clear_conflict_without_changing_the_prof
         )
         .await;
         assert_eq!(reply.status, StatusCode::BAD_REQUEST);
-        assert_eq!(
-            reply.json()["error"],
-            format!("the name {name:?} is taken by another address")
-        );
+        assert_eq!(reply.json()["error"], "That name is taken.");
     }
     let store = Store::open_read_only(&archive.database).unwrap();
     assert!(store.profile_edit(&address).unwrap().is_none());

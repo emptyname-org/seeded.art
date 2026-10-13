@@ -1171,7 +1171,7 @@ async fn fifth_concurrent_chain_request_has_a_short_bounded_wait() {
 }
 
 #[tokio::test]
-async fn accepting_with_a_token_the_address_does_not_hold_names_the_token_and_contract() {
+async fn accepting_with_a_token_the_address_does_not_hold_is_refused_as_not_held() {
     let m = Mock::new();
     m.unheld.store(true, Ordering::SeqCst);
     let accept = Action::Accept {
@@ -1198,13 +1198,8 @@ async fn accepting_with_a_token_the_address_does_not_hold_names_the_token_and_co
         &error,
         TradingError::NotHeld { contract, token_id: 1209122 } if contract == TOKENS[2]
     ));
-    assert_eq!(
-        error.to_string(),
-        format!(
-            "This address does not hold token 1209122 on contract {}",
-            TOKENS[2]
-        )
-    );
+    assert_eq!(error.to_string(), "Your address doesn't hold that NFT");
+    assert_eq!(error.number(), 229);
 }
 
 #[tokio::test]

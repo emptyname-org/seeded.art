@@ -588,6 +588,9 @@ pub fn https_link(text: &str) -> Option<String> {
     .filter(|s| s.chars().count() <= MAX_LINK_CHARS)
 }
 
+/// A claimed name another address shows or carries; shown to the user as is.
+pub const NAME_TAKEN: &str = "That name is taken.";
+
 fn bad(msg: impl Into<String>) -> StoreError {
     StoreError::BadRequest(msg.into())
 }
@@ -661,7 +664,7 @@ fn require_account(address: &str) -> Result<(), StoreError> {
 }
 
 fn check_claim(c: &Connection, address: &str, edit: &CheckedEdit) -> Result<(), StoreError> {
-    if let Some((name, key)) = &edit.name {
+    if let Some((_, key)) = &edit.name {
         // Keeping a claim already held: a name imported since cannot take it back.
         let held: bool = c
             .prepare_cached("SELECT 1 FROM profile_edits WHERE address = ?1 AND name_key = ?2")
@@ -682,9 +685,7 @@ fn check_claim(c: &Connection, address: &str, edit: &CheckedEdit) -> Result<(), 
             ));
         }
         if carried_by_other(c, key, address)? || shown_by_other(c, key, address)? {
-            return Err(bad(format!(
-                "the name {name:?} is taken by another address"
-            )));
+            return Err(bad(NAME_TAKEN));
         }
     }
     Ok(())

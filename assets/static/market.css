@@ -31,7 +31,6 @@
 #market-review { width: min(650px, calc(100vw - 32px)); max-height: 85dvh; padding: 28px; border: 1px solid var(--line); border-radius: 4px; color: var(--text); background: var(--panel); }
 #market-review::backdrop { background: var(--backdrop); }
 #market-review p { line-height: 1.65; overflow-wrap: anywhere; }
-#market-review pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
 #review-content section { padding-top: 16px; border-top: 1px solid var(--line); }
 #market-review > div:last-child { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 #market-operation { display: block; margin: 12px 0; font-size: 13px; overflow-wrap: anywhere; }

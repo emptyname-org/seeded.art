@@ -289,8 +289,7 @@ code { color: var(--muted); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, 
 .archive-counts dd { font-size: 30px; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
 .auth-page { max-width: 600px; padding: 24px 0; }
 .auth-page h1 { margin-bottom: 28px; }
-.auth-page p, .auth-reasons { font-size: 18px; }
-.auth-reasons { display: grid; gap: 12px; padding-left: 22px; margin: 18px 0 28px; line-height: 1.7; }
+.auth-page p { font-size: 18px; }
 .auth-page [data-auth-status] { margin: 20px 0 12px; color: var(--muted); }
 .auth-page > .subtle { margin-top: 24px; }
 .profile-edit-page { max-width: 640px; }

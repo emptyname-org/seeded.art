@@ -49,21 +49,22 @@ impl TrustedClientIp {
     }
 }
 
+/// User sentences without their number; responses append "(error N)." from `number`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum AuthError {
-    #[error("Sign in again to continue.")]
+    #[error("Sign in again")]
     Unauthenticated,
-    #[error("This request did not come from this site.")]
+    #[error("Request rejected; reload the page")]
     Forbidden,
-    #[error("The sign-in signature could not be verified. Connect again.")]
+    #[error("Sign-in failed; try again")]
     InvalidSignature,
-    #[error("The sign-in request expired or was already used. Connect again.")]
+    #[error("Sign-in expired; try again")]
     Expired,
-    #[error("Too many requests. Try again in a minute.")]
+    #[error("Too many attempts; wait a minute")]
     RateLimited,
-    #[error("Sign-in is temporarily unavailable.")]
+    #[error("Sign-in is unavailable right now")]
     Unavailable,
-    #[error("Invalid sign-in origin configuration.")]
+    #[error("Sign-in is unavailable right now")]
     Configuration,
 }
 
@@ -78,13 +79,41 @@ impl AuthError {
             Self::Unavailable | Self::Configuration => StatusCode::SERVICE_UNAVAILABLE,
         }
     }
+    /// The fixed number shown with the sentence and logged; docs/errors.md lists them.
+    pub fn number(self) -> u16 {
+        match self {
+            Self::Forbidden => 102,
+            Self::InvalidSignature => 103,
+            Self::Expired => 104,
+            Self::RateLimited => 105,
+            Self::Unavailable => 106,
+            Self::Configuration => 107,
+            Self::Unauthenticated => 109,
+        }
+    }
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Unauthenticated => "Unauthenticated",
+            Self::Forbidden => "Forbidden",
+            Self::InvalidSignature => "InvalidSignature",
+            Self::Expired => "Expired",
+            Self::RateLimited => "RateLimited",
+            Self::Unavailable => "Unavailable",
+            Self::Configuration => "Configuration",
+        }
+    }
+    /// The sentence with its number.
+    pub fn message(self) -> String {
+        crate::error_number::numbered(&self.to_string(), self.number())
+    }
 }
 
 impl IntoResponse for AuthError {
     fn into_response(self) -> Response {
+        crate::error_number::log(self.number(), self.name());
         let mut response = (
             self.status(),
-            Json(serde_json::json!({"error":self.to_string()})),
+            Json(serde_json::json!({"error":self.message(),"number":self.number()})),
         )
             .into_response();
         response

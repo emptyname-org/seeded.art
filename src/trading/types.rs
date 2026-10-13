@@ -81,54 +81,114 @@ pub struct AcceptFees {
     pub seller_net_mutez: u64,
 }
 
+/// User sentences without their number; the web layer appends "(error N)." from `number`.
 #[derive(Debug, thiserror::Error)]
 pub enum TradingError {
-    #[error("Acceptances are unavailable because the platform fee audit could not be opened")]
+    #[error("Accepting offers is unavailable right now")]
     FeeAuditUnavailable,
-    #[error("Offer accepts are unavailable until the platform fee address is configured")]
+    #[error("Accepting offers is unavailable right now")]
     FeeUnconfigured,
-    #[error("The platform fee contract needs a unit default entrypoint")]
+    #[error("Accepting offers is unavailable right now")]
     FeeRecipient,
-    #[error(
-        "Acceptance applied on chain without the reviewed platform fee. Do not resend the acceptance"
-    )]
+    /// Never shown: the page treats the acceptance as done; the server logs it.
+    #[error("Acceptance applied without the reviewed platform fee")]
     FeeEvasion,
-    #[error("Too many trading checks from this address or connection; retry in a minute")]
+    #[error("Too many requests; wait a minute")]
     RateLimited,
-    #[error(
-        "A checked operation may still be pending. Confirm it or retry in {0} seconds; do not resend it"
-    )]
+    #[error("Your previous operation is still pending; wait {0} seconds")]
     SigningPending(u64),
-    #[error("Trading receipt capacity is full; retry in {0} seconds")]
+    #[error("Busy; try again in {0} seconds")]
     ReceiptCapacity(u64),
-    #[error("Operation is awaiting canonical confirmation")]
+    /// A status, shown without its number.
+    #[error("Waiting for confirmation…")]
     Pending,
-    #[error("Invalid trading request")]
+    #[error("Request failed")]
     Invalid,
-    #[error("Only the verified address may perform this action")]
+    #[error("Sign in again")]
     Unauthorized,
-    #[error("This address does not hold token {token_id} on contract {contract}")]
-    NotHeld { contract: String, token_id: u64 },
-    #[error("Market state changed or is no longer active; refresh and review again")]
+    #[error("Your address doesn't hold that NFT")]
+    NotHeld {
+        // Read through Debug in the trading step log and by tests.
+        #[allow(dead_code)]
+        contract: String,
+        #[allow(dead_code)]
+        token_id: u64,
+    },
+    #[error("This listing or offer changed; review it again")]
     Changed,
-    #[error("Market code or configuration changed; trading requires a new code review")]
+    #[error("Trading is unavailable right now")]
     CodeChanged,
-    #[error("Chain data is unavailable or stale; no operation was prepared")]
+    #[error("Trading is unavailable right now; try again shortly")]
     Unavailable,
-    #[error("The operation failed or was dropped; nothing changed")]
+    #[error("The operation failed; nothing changed")]
     Failed,
-    #[error("The operation could not be verified against its review")]
+    #[error("The operation couldn't be confirmed; check it in your wallet")]
     Unverified,
-    #[error("Another trading request is active; finish it before preparing another")]
+    #[error("Another request is still running; wait for it")]
     Busy,
-    #[error("Review expired or was already used; refresh and prepare again")]
+    #[error("The review expired; review again")]
     Expired,
-    #[error("Simulation failed; no operation is ready to sign")]
+    #[error("This can't be done right now")]
     Simulation,
-    #[error("This group exceeds the resource cap; select fewer actions")]
+    #[error("Too many items; select fewer")]
     TooLarge,
-    #[error("Reveal this address in its signing app before trading")]
+    #[error("Your address must make one transaction before it can trade here")]
     Unrevealed,
+}
+
+impl TradingError {
+    /// The fixed number shown with the sentence and logged; docs/errors.md lists them.
+    pub fn number(&self) -> u16 {
+        match self {
+            Self::FeeAuditUnavailable => 221,
+            Self::FeeUnconfigured => 222,
+            Self::FeeRecipient => 223,
+            Self::RateLimited => 224,
+            Self::SigningPending(_) => 225,
+            Self::ReceiptCapacity(_) => 226,
+            Self::Invalid => 227,
+            Self::Unauthorized => 228,
+            Self::NotHeld { .. } => 229,
+            Self::Changed => 230,
+            Self::CodeChanged => 231,
+            Self::Unavailable => 232,
+            Self::Busy => 233,
+            Self::Expired => 234,
+            Self::Simulation => 235,
+            Self::TooLarge => 236,
+            Self::Unrevealed => 237,
+            Self::Failed => 301,
+            Self::Unverified => 302,
+            Self::Pending => 310,
+            Self::FeeEvasion => 320,
+        }
+    }
+    /// The variant name, for the journal: carries no address or token.
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::FeeAuditUnavailable => "FeeAuditUnavailable",
+            Self::FeeUnconfigured => "FeeUnconfigured",
+            Self::FeeRecipient => "FeeRecipient",
+            Self::FeeEvasion => "FeeEvasion",
+            Self::RateLimited => "RateLimited",
+            Self::SigningPending(_) => "SigningPending",
+            Self::ReceiptCapacity(_) => "ReceiptCapacity",
+            Self::Pending => "Pending",
+            Self::Invalid => "Invalid",
+            Self::Unauthorized => "Unauthorized",
+            Self::NotHeld { .. } => "NotHeld",
+            Self::Changed => "Changed",
+            Self::CodeChanged => "CodeChanged",
+            Self::Unavailable => "Unavailable",
+            Self::Failed => "Failed",
+            Self::Unverified => "Unverified",
+            Self::Busy => "Busy",
+            Self::Expired => "Expired",
+            Self::Simulation => "Simulation",
+            Self::TooLarge => "TooLarge",
+            Self::Unrevealed => "Unrevealed",
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]

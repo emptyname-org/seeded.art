@@ -384,9 +384,10 @@ async fn signed_out_authorize_goes_to_sign_in_and_returns_after_it() {
     assert_eq!(page.status, StatusCode::OK);
     assert!(page.text().contains("data-auth-next=\""), "{}", page.text());
     assert!(page.text().contains("<h1>Sign in to the forum</h1>"));
-    assert!(!page.text().contains("auth-reasons"));
+    assert!(page.text().contains("Signing in makes no transaction."));
     let plain = get(&archive, "/auth", None).await;
-    assert!(plain.text().contains("auth-reasons"));
+    assert!(plain.text().contains("<h1>Connect wallet</h1>"));
+    assert!(!plain.text().contains("Signing in makes no transaction."));
     assert!(!plain.text().contains("Sign in to the forum"));
     let (cookie, _) = login(&archive, 7).await;
     let signed_in = get(&archive, reply.location(), Some(&cookie)).await;

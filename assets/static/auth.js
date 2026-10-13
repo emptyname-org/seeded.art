@@ -15,6 +15,17 @@ function holdSigner(value){
   try{if(value)sessionStorage.setItem('seeded:signer-mismatch','true');else sessionStorage.removeItem('seeded:signer-mismatch');}catch{}
 }
 
+// User-visible errors end with their number (docs/errors.md); statuses have none.
+export function failure(text,number=0){
+  const error=new Error(number?`${text} (error ${number}).`:text);
+  error.number=number;
+  return error;
+}
+// A wallet error the user caused by cancelling shows as a status; any other gets a number.
+function walletFailure(error,cancelled,text,number){
+  if(typeof error?.number==='number')return error;
+  return /^\[ABORTED_ERROR\]/.test(String(error?.message))?failure(cancelled):failure(text,number);
+}
 function status(text){
   document.querySelectorAll('[data-auth-status]').forEach(node=>{node.textContent=text;});
 }
@@ -42,22 +53,25 @@ async function jsonRequest(path,options={}){
   const controller=new AbortController();
   const deadline=path==='/api/market/prepare'||path==='/api/market/check'?60000:path==='/api/market/confirm'?25000:10000;
   const timeout=setTimeout(()=>controller.abort(),deadline);
+  let response=null,value=null;
   try{
-    const response=await fetch(path,{credentials:'same-origin',cache:'no-store',...options,signal:controller.signal});
-    if(response.status===204)return null;
-    const value=await response.json().catch(()=>null);
-    if(!response.ok){
-      const error=new Error(value?.error||'The request failed. Try again.');
-      error.status=response.status;
-      error.code=value?.code;
-      throw error;
-    }
-    if(value===null)throw new Error('The response was incomplete. Try again.');
-    return value;
-  }catch(error){
-    if(controller.signal.aborted)throw new Error('Request timed out. Retry.');
+    response=await fetch(path,{credentials:'same-origin',cache:'no-store',...options,signal:controller.signal});
+    if(response.status!==204)value=await response.json().catch(()=>null);
+  }catch{/* Reported below. */}
+  finally{clearTimeout(timeout);}
+  const timedOut=()=>failure('Request timed out; try again',503);
+  if(!response)throw controller.signal.aborted?timedOut():failure('Request failed; try again',505);
+  if(response.status===204)return null;
+  if(!response.ok){
+    // The server's sentence already carries its number.
+    const error=value?.error?new Error(String(value.error)):controller.signal.aborted?timedOut():failure('Request failed; try again',501);
+    error.status=response.status;
+    error.code=value?.code;
+    error.number=Number.isInteger(value?.number)?value.number:error.number??0;
     throw error;
-  }finally{clearTimeout(timeout);}
+  }
+  if(value===null)throw controller.signal.aborted?timedOut():failure('Request failed; try again',502);
+  return value;
 }
 export async function getSession(){
   const revision=sessionRevision,read=++sessionRead;
@@ -66,9 +80,9 @@ export async function getSession(){
   return currentSession;
 }
 export async function authFetch(path,body){
-  if(!/^\/api\/(auth|market)\/[a-z-]+$/.test(path))throw new Error('Invalid authenticated request.');
+  if(!/^\/api\/(auth|market)\/[a-z-]+$/.test(path))throw failure('Request failed',504);
   const session=await getSession();
-  if(!session)throw new Error('Sign in again to continue.');
+  if(!session)throw failure('Sign in again',109);
   return jsonRequest(path,{method:'POST',headers:{'content-type':'application/json','x-csrf-token':session.csrf},body:JSON.stringify(body)});
 }
 export async function getBeaconClient(){
@@ -84,7 +98,7 @@ export async function getBeaconClient(){
           if(pendingChanged){attempt++;pendingAddress=null;canCancel=false;busy(verifyPending);}
           holdSigner(true);
           publish(null);
-          status('Address changed. Sign in again to continue.');
+          status('Your wallet\'s address changed; sign in again.');
           if(previous){
             try{await jsonRequest('/api/auth/logout',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':previous.csrf},body:JSON.stringify({all:false})});}
             catch{/* Keep actions blocked until an explicitly verified sign-in. */}
@@ -98,12 +112,14 @@ export async function getBeaconClient(){
 }
 export async function requestOperations(operationDetails,expectedAddress){
   const session=await getSession();
-  if(!session||session.address!==expectedAddress)throw new Error('Sign in with the reviewed address.');
-  if(!Array.isArray(operationDetails)||!operationDetails.length||operationDetails.some(operation=>operation.source!==expectedAddress))throw new Error('The operation address changed. Review again.');
-  const client=await getBeaconClient();
-  const account=await client.getActiveAccount();
-  if(!account||account.address!==expectedAddress||account.network?.type!=='mainnet')throw new Error('Connect the reviewed Tezos mainnet address.');
-  return client.requestOperation({operationDetails});
+  if(!session||session.address!==expectedAddress)throw failure('You signed in with another address; reload',308);
+  if(!Array.isArray(operationDetails)||!operationDetails.length||operationDetails.some(operation=>operation.source!==expectedAddress))throw failure('Your wallet\'s address changed; review again.');
+  try{
+    const client=await getBeaconClient();
+    const account=await client.getActiveAccount();
+    if(!account||account.address!==expectedAddress||account.network?.type!=='mainnet')throw failure('Switch your wallet to the signed-in address',108);
+    return await client.requestOperation({operationDetails});
+  }catch(error){throw walletFailure(error,'Signing cancelled.','Signing failed in your wallet',309);}
 }
 function busy(value){
   connecting=value;
@@ -114,8 +130,8 @@ async function connect(){
   if(connecting)return;
   const ownAttempt=++attempt;
   let submitted=false;
-  const active=()=>{if(attempt!==ownAttempt)throw new Error('Connection cancelled.');};
-  canCancel=true;busy(true);status('Choose an address, then approve the sign-in message.');
+  const active=()=>{if(attempt!==ownAttempt)throw failure('Connection cancelled.');};
+  canCancel=true;busy(true);status('Approve the sign-in in your wallet.');
   try{
     const client=await getBeaconClient();active();
     let account=await client.getActiveAccount();active();
@@ -123,14 +139,14 @@ async function connect(){
       await client.requestPermissions();active();
       account=await client.getActiveAccount();active();
     }
-    if(!account?.publicKey||!/^tz[123]/.test(account.address)||account.network?.type!=='mainnet')throw new Error('Choose a supported Tezos mainnet address (tz1, tz2 or tz3).');
+    if(!account?.publicKey||!/^tz[123]/.test(account.address)||account.network?.type!=='mainnet')throw failure('Choose a Tezos mainnet tz1, tz2 or tz3 address',101);
     pendingAddress=account.address;
     const challenge=await jsonRequest('/api/auth/challenge',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:account.address,public_key:account.publicKey})});active();
     const signed=await client.requestSignPayload({signingType:'micheline',payload:challenge.payload,sourceAddress:account.address});active();
     const signingAccount=await client.getActiveAccount();active();
     if(!signingAccount||signingAccount.address!==account.address||signingAccount.network?.type!=='mainnet'){
       holdSigner(true);publish(null);
-      throw new Error('Address changed. Sign in again to continue.');
+      throw failure('Your wallet\'s address changed; sign in again.');
     }
     // Cancellation cannot leave an unseen session after the verification response sets its cookie.
     canCancel=false;submitted=true;verifyPending=true;busy(true);
@@ -145,7 +161,7 @@ async function connect(){
     // A signed-in address has no use for the sign-in page.
     if(document.querySelector('[data-auth-page]')){location.assign(authNext()||`/profile/${value.session.address}`);return;}
     status(`Signed in as ${value.session.address}.`);
-  }catch(error){if(attempt===ownAttempt)status(error.message||'Connection declined. Try again.');}
+  }catch(error){if(attempt===ownAttempt)status(walletFailure(error,'Connection cancelled.','Sign-in failed in your wallet; try again',110).message);}
   finally{
     if(submitted)verifyPending=false;
     if(submitted||attempt===ownAttempt){pendingAddress=null;canCancel=false;busy(false);}
@@ -200,7 +216,7 @@ getSession().then(session=>{
   if(!session&&attempt===0&&!connecting&&authNext()){connect();return;}
   // A signed-out visitor on the sign-in page needs the wallet code next: fetch it now so Connect answers at once.
   if(!session&&document.querySelector('[data-auth-page]'))import('./beacon/client.js').catch(()=>{});
-  if(attempt===0&&!connecting&&document.querySelector('[data-auth-connect]'))status(signerMismatch?'Address changed. Sign in again to continue.':session?`Signed in as ${session.address}.`:'Not connected.');
+  if(attempt===0&&!connecting&&document.querySelector('[data-auth-connect]'))status(signerMismatch?'Your wallet\'s address changed; sign in again.':session?`Signed in as ${session.address}.`:'Not connected.');
 }).catch(()=>{/* Pages remain readable if sign-in is unavailable. */});
 function closeMenus(except){document.querySelectorAll('details.account-menu[open]').forEach(menu=>{if(menu!==except)menu.open=false;});}
 document.addEventListener('click',event=>closeMenus(event.target.closest?.('details.account-menu')));

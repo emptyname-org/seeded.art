@@ -159,7 +159,8 @@ type AppRouter = (
 /// Application side: pages, sessions, sign-in, market. Its fee audit runs as a worker.
 /// `content` is set only when this process also serves artwork, for cache readiness.
 fn app_router(config: &Config, content: Option<ContentStore>) -> Result<AppRouter, Box<dyn Error>> {
-    let auth = seeded_archive::auth::AuthState::new(&config.app_origin)?;
+    let auth = seeded_archive::auth::AuthState::new(&config.app_origin)
+        .map_err(|e| format!("sign-in configuration: {}", e.message()))?;
     let trading = Arc::new(
         TradingState::new(seeded_archive::trading::TradingConfig {
             rpc_url: config.trading_rpc.clone(),
@@ -167,6 +168,10 @@ fn app_router(config: &Config, content: Option<ContentStore>) -> Result<AppRoute
             app_origin: config.app_origin.clone(),
             platform_fee_bps: config.platform_fee_bps,
             platform_fee_address: config.platform_fee_address.clone(),
+        })
+        .map_err(|e| {
+            let text = seeded_archive::error_number::numbered(&e.to_string(), e.number());
+            format!("trading configuration: {text}")
         })?
         .with_optional_fee_audit(&config.trading_database)
         .with_sync_request(config.database.with_file_name("sync.request")),

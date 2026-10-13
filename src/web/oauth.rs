@@ -70,9 +70,10 @@ fn oauth_state(state: &AppState) -> Result<Arc<OAuthState>, Response> {
 }
 
 fn bad_client() -> Response {
+    crate::error_number::log(111, "UnknownClient");
     WebError {
         status: StatusCode::BAD_REQUEST,
-        message: "Unknown sign-in client or return address.",
+        message: "Unknown sign-in client or return address (error 111).",
     }
     .into_response()
 }

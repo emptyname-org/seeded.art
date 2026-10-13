@@ -138,8 +138,8 @@ async fn owner_page_and_prepare_require_current_session_origin_and_csrf() {
     assert_eq!(status, StatusCode::OK);
     assert_eq!(h[header::CACHE_CONTROL], "no-store");
     assert!(body.contains("Listings and offers"));
-    assert!(body.contains("Index coverage"));
-    assert!(body.contains("no completed indexing pass"));
+    assert!(!body.contains("Index coverage"));
+    assert!(!body.contains("no completed indexing pass"));
     let (status, headers, _) =
         request(app.clone(), &own, false, HeaderMap::new(), Value::Null).await;
     assert_eq!(status, StatusCode::SEE_OTHER);
@@ -526,7 +526,7 @@ async fn unavailable_fee_audit_disables_accepts_without_erasing_fee_configuratio
     .await;
     assert_eq!(status, StatusCode::OK);
     assert!(html.contains("Platform fee: 2.5%"));
-    assert!(html.contains("Acceptances unavailable: platform fee audit could not be opened."));
+    assert!(html.contains("Accepting offers is unavailable right now (error 221)."));
     assert!(!html.contains("until a platform fee recipient is configured"));
     assert!(html.contains("disabled data-accept-disabled"));
 
@@ -554,11 +554,10 @@ async fn unavailable_fee_audit_disables_accepts_without_erasing_fee_configuratio
     assert_eq!(status, StatusCode::SERVICE_UNAVAILABLE);
     let error: Value = serde_json::from_str(&body).unwrap();
     assert_eq!(error["code"], "FeeAuditUnavailable");
-    assert!(
-        error["error"]
-            .as_str()
-            .unwrap()
-            .contains("fee audit could not be opened")
+    assert_eq!(error["number"], 221);
+    assert_eq!(
+        error["error"],
+        "Accepting offers is unavailable right now (error 221)."
     );
 }
 
@@ -604,7 +603,7 @@ async fn market_browsing_hides_fee_and_disables_actions_when_trading_is_off() {
     )
     .await;
     assert_eq!(status, StatusCode::OK);
-    assert!(body.contains("Trading actions are temporarily unavailable."));
+    assert!(body.contains("Trading is unavailable right now."));
     assert!(!body.contains("Platform fee:"));
     assert!(!body.contains("fee recipient is configured"));
     assert!(body.contains("id=\"sign-market\" type=\"button\" disabled"));

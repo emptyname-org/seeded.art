@@ -1,4 +1,4 @@
-import {authFetch,getSession,requestOperations} from './auth.js';
+import {authFetch,failure,getSession,requestOperations} from './auth.js';
 
 const root=document.querySelector('#market');
 if(root){
@@ -8,7 +8,7 @@ if(root){
   const sign=document.querySelector('#sign-market');
   const close=document.querySelector('#close-market');
   const actor=root.dataset.address;
-  let review=null,working=false,walletWait=false,signAttempt=0,returnFocus=null,queue=[],bulk=false,nextUrl=null,pageCount=0,groupSize=10,feeEvasionTerminal=false;
+  let review=null,working=false,walletWait=false,signAttempt=0,returnFocus=null,queue=[],bulk=false,nextUrl=null,pageCount=0,groupSize=10;
   // Messages open as a pop-up above the page and the review dialog.
   const notice=status.closest('[popover]');
   const say=text=>{status.textContent=text;if(!notice?.showPopover)return;if(notice.matches(':popover-open'))notice.hidePopover();if(text)notice.showPopover();};
@@ -17,7 +17,7 @@ if(root){
   const mutez=value=>typeof value==='string'&&/^\d+$/.test(value);
   const controls=disabled=>{root.querySelectorAll('button:not(.market-notice-close)').forEach(b=>{b.disabled=disabled||b.hasAttribute('data-accept-disabled');});};
   const item=(parent,label,value)=>{const p=document.createElement('p');const strong=document.createElement('strong');strong.textContent=`${label}: `;p.append(strong,document.createTextNode(String(value)));parent.append(p);};
-  const safeAction=action=>{if(!Number.isSafeInteger(action.id)||action.id<0)throw new Error('Record ID exceeds the supported range.');return action;};
+  const safeAction=action=>{if(!Number.isSafeInteger(action.id)||action.id<0)throw failure('This record can\'t be handled here',201);return action;};
   const isPlainTransfer=operation=>operation&&(operation.parameters==null||(operation.parameters.entrypoint==='default'&&operation.parameters.value?.prim==='Unit'));
   function transferMatches(operations,fees){
     if(!Array.isArray(operations))return false;
@@ -41,10 +41,10 @@ if(root){
     if(expectedNet<0n||net!==expectedNet)return false;
     return transferMatches(candidate.simulation.operations,fees);
   }
+  // An applied acceptance whose fee was not paid is done for the user; the server logs it.
   function feeEvasion(error){
     if(error.code!=='FeeEvasion')return false;
-    feeEvasionTerminal=true;clearPending();review=null;bulk=false;queue=[];
-    say('The acceptance was applied but its reviewed platform fee was not paid. Do not resend it. Reload to refresh the records.');
+    clearPending(true);review=null;bulk=false;queue=[];say('');void redraw();
     return true;
   }
   function actionsFrom(doc){return [...doc.querySelectorAll('.market-record[data-action]')].filter(row=>row.querySelector('.cancel-one')).map(row=>safeAction(JSON.parse(row.dataset.action)));}
@@ -54,56 +54,50 @@ if(root){
       const box=document.createElement('section');const heading=document.createElement('h3');
       heading.textContent=`${record.action.action==='accept'?'Accept':'Cancel'} ${record.action.kind} #${record.action.id}`;box.append(heading);
       item(box,record.action.kind==='listing'?'Seller':'Buyer',`${result.names[record.counterparty]||record.counterparty} (${record.counterparty})`);
-      item(box,record.action.kind==='listing'?'Listing price':'Offer price',`${tez(record.price_mutez)} tez per token`);
-      item(box,'Created',`${record.created_at} · block ${record.created_level}`);
+      item(box,record.action.kind==='listing'?'Listing price':'Offer price',`${tez(record.price_mutez)} tez per NFT`);
+      item(box,'Created',record.created_at);
       item(box,'Remaining',record.remaining);
-      if(record.token)item(box,'Token',`${record.token.contract} / ${record.token.token_id}`);
-      if(record.action.token&&!record.token)item(box,'Token to transfer',`${record.action.token.contract} / ${record.action.token.token_id}`);
+      if(record.token)item(box,'NFT',`${record.token.contract} / ${record.token.token_id}`);
+      if(record.action.token&&!record.token)item(box,'NFT',`${record.action.token.contract} / ${record.action.token.token_id}`);
       if(record.project_id!==null)item(box,'Project',record.project_id);
-      if(record.action.action==='cancel'&&record.action.kind!=='listing')item(box,'Escrow refund',`${tez(BigInt(record.price_mutez)*BigInt(record.remaining))} tez`);
+      if(record.action.action==='cancel'&&record.action.kind!=='listing')item(box,'Refund',`${tez(BigInt(record.price_mutez)*BigInt(record.remaining))} tez`);
       content.append(box);
     }
     const hasAccept=review.items.some(record=>record.action.action==='accept');
-    if(!hasAccept)item(content,'Simulated incoming tez',`${tez(review.simulation.proceeds_mutez)} tez before network fee and storage`);
+    if(!hasAccept)item(content,'You receive',`${tez(review.simulation.proceeds_mutez)} tez`);
     let feeBreakdownValid=feeReviewValid(review);
     if(hasAccept){
       const fees=review.simulation.accept_fees;
       if(feeBreakdownValid){
         const rate=fees.platform_fee_bps;
-        item(content,'Artist royalties paid to others',`${tez(fees.royalties_mutez)} tez`);
+        item(content,'Artist royalties',`${tez(fees.royalties_mutez)} tez`);
         item(content,'fxhash fee',`${tez(fees.fxhash_fee_mutez)} tez`);
         const rateText=(rate/100).toFixed(2).replace(/0$/,'').replace(/\.0$/,'');
         item(content,'seeded.art fee',`${tez(fees.platform_fee_mutez)} tez (${rateText}%)`);
-        item(content,'Receiving address',fees.platform_fee_address);
-        if(BigInt(fees.platform_fee_returned_mutez)>0n)item(content,'Fee transfer returned to this address',`${tez(fees.platform_fee_returned_mutez)} tez`);
-        item(content,'Seller net',`${tez(fees.seller_net_mutez)} tez before network fee and storage`);
+        item(content,'You receive',`${tez(fees.seller_net_mutez)} tez`);
       }
-      if(!feeBreakdownValid)item(content,'Acceptance unavailable','The fee breakdown or final fee transfer did not match. Refresh before signing.');
     }
     item(content,'Network fee',`${tez(review.simulation.fee_mutez)} tez`);
-    item(content,'Maximum storage burn',`${tez(review.simulation.storage_burn_cap_mutez)} tez`);
-    item(content,'Operation group',`${review.simulation.operations.length} calls · ${review.simulation.gas} gas cap · ${review.simulation.bytes} bytes`);
-    item(content,'State checked',`Mainnet block ${review.head.level}. Review expires in ${review.expires_seconds} seconds.`);
-    const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Exact calls and resource caps';const pre=document.createElement('pre');pre.textContent=JSON.stringify(review.simulation.operations,null,2);details.append(summary,pre);content.append(details);
+    item(content,'Storage fee, up to',`${tez(review.simulation.storage_burn_cap_mutez)} tez`);
     sign.disabled=!feeBreakdownValid;close.disabled=false;dialog.showModal();sign.focus();
-    if(!feeBreakdownValid)say('The fee breakdown or final fee transfer did not match. Refresh before signing.');
+    if(!feeBreakdownValid)say(failure('Something changed; review again',202).message);
     return feeBreakdownValid;
   }
   async function prepare(actions){
-    if(working)return;if(feeEvasionTerminal&&actions.some(action=>action.action==='accept')){say('This page has a terminal fee-evasion result. Do not resend the acceptance; reload to refresh the records.');return;}if(pending&&pending.expires>Date.now()){say('Waiting for the previous operation to confirm…');await watchPending(pending.ticket,pending.hash);if(pending&&pending.expires>Date.now())return;say('');}if(pending)clearPending();working=true;controls(true);returnFocus=document.activeElement;say('Checking current mainnet records and simulating…');
+    if(working)return;if(pending&&pending.expires>Date.now()){say('Waiting for your previous operation…');await watchPending(pending.ticket,pending.hash);if(pending&&pending.expires>Date.now())return;say('');}if(pending)clearPending();working=true;controls(true);returnFocus=document.activeElement;say('Preparing…');
     try{
       actions.forEach(safeAction);
-      const session=await getSession();if(session?.address!==actor)throw new Error('Sign in with this profile address.');
-      const result=await authFetch('/api/market/prepare',{actions});const readyToSign=render(result);if(readyToSign)say('Review the exact calls before signing.');
+      const session=await getSession();if(!session)throw failure('Sign in again',109);if(session.address!==actor)throw failure('You signed in with another address; reload',238);
+      const result=await authFetch('/api/market/prepare',{actions});if(render(result))say('');
     }catch(error){
       if(feeEvasion(error)){dialog.close();controls(false);returnFocus?.focus();return;}
-      if(bulk&&actions.length>1&&String(error.message).includes('resource cap')){groupSize=Math.max(1,Math.floor(actions.length/2));working=false;await prepare(queue.slice(0,groupSize));return;}
+      if(bulk&&actions.length>1&&error.code==='TooLarge'){groupSize=Math.max(1,Math.floor(actions.length/2));working=false;await prepare(queue.slice(0,groupSize));return;}
       say(error.message);bulk=false;queue=[];controls(false);
     }finally{working=false;}
   }
   async function dismiss(){
     // While the signing app holds the request, closing hides the review; the request stays open there.
-    if(working&&walletWait){signAttempt++;walletWait=false;working=false;review=null;bulk=false;queue=[];dialog.close();controls(false);say('Review closed. The signing request may stay open in your signing app for up to 2 minutes: reject it there. If you approve it, its confirmation shows here. Do not resend it.');return;}
+    if(working&&walletWait){signAttempt++;walletWait=false;working=false;review=null;bulk=false;queue=[];dialog.close();controls(false);say('Review closed; the request may still be open in your wallet.');return;}
     if(working)return;
     const old=review;review=null;bulk=false;queue=[];dialog.close();controls(false);returnFocus?.focus();
     if(old){try{await authFetch('/api/market/discard',{ticket:old.ticket});}catch{/* A consumed check remains protected on the server. */}}
@@ -113,19 +107,21 @@ if(root){
   async function nextBatch(){
     if(queue.length){await prepare(queue.slice(0,groupSize));return;}
     if(nextUrl&&pageCount<100){
-      const url=new URL(nextUrl,location.origin);if(url.origin!==location.origin||url.pathname!==location.pathname)throw new Error('Invalid next records link.');
+      const nextFailure=number=>failure('Couldn\'t load the next page; reload',number);
+      const url=new URL(nextUrl,location.origin);if(url.origin!==location.origin||url.pathname!==location.pathname)throw nextFailure(521);
       const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);let text;
-      try{const response=await fetch(url,{credentials:'same-origin',cache:'no-store',signal:controller.signal});if(!response.ok)throw new Error('The next page is unavailable. Reload to continue.');
-        if(Number(response.headers.get('content-length'))>1024*1024)throw new Error('Records page exceeds the display limit.');
+      try{const response=await fetch(url,{credentials:'same-origin',cache:'no-store',signal:controller.signal});if(!response.ok)throw nextFailure(522);
+        if(Number(response.headers.get('content-length'))>1024*1024)throw nextFailure(523);
         const reader=response.body.getReader();const decoder=new TextDecoder();text='';let bytes=0;
-        try{while(true){const {value,done}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>1024*1024)throw new Error('Records page exceeds the display limit.');text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}finally{await reader.cancel();}
-      }finally{clearTimeout(timer);}
-      const doc=new DOMParser().parseFromString(text,'text/html');if(doc.querySelector('#market')?.dataset.address!==actor)throw new Error('The profile session changed.');
+        try{while(true){const {value,done}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>1024*1024)throw nextFailure(523);text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}finally{await reader.cancel();}
+      }catch(error){throw error.number?error:nextFailure(522);}
+      finally{clearTimeout(timer);}
+      const doc=new DOMParser().parseFromString(text,'text/html');if(doc.querySelector('#market')?.dataset.address!==actor)throw failure('You signed in with another address; reload',524);
       queue=actionsFrom(doc);nextUrl=doc.querySelector('nav[data-load-more="market"] a[rel="next"]')?.getAttribute('href')||null;pageCount++;
       if(queue.length){await prepare(queue.slice(0,groupSize));return;}
       // Empty/unsupported pages stop rather than creating an unbounded automatic scan.
     }
-    bulk=false;controls(false);say(nextUrl?'This batch is complete. Use Next page to continue.':'All selected records are confirmed.');void redraw();
+    bulk=false;controls(false);say(nextUrl?'Done; use Next page for more.':'All done.');void redraw();
   }
   const pendingKey=`seeded:market-confirm:${actor}`;
   function swap(doc){
@@ -151,9 +147,8 @@ if(root){
         try{const result=await authFetch('/api/market/confirm',{ticket,hash});if(!current())return;if(result?.confirmed){released(ticket,hash,true);return;}}
         catch(error){
           if(!current())return;
-          if(error.code==='Failed'){released(ticket,hash,true);say(`Operation failed: ${hash}. Nothing changed; the records are back.`);await redraw();return;}
-          if(error.code==='Unverified'){released(ticket,hash,true);say(`Operation ${hash} could not be verified against its review. The lists show the chain’s state; check the operation link.`);await redraw();return;}
-          if(error.code==='FeeEvasion'){released(ticket,hash,true);feeEvasion(error);return;}
+          if(['Failed','Unverified'].includes(error.code)){released(ticket,hash,true);say(error.message);await redraw();return;}
+          if(error.code==='FeeEvasion'){released(ticket,hash,true);await redraw();return;}
           if(['Expired','Unauthorized'].includes(error.code)){released(ticket,hash,false);return;}
         }
       }
@@ -163,53 +158,49 @@ if(root){
   let pending=null;
   function showPending(value){
     pending=value;
-    let link=document.querySelector('#market-operation');if(!link){link=document.createElement('a');link.id='market-operation';status.insertAdjacentElement('afterend',link);}link.href=`https://tzkt.io/${value.hash}`;link.textContent=`Operation ${value.hash}`;
-    let retry=document.querySelector('#market-reconfirm');if(!retry){retry=document.createElement('button');retry.id='market-reconfirm';retry.type='button';retry.textContent='Check confirmation';link.insertAdjacentElement('afterend',retry);retry.addEventListener('click',async()=>{
-      if(working||!pending)return;working=true;controls(true);const current=pending;
-      try{if(Date.now()>=current.expires)throw expiredReceipt();say('Checking the submitted operation…');await confirm(current.ticket,current.hash);if(watcher?.ticket===current.ticket&&watcher?.hash===current.hash)watcher=null;clearPending(true);say(`Confirmed: ${current.hash}.`);void redraw();}
-      catch(error){releaseUnavailableReceipt(error);if(!feeEvasion(error))say(error.receiptLost||error.code==='StillPending'?error.message:`${error.message} Check the operation link; do not resubmit.`);}finally{working=false;controls(false);}
-    });}retry.hidden=false;retry.disabled=value.expires<=Date.now();
+    let link=document.querySelector('#market-operation');if(!link){link=document.createElement('a');link.id='market-operation';status.insertAdjacentElement('afterend',link);}link.href=`https://tzkt.io/${value.hash}`;link.textContent='View operation';
   }
   function savePending(ticket,hash,expires){const value={ticket,hash,expires};showPending(value);try{sessionStorage.setItem(pendingKey,JSON.stringify(value));}catch{}}
-  function clearPending(confirmed=false){try{if(confirmed)sessionStorage.removeItem(pendingKey);else if(pending)sessionStorage.setItem(pendingKey,JSON.stringify({...pending,released:true}));}catch{}pending=null;const retry=document.querySelector('#market-reconfirm');if(retry)retry.hidden=true;}
-  function expiredReceipt(){const error=new Error('Confirmation receipt expired. Check the operation link before reviewing again; do not resend it.');error.code='Expired';return error;}
-  function releaseUnavailableReceipt(error){if(pending&&['Expired','Unauthorized'].includes(error.code)){clearPending();error.receiptLost=true;error.message='Confirmation receipt expired or unavailable. Check the operation link before reviewing again; do not resend it.';}}
-  try{const value=JSON.parse(sessionStorage.getItem(pendingKey)||'null');if(value&&/^[a-f0-9]{48}$/.test(value.ticket)&&/^o[1-9A-HJ-NP-Za-km-z]{50}$/.test(value.hash)&&Number.isSafeInteger(value.expires)){showPending(value);if(value.released||value.expires<=Date.now()){clearPending();say('Previous operation link retained. Check its outcome before reviewing again.');}else void watchPending(value.ticket,value.hash);}else{sessionStorage.removeItem(pendingKey);}}catch{}
-  function stillPending(hash){const error=new Error(`Confirmation is still pending. Do not resubmit. Operation: ${hash}`);error.code='StillPending';return error;}
+  function clearPending(confirmed=false){try{if(confirmed)sessionStorage.removeItem(pendingKey);else if(pending)sessionStorage.setItem(pendingKey,JSON.stringify({...pending,released:true}));}catch{}pending=null;}
+  const unconfirmed='The operation couldn\'t be confirmed; check it in your wallet';
+  function expiredReceipt(){const error=failure(unconfirmed,303);error.code='Expired';error.receiptLost=true;return error;}
+  function releaseUnavailableReceipt(error){if(pending&&['Expired','Unauthorized'].includes(error.code)){clearPending();if(error.number!==303){error.receiptLost=true;error.message=failure(unconfirmed,307).message;error.number=307;}}}
+  try{const value=JSON.parse(sessionStorage.getItem(pendingKey)||'null');if(value&&/^[a-f0-9]{48}$/.test(value.ticket)&&/^o[1-9A-HJ-NP-Za-km-z]{50}$/.test(value.hash)&&Number.isSafeInteger(value.expires)){showPending(value);if(value.released||value.expires<=Date.now())clearPending();else void watchPending(value.ticket,value.hash);}else{sessionStorage.removeItem(pendingKey);}}catch{}
+  function stillPending(){const error=failure('Still waiting for confirmation.');error.code='StillPending';return error;}
   async function confirm(ticket,hash){
     const deadline=Date.now()+120000;
     for(let attempt=0;attempt<18;attempt++){
-      if(Date.now()>=deadline)throw stillPending(hash);
+      if(Date.now()>=deadline)throw stillPending();
       if(attempt)await new Promise(resolve=>setTimeout(resolve,5000));
-      try{const result=await authFetch('/api/market/confirm',{ticket,hash});if(result.confirmed)return;if(!result.pending)throw new Error('Unexpected confirmation response.');}
+      try{const result=await authFetch('/api/market/confirm',{ticket,hash});if(result.confirmed)return;if(!result.pending)throw failure('Request failed',304);}
       catch(error){if(error.code==='RateLimited')throw error;if(!['Unavailable','Busy'].includes(error.code)&&![429,503].includes(error.status))throw error;}
-      if(attempt===17)throw stillPending(hash);
+      if(attempt===17)throw stillPending();
     }
   }
   sign.addEventListener('click',async()=>{
     if(working||!review)return;working=true;sign.disabled=true;close.disabled=true;
-    const attempt=++signAttempt;const selected=review;let issued=false;let lockSeconds=120;
+    const attempt=++signAttempt;const selected=review;let lockSeconds=120;
     try{
-      say('Checking the reviewed state again…');const checkStarted=Date.now();const ready=await authFetch('/api/market/check',{ticket:selected.ticket});if(!feeReviewValid(selected)||!transferMatches(ready.operations,selected.simulation.accept_fees))throw new Error('Checked operations do not match the reviewed fee transfer. Refresh before signing.');issued=true;lockSeconds=ready.signing_lock_seconds||120;
-      say('Approve the reviewed operation in your signing app.');walletWait=true;close.disabled=false;let result;try{result=await requestOperations(ready.operations,actor);}finally{if(attempt===signAttempt){walletWait=false;close.disabled=true;}}
-      const hash=result.transactionHash;if(typeof hash!=='string'||!/^o[1-9A-HJ-NP-Za-km-z]{50}$/.test(hash))throw new Error('No valid operation hash returned. Check your signing app before resubmitting.');
-      // Approved after the review was closed: record it for Check confirmation without touching the page's current state.
+      say('Checking…');const checkStarted=Date.now();const ready=await authFetch('/api/market/check',{ticket:selected.ticket});if(!feeReviewValid(selected)||!transferMatches(ready.operations,selected.simulation.accept_fees))throw failure('Something changed; review again',203);lockSeconds=ready.signing_lock_seconds||120;
+      say('Approve it in your wallet.');walletWait=true;close.disabled=false;let result;try{result=await requestOperations(ready.operations,actor);}finally{if(attempt===signAttempt){walletWait=false;close.disabled=true;}}
+      const hash=result.transactionHash;if(typeof hash!=='string'||!/^o[1-9A-HJ-NP-Za-km-z]{50}$/.test(hash))throw failure('Your wallet didn\'t return the operation; check your wallet before trying again',305);
+      // Kept for the background confirmation.
       savePending(selected.ticket,hash,checkStarted+(ready.receipt_seconds||1800)*1000);
       try{await authFetch('/api/market/submitted',{ticket:selected.ticket,hash});}catch{/* The background check still confirms it. */}
       // Approved after the review was closed: show it as done without touching the page's current state.
       if(attempt!==signAttempt){say('');await redraw();void watchPending(selected.ticket,hash);return;}
       dialog.close();review=null;if(pending.expires<=Date.now())throw expiredReceipt();
       if(!bulk){say('');await redraw();working=false;controls(false);returnFocus?.focus();void watchPending(selected.ticket,hash);return;}
-      say(`Waiting for inclusion and two blocks: ${hash}`);try{await confirm(selected.ticket,hash);}catch(error){error.submitted=hash;throw error;}
-      clearPending(true);say(`Confirmed: ${hash}.`);queue.splice(0,selected.items.length);working=false;
+      say('Waiting for confirmation…');try{await confirm(selected.ticket,hash);}catch(error){error.submitted=hash;throw error;}
+      clearPending(true);say('Confirmed.');queue.splice(0,selected.items.length);working=false;
       await nextBatch();
-    }catch(error){if(attempt!==signAttempt)return;releaseUnavailableReceipt(error);if(feeEvasion(error)){}else say(error.receiptLost||error.code==='StillPending'?error.message:error.submitted?`Submitted, but the confirmation check failed: ${error.message} Use Check confirmation; do not resend it.`:issued?`${error.message} This checked operation may still be pending. Do not resend it.`:`${error.message} No signing request was opened. Refresh to review again;`);review=null;bulk=false;queue=[];dialog.close();controls(false);returnFocus?.focus();}
+    }catch(error){if(attempt!==signAttempt)return;releaseUnavailableReceipt(error);const delayed=error.submitted&&!error.receiptLost&&!['StillPending','Failed','Unverified'].includes(error.code);if(!feeEvasion(error))say(delayed?failure('Submitted; confirmation is delayed',306).message:error.message);review=null;bulk=false;queue=[];dialog.close();controls(false);returnFocus?.focus();}
     finally{if(attempt===signAttempt){working=false;close.disabled=false;}}
   });
   root.addEventListener('click',event=>{const button=event.target.closest('.cancel-one');if(!button||!root.contains(button))return;bulk=false;void prepare([JSON.parse(button.closest('[data-action]').dataset.action)]);});
   root.addEventListener('submit',event=>{
     const form=event.target.closest('.accept-offer');if(!form||!root.contains(form))return;event.preventDefault();if(form.querySelector('[data-accept-disabled]'))return;const fields=new FormData(form);const choice=fields.has('token')?String(fields.get('token')).split('/'):null;const contract=choice?choice[0]:String(fields.get('contract'));const tokenId=Number(choice?choice[1]:fields.get('token_id'));
-    if(!Number.isSafeInteger(tokenId)||tokenId<0){say('Enter a valid token ID.');return;}
+    if(!Number.isSafeInteger(tokenId)||tokenId<0){say(failure('Enter a valid token ID',239).message);return;}
     const action=JSON.parse(form.closest('[data-action]').dataset.action);action.token={contract,token_id:tokenId};bulk=false;void prepare([action]);
   });
   // A received collection offer shows the held NFT chosen to accept it with.

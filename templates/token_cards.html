@@ -3,7 +3,7 @@
 {% for card in cards %}
   <article class="artwork-card" data-token-id="{{ card.token_id }}" data-edition-key="{{ card.url }}">
     <a class="artwork-card-preview" href="{{ card.url }}" aria-label="Open {{ card.title }}">
-      {% match card.preview %}{% when Some with (image) %}<img src="{{ image }}" alt="{{ card.title }} static token preview" width="800" height="800" loading="lazy">{% when None %}<span class="missing-preview">Preview not yet indexed</span>{% endmatch %}
+      {% match card.preview %}{% when Some with (image) %}<img src="{{ image }}" alt="{{ card.title }} static NFT preview" width="800" height="800" loading="lazy">{% when None %}<span class="missing-preview">Preview not yet indexed</span>{% endmatch %}
     </a>
     <div class="artwork-card-body"><div class="artwork-card-heading"><h3><a href="{{ card.url }}">{{ card.title }}</a></h3><span>{{ card.palette }}</span></div>
       <div class="artwork-people"><p class="artwork-artist">by {% call ui::byline(card.artists.as_slice()) %}</p><p class="artwork-owner">Owner: <span>{% call ui::owner(card) %}</span></p></div>

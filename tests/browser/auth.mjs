@@ -32,7 +32,8 @@ export class DAppClient {
  }
  async requestSignPayload(request){
   window.__signed=request;
-  if(window.__mode==='reject')throw new Error('Signature declined.');
+  if(window.__mode==='reject')throw new Error('[ABORTED_ERROR]:The action was aborted by the user.');
+  if(window.__mode==='wallet-error')throw new Error('[UNKNOWN_ERROR]:Wallet fixture failure.');
   if(window.__mode==='late')await new Promise(resolve=>{window.__releaseSignature=resolve;});
   return {signature:'fixture-signature'};
  }
@@ -212,9 +213,15 @@ try{
  });
  await scenario('declining signature leaves session absent and connect enabled','reject',async page=>{
   await page.locator('[data-auth-connect]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Signature declined.');
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Connection cancelled.');
   assert.equal(await page.locator('[data-auth-connect]').isDisabled(),false);
   assert(!calls.some(call=>call.path==='/api/auth/verify'));
+  assert.equal(session,null);
+ });
+ await scenario('a wallet failure shows its number, not the wallet text','wallet-error',async page=>{
+  await page.locator('[data-auth-connect]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Sign-in failed in your wallet; try again (error 110).');
+  assert.equal(await page.locator('[data-auth-connect]').isDisabled(),false);
   assert.equal(session,null);
  });
  await scenario('late signature after cancellation never verifies and retry works','late',async page=>{
@@ -250,7 +257,7 @@ try{
   await page.locator('[data-auth-connect]').click();
   await page.waitForFunction(()=>typeof window.__releaseSignature==='function');
   await page.evaluate(other=>{window.__account={address:other,network:{type:'mainnet'}};window.__releaseSignature();},other);
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent.startsWith('Address changed.'));
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent.startsWith("Your wallet's address changed"));
   assert(!calls.some(call=>call.path==='/api/auth/verify'));
  });
  await scenario('late initial session response cannot overwrite a verified login','success',async page=>{
@@ -276,13 +283,13 @@ try{
  await scenario('expired session prevents a profile save','success',async page=>{
   await signin(page);session=null;
   await page.locator('button[type=submit]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Sign in again to continue.');
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Sign in again (error 109).');
   assert(!calls.some(call=>call.path==='/api/auth/profile'));
  });
  await scenario('address switch revokes the authenticated session','success',async page=>{
   await signin(page);
   await page.evaluate(other=>window.__accountChange({address:other}),other);
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Address changed. Sign in again to continue.');
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==="Your wallet's address changed; sign in again.");
   assert(calls.some(call=>call.path==='/api/auth/logout'));
   assert.equal(session,null);
  });
@@ -292,9 +299,9 @@ try{
   assert(session,'server logout intentionally failed');
   assert.equal(await page.evaluate(async()=>{const auth=await import('/static/auth.js');return auth.getSession();}),null);
   await page.reload();
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent.startsWith('Address changed.'));
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent.startsWith("Your wallet's address changed"));
   await page.locator('button[type=submit]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Sign in again to continue.');
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Sign in again (error 109).');
   assert(!calls.some(call=>call.path==='/api/auth/profile'));
  });
  await scenario('server validation is displayed as text and form can retry','invalid-profile',async page=>{
@@ -305,12 +312,12 @@ try{
  });
  await scenario('incomplete response leaves the form available for retry','malformed-profile',async page=>{
   await signin(page);await page.locator('button[type=submit]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='The response was incomplete. Try again.');
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Request failed; try again (error 502).');
   assert.equal(await page.locator('button[type=submit]').isDisabled(),false);
  });
  await scenario('request timeout aborts the fetch and releases the form','timeout-profile',async page=>{
   await signin(page);await page.locator('button[type=submit]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent.startsWith('Request timed out.'),{},{timeout:12000});
+  await page.waitForFunction(()=>document.querySelector('[data-auth-status]').textContent==='Request timed out; try again (error 503).',{},{timeout:12000});
   assert.equal(await page.locator('button[type=submit]').isDisabled(),false);
  });
  await scenario('operations require the reviewed session and explicit source','success',async page=>{
@@ -324,7 +331,7 @@ try{
     const result=await auth.requestOperations(operations,address);
     return {errors,result,request:window.__operation};
   },{address,other});
-  assert.equal(result.errors.length,2);assert.equal(result.result.transactionHash,'fixture-operation');
+  assert.deepEqual(result.errors,["Your wallet's address changed; review again.","Your wallet's address changed; review again."]);assert.equal(result.result.transactionHash,'fixture-operation');
   assert.equal(result.request.operationDetails[0].source,address);
  });
  await scenario('market requests retain server status and typed retry code','success',async page=>{
@@ -353,7 +360,7 @@ try{
   });
   assert.deepEqual(result.deadlines,[60000,60000,25000]);
   assert.equal(result.errors.length,3);
-  assert(result.errors.every(error=>error.startsWith('Request timed out.')));
+  assert(result.errors.every(error=>error==='Request timed out; try again (error 503).'));
  });
  await scenario('actual bundled SDK initializes under CSP without unsafe-eval','real-sdk',async page=>{
   const result=await page.evaluate(async()=>{

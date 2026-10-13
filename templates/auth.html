@@ -4,20 +4,17 @@
 <section class="auth-page" data-auth-page{% if !next.is_empty() %} data-auth-next="{{ next }}"{% endif %}>
   {% if next.is_empty() %}
   <h1>Connect wallet</h1>
-  <p>Connect to:</p>
-  <ul class="auth-reasons"><li>edit your profile name, bio and links;</li><li>see your fxhash listings and offers, and cancel them;</li><li>accept offers on your NFTs.</li></ul>
   {% else %}
   <h1>Sign in to the forum</h1>
-  <p>Connect your wallet and sign a message to sign in to forum.seeded.art. No transaction is made.</p>
+  <p>Signing in makes no transaction.</p>
   {% endif %}
   <p data-auth-status role="status" aria-live="polite">{% if address.is_empty() %}Not connected.{% else %}Signed in as {{ address }}.{% endif %}</p>
   <button type="button" data-auth-connect>Connect wallet</button>
   <button type="button" class="secondary-button" data-auth-cancel hidden>Cancel</button>
   <div data-auth-connected {% if address.is_empty() %}hidden{% endif %}>
-    <p><a data-auth-profile href="/profile/{{ address }}">View profile →</a> <a href="/auth/profile">Edit profile →</a></p>
+    <p><a data-auth-profile href="/profile/{{ address }}">Profile →</a> <a href="/auth/profile">Edit profile →</a></p>
     <button type="button" class="secondary-button" data-auth-logout>Sign out</button>
     <button type="button" class="secondary-button" data-auth-logout-all>Sign out everywhere</button>
   </div>
-  <p class="subtle">Sign-in expires after eight hours or a server restart.</p>
 </section>
 {% endblock %}

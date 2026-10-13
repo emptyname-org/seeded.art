@@ -14,8 +14,9 @@ use tokio::sync::OwnedSemaphorePermit;
 use super::{AppState, views::Meta};
 use crate::{
     auth::{AuthError, AuthState, SignInRequest, TrustedClientIp, VerifyRequest},
+    error_number::numbered,
     model::ProfileEdit,
-    store::{Store, StoreError},
+    store::{Store, StoreError, profile::NAME_TAKEN},
 };
 
 pub fn router() -> Router<AppState> {
@@ -329,10 +330,7 @@ async fn save_profile(
             .await
             .map_err(|error| match error {
                 super::claims::ClaimCheckError::Conflict => {
-                    profile_error(StoreError::BadRequest(format!(
-                        "the name {:?} is taken by another address",
-                        edit.name.as_deref().unwrap_or_default()
-                    )))
+                    profile_error(StoreError::BadRequest(NAME_TAKEN.into()))
                 }
                 super::claims::ClaimCheckError::Unavailable
                 | super::claims::ClaimCheckError::RateLimited => claim_unavailable(),
@@ -365,9 +363,7 @@ async fn save_profile(
             .is_current(&identity)
             .map_err(|_| StoreError::Unavailable("Sign-in unavailable".into()))?
         {
-            return Err(StoreError::BadRequest(
-                "Sign in again before saving.".into(),
-            ));
+            return Err(StoreError::BadRequest(SIGNED_OUT.into()));
         }
         // save_profile_edit repeats validation under its immediate transaction.
         super::claims::guard_write(&store, baseline, &edit)?;
@@ -384,26 +380,55 @@ async fn save_profile(
     }
 }
 
+/// Marks a session that ended before the save; never shown as is.
+const SIGNED_OUT: &str = "signed out before saving";
+
+/// A numbered profile error body; the journal gets the number.
+fn numbered_profile_error(status: StatusCode, number: u16, sentence: &str, name: &str) -> Response {
+    crate::error_number::log(number, name);
+    let body = Json(serde_json::json!({"error":numbered(sentence, number),"number":number}));
+    if status == StatusCode::SERVICE_UNAVAILABLE {
+        (status, [(header::RETRY_AFTER, "60")], body).into_response()
+    } else {
+        (status, body).into_response()
+    }
+}
+
 fn profile_error(error: StoreError) -> Response {
     match error {
-        StoreError::BadRequest(message) => (
+        StoreError::BadRequest(message) if message == NAME_TAKEN => (
             StatusCode::BAD_REQUEST,
             Json(serde_json::json!({"error":message})),
         )
             .into_response(),
-        _ => (
+        StoreError::BadRequest(message) if message == SIGNED_OUT => {
+            numbered_profile_error(StatusCode::BAD_REQUEST, 403, "Sign in again", "SignedOut")
+        }
+        // The store names the rejected field.
+        StoreError::BadRequest(message) => {
+            let mut chars = message.chars();
+            let sentence = chars
+                .next()
+                .map(|first| first.to_uppercase().chain(chars).collect::<String>())
+                .unwrap_or_default();
+            numbered_profile_error(StatusCode::BAD_REQUEST, 404, &sentence, "ProfileInvalid")
+        }
+        _ => numbered_profile_error(
             StatusCode::SERVICE_UNAVAILABLE,
-            [(header::RETRY_AFTER, "60")],
-            Json(serde_json::json!({"error":"Profile could not be saved. Retry shortly."})),
-        )
-            .into_response(),
+            401,
+            "The profile wasn't saved; try again",
+            "ProfileUnsaved",
+        ),
     }
 }
 
 fn claim_unavailable() -> Response {
-    (StatusCode::SERVICE_UNAVAILABLE,
-     [(header::RETRY_AFTER, "60")],
-     Json(serde_json::json!({"error":"Name registry refresh unavailable. Retry shortly, or save without a new name."}))).into_response()
+    numbered_profile_error(
+        StatusCode::SERVICE_UNAVAILABLE,
+        402,
+        "The name couldn't be checked; try again later",
+        "NameUnchecked",
+    )
 }
 
 #[cfg(test)]

@@ -286,7 +286,7 @@ pub(super) fn head(
             .map(|url| {
                 (
                     url,
-                    format!("{} #{iteration} static token preview", text(&project["title"])),
+                    format!("{} #{iteration} static NFT preview", text(&project["title"])),
                 )
             });
             Some(head)

@@ -171,7 +171,7 @@ pub(super) fn log(event: &FeeEvasion) {
         std::io::stderr().lock(),
         "{}",
         serde_json::json!({
-            "event":"platform_fee_evasion", "evidence":event
+            "event":"platform_fee_evasion", "number":320, "evidence":event
         })
     );
 }

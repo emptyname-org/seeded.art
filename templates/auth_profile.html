@@ -5,11 +5,11 @@
   <form data-auth-profile-form class="auth-profile-form">
     <p><label for="profile-name">Name</label><input id="profile-name" name="name" value="{% if name.is_empty() %}{{ imported_name }}{% else %}{{ name }}{% endif %}" data-imported="{{ imported_name }}" maxlength="40" autocomplete="nickname"></p>
     <p><label for="profile-bio">Bio</label><textarea id="profile-bio" name="bio" data-imported="{{ imported_bio }}" rows="7" maxlength="1000">{% if bio.is_empty() %}{{ imported_bio }}{% else %}{{ bio }}{% endif %}</textarea></p>
-    <p><label for="profile-links">Links (one per line, up to five)</label><textarea id="profile-links" name="links" data-imported="{{ imported_links }}" rows="5" maxlength="1504">{% if links.is_empty() %}{{ imported_links }}{% else %}{{ links }}{% endif %}</textarea></p>
+    <p><label for="profile-links">Links (one per line, up to 5)</label><textarea id="profile-links" name="links" data-imported="{{ imported_links }}" rows="5" maxlength="1504">{% if links.is_empty() %}{{ imported_links }}{% else %}{{ links }}{% endif %}</textarea></p>
     <p><label class="auth-checkbox"><input type="checkbox" name="hide_bio"{% if hide_bio %} checked{% endif %}> Hide imported bio</label></p>
-    <button type="submit">Save profile</button>
+    <button type="submit">Save</button>
   </form>
   <p data-auth-status role="status" aria-live="polite"></p>
-  <noscript>Enable JavaScript to save your profile.</noscript>
+  <noscript>Turn on JavaScript to save.</noscript>
 </section>
 {% endblock %}

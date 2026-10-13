@@ -6,29 +6,28 @@
 <section id="market" data-address="{{ header.address }}">
 <nav class="market-views" aria-label="Market records"><a href="?view=listings" {% if view == "listings" %}aria-current="page"{% endif %}>Listings{% if counts.listings > 0 %} <span>{{ counts.listings }}</span>{% endif %}</a><a href="?view=offers" {% if view == "offers" %}aria-current="page"{% endif %}>Offers made{% if counts.offers_made > 0 %} <span>{{ counts.offers_made }}</span>{% endif %}</a><a href="?view=received" {% if view == "received" %}aria-current="page"{% endif %}>Offers received{% if counts.offers_received > 0 %} <span>{{ counts.offers_received }}</span>{% endif %}</a></nav>
 <div class="market-tools"><p>{{ total }} {% if view == "listings" %}listing{% else %}offer{% endif %}{% if total != 1 %}s{% endif %}</p></div>
-{% if !trading_enabled %}<p>Trading actions are temporarily unavailable.</p>{% endif %}
-{% if view != "received" && !rows.is_empty() %}<div class="market-bulk"><button id="cancel-page" type="button" {% if !trading_enabled %}disabled{% endif %}>Cancel all</button><p>Includes every page. Review and sign each group to continue.</p></div>{% endif %}
-<div id="market-notice" popover="manual"><p id="market-status" role="status" aria-live="polite"></p><button type="button" class="market-notice-close" aria-label="Close message"></button></div>
+{% if !trading_enabled %}<p>Trading is unavailable right now.</p>{% endif %}
+{% if view != "received" && !rows.is_empty() %}<div class="market-bulk"><button id="cancel-page" type="button" {% if !trading_enabled %}disabled{% endif %}>Cancel all</button><p>Covers every page; each group needs its own signature.</p></div>{% endif %}
+<div id="market-notice" popover="manual"><p id="market-status" role="status" aria-live="polite"></p><button type="button" class="market-notice-close" aria-label="Close"></button></div>
 <div class="market-records" data-load-more-region="market">
 {% for row in rows %}
 <article class="market-record" data-action="{{ row.action }}" data-market-key="{{ row.action }}">
 <div class="market-record-head"><a class="market-thumb" href="{{ row.thumb_url }}" tabindex="-1" aria-hidden="true">{% match row.thumb %}{% when Some with (src) %}<img src="{{ src }}" alt="" width="88" height="88" loading="lazy" decoding="async">{% when None %}{% endmatch %}</a><div><h3><a href="{{ row.url }}">{{ row.title }}</a></h3><p>{{ row.kind }} · ID {{ row.id }}</p></div></div>
-<dl class="facts"><div><dt>Price per token</dt><dd>{{ row.amount }} tez</dd></div><div><dt>Remaining</dt><dd>{{ row.remaining }}</dd></div><div><dt>Created</dt><dd>{{ row.date }}</dd></div>{% if view == "received" %}<div><dt>Buyer</dt><dd><a href="/profile/{{ row.address }}">{{ row.counterparty }}</a><br><small>{{ row.address }}</small></dd></div>{% endif %}</dl>
+<dl class="facts"><div><dt>Price per NFT</dt><dd>{{ row.amount }} tez</dd></div><div><dt>Remaining</dt><dd>{{ row.remaining }}</dd></div><div><dt>Created</dt><dd>{{ row.date }}</dd></div>{% if view == "received" %}<div><dt>Buyer</dt><dd><a href="/profile/{{ row.address }}">{{ row.counterparty }}</a><br><small>{{ row.address }}</small></dd></div>{% endif %}</dl>
 {% if row.supported %}{% if row.accept %}
 {% if trading_enabled %}
-<p>Platform fee: {{ platform_fee_percent }}% on acceptance.</p>
+<p>Platform fee: {{ platform_fee_percent }}%</p>
 {% if !accepts_enabled %}<p>{{ accepts_unavailable_message }}</p>{% endif %}
-<form class="accept-offer">{% if !row.held.is_empty() %}<label>NFT<select name="token">{% for choice in row.held %}<option value="{{ choice.value }}" data-url="{{ choice.url }}"{% match choice.thumb %}{% when Some with (src) %} data-thumb="{{ src }}"{% when None %}{% endmatch %} {% if choice.selected %}selected{% endif %}>{{ choice.label }}</option>{% endfor %}</select></label>{% else %}<label>Token contract<select name="contract">{% for contract in contracts %}<option value="{{ contract }}" {% if *contract == row.contract %}selected{% endif %}>{{ contract }}</option>{% endfor %}</select></label><label>Token ID<input name="token_id" type="number" min="0" step="1" required value="{{ row.token_id }}"></label>{% endif %}<button type="submit" {% if !accepts_enabled %}disabled data-accept-disabled{% endif %}>Review acceptance</button></form>
+<form class="accept-offer">{% if !row.held.is_empty() %}<label>NFT<select name="token">{% for choice in row.held %}<option value="{{ choice.value }}" data-url="{{ choice.url }}"{% match choice.thumb %}{% when Some with (src) %} data-thumb="{{ src }}"{% when None %}{% endmatch %} {% if choice.selected %}selected{% endif %}>{{ choice.label }}</option>{% endfor %}</select></label>{% else %}<label>Token contract<select name="contract">{% for contract in contracts %}<option value="{{ contract }}" {% if *contract == row.contract %}selected{% endif %}>{{ contract }}</option>{% endfor %}</select></label><label>Token ID<input name="token_id" type="number" min="0" step="1" required value="{{ row.token_id }}"></label>{% endif %}<button type="submit" {% if !accepts_enabled %}disabled data-accept-disabled{% endif %}>Accept</button></form>
 {% endif %}
-{% else %}<button class="cancel-one" type="button" {% if !trading_enabled %}disabled{% endif %}>Review cancellation</button>{% endif %}{% else %}<p>Manage this legacy listing on <a href="https://objkt.com">objkt.com</a>.</p>{% endif %}
+{% else %}<button class="cancel-one" type="button" {% if !trading_enabled %}disabled{% endif %}>Cancel</button>{% endif %}{% else %}<p>Manage this listing on <a href="https://objkt.com">objkt.com</a>.</p>{% endif %}
 </article>
 {% endfor %}
 </div>
-{% if rows.is_empty() %}{% call ui::empty_state("No indexed records in this view", "", "", "") %}{% endif %}
+{% if rows.is_empty() %}{% call ui::empty_state("None.", "", "", "") %}{% endif %}
 {% call ui::pagination(pages, "market", "Market records pages") %}
-{% call ui::index_coverage(coverage) %}
-<noscript><p>Address review needs JavaScript.</p></noscript>
+<noscript><p>Turn on JavaScript to trade.</p></noscript>
 </section>
-<dialog id="market-review" aria-labelledby="review-title"><h2 id="review-title">Review operation</h2><div id="review-content"></div><p>Market state may change after the signing app opens.</p><div><button id="sign-market" type="button" {% if !trading_enabled %}disabled{% endif %}>Review and sign</button> <button id="close-market" class="secondary-button" type="button">Close review</button></div></dialog>
+<dialog id="market-review" aria-labelledby="review-title"><h2 id="review-title">Review</h2><div id="review-content"></div><div><button id="sign-market" type="button" {% if !trading_enabled %}disabled{% endif %}>Sign</button> <button id="close-market" class="secondary-button" type="button">Close</button></div></dialog>
 <script type="module" src="/static/market.js"></script>
 {% endblock %}

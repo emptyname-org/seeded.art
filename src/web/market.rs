@@ -1,6 +1,7 @@
 use super::{AppState, views::Meta};
 use crate::{
     auth::{AuthError, AuthIdentity, TrustedClientIp},
+    error_number::numbered,
     store::{
         Cursor,
         market::{MarketCounts, OfferKind},
@@ -53,6 +54,21 @@ fn trading(state: &AppState) -> Result<Arc<TradingState>, Response> {
         .ok_or_else(|| error(TradingError::Unavailable))
 }
 fn error(e: TradingError) -> Response {
+    let (status, body, journal) = error_parts(&e);
+    eprintln!("{journal}");
+    let retry = body["retry_after_seconds"].as_u64();
+    let mut r = (status, Json(body)).into_response();
+    if let Some(n) = retry {
+        if let Ok(value) = n.to_string().parse() {
+            r.headers_mut().insert(header::RETRY_AFTER, value);
+        }
+    }
+    r.headers_mut()
+        .insert(header::CACHE_CONTROL, "no-store".parse().unwrap());
+    r
+}
+/// Status, JSON body and journal line of a trading error response.
+fn error_parts(e: &TradingError) -> (StatusCode, serde_json::Value, String) {
     let code = match e {
         TradingError::Pending => "Pending",
         TradingError::Unavailable => "Unavailable",
@@ -68,6 +84,7 @@ fn error(e: TradingError) -> Response {
         TradingError::NotHeld { .. } => "NotHeld",
         TradingError::Failed => "Failed",
         TradingError::Unverified => "Unverified",
+        TradingError::TooLarge => "TooLarge",
         _ => "Permanent",
     };
     let status = match e {
@@ -83,34 +100,59 @@ fn error(e: TradingError) -> Response {
         _ => StatusCode::CONFLICT,
     };
     let retry = match e {
-        TradingError::SigningPending(n) => Some(n),
-        TradingError::ReceiptCapacity(n) => Some(n),
+        TradingError::SigningPending(n) => Some(*n),
+        TradingError::ReceiptCapacity(n) => Some(*n),
         TradingError::RateLimited => Some(60),
         TradingError::Busy => Some(1),
         _ => None,
     };
-    let mut body = json!({"error":e.to_string(),"code":code,"retry_after_seconds":retry});
+    let number = e.number();
+    // A status keeps its sentence alone.
+    let text = if matches!(e, TradingError::Pending) {
+        e.to_string()
+    } else {
+        numbered(&e.to_string(), number)
+    };
+    let mut body = json!({"error":text,"code":code,"number":number,"retry_after_seconds":retry});
     if matches!(e, TradingError::FeeEvasion) {
         body["acceptance_applied"] = json!(true);
     }
-    let mut r = (status, Json(body)).into_response();
-    if let Some(n) = retry {
-        if let Ok(value) = n.to_string().parse() {
-            r.headers_mut().insert(header::RETRY_AFTER, value);
-        }
-    }
-    r.headers_mut()
-        .insert(header::CACHE_CONTROL, "no-store".parse().unwrap());
-    r
+    (status, body, crate::error_number::journal(number, e.name()))
 }
-fn browser_error(status: StatusCode, title: &str, message: &str) -> Response {
+/// An error page: the title and the numbered sentence; the journal gets the number.
+fn browser_error(
+    status: StatusCode,
+    title: &str,
+    number: u16,
+    sentence: &str,
+    name: &str,
+) -> Response {
+    crate::error_number::log(number, name);
     let html = super::views::render_error(super::views::ErrorPage {
         status: status.as_u16(),
         title: title.into(),
-        message: message.into(),
+        message: numbered(sentence, number),
     })
     .unwrap_or_else(|_| "Page unavailable".into());
     private((status, Html(html)))
+}
+fn sign_in_unavailable(e: AuthError) -> Response {
+    browser_error(
+        StatusCode::SERVICE_UNAVAILABLE,
+        "Address sign-in unavailable",
+        e.number(),
+        &e.to_string(),
+        e.name(),
+    )
+}
+fn invalid_view() -> Response {
+    browser_error(
+        StatusCode::BAD_REQUEST,
+        "Invalid market view",
+        525,
+        "Invalid page",
+        "InvalidView",
+    )
 }
 fn client(value: Option<Extension<TrustedClientIp>>) -> Result<std::net::IpAddr, Response> {
     value
@@ -178,7 +220,6 @@ struct MarketPage {
     counts: MarketCounts,
     pages: super::views::PageInfo,
     contracts: Vec<&'static str>,
-    coverage: Vec<String>,
     trading_enabled: bool,
     accepts_enabled: bool,
     accepts_unavailable_reason: &'static str,
@@ -195,13 +236,7 @@ async fn page(
 ) -> Response {
     let auth = match state.auth.as_ref() {
         Some(auth) => auth,
-        None => {
-            return browser_error(
-                StatusCode::SERVICE_UNAVAILABLE,
-                "Address sign-in unavailable",
-                "Try again later.",
-            );
-        }
+        None => return sign_in_unavailable(AuthError::Unavailable),
     };
     let who = match auth.identity(&headers) {
         Ok(Some(who)) => who,
@@ -212,29 +247,21 @@ async fn page(
                 private(Redirect::to("/auth"))
             };
         }
-        Err(_) => {
-            return browser_error(
-                StatusCode::SERVICE_UNAVAILABLE,
-                "Address sign-in unavailable",
-                "Try again later.",
-            );
-        }
+        Err(e) => return sign_in_unavailable(e),
     };
     if who.address() != address {
         return browser_error(
             StatusCode::FORBIDDEN,
             "This is another address",
-            "Open Listings and offers from your connected address profile.",
+            526,
+            "You signed in with another address",
+            "OtherAddress",
         );
     }
     let query = match query {
         Ok(Query(query)) => query,
         Err(_) => {
-            return browser_error(
-                StatusCode::BAD_REQUEST,
-                "Invalid market view",
-                "Open Listings and offers again from your profile.",
-            );
+            return invalid_view();
         }
     };
     let view = if query.view.is_empty() {
@@ -243,20 +270,12 @@ async fn page(
         query.view
     };
     if !["listings", "offers", "received"].contains(&view.as_str()) {
-        return browser_error(
-            StatusCode::BAD_REQUEST,
-            "Invalid market view",
-            "Open Listings and offers again from your profile.",
-        );
+        return invalid_view();
     }
     let after = match query.after.map(|s| Cursor::parse(&s)).transpose() {
         Ok(v) => v,
         Err(_) => {
-            return browser_error(
-                StatusCode::BAD_REQUEST,
-                "Invalid market view",
-                "Open Listings and offers again from your profile.",
-            );
+            return invalid_view();
         }
     };
     if query
@@ -265,11 +284,7 @@ async fn page(
         .is_some_and(|c| !TOKENS.contains(&c.as_str()))
         || query.token_contract.is_some() != query.token_id.is_some()
     {
-        return browser_error(
-            StatusCode::BAD_REQUEST,
-            "Invalid market view",
-            "Open Listings and offers again from your profile.",
-        );
+        return invalid_view();
     }
     let json_requested = request.json;
     let fee = state
@@ -294,15 +309,16 @@ async fn page(
     };
     let accepts_unavailable_message = match accepts_unavailable_reason {
         "fee_audit_unavailable" => {
-            "Acceptances unavailable: platform fee audit could not be opened."
+            let e = TradingError::FeeAuditUnavailable;
+            numbered(&e.to_string(), e.number())
         }
         "fee_recipient_unconfigured" => {
-            "Acceptances unavailable: no platform fee recipient configured."
+            let e = TradingError::FeeUnconfigured;
+            numbered(&e.to_string(), e.number())
         }
-        "trading_unavailable" => "Trading is unavailable.",
-        _ => "",
-    }
-    .to_owned();
+        "trading_unavailable" => "Trading is unavailable right now.".to_owned(),
+        _ => String::new(),
+    };
     let platform_fee_percent = format!("{:.2}", f64::from(fee.bps) / 100.0)
         .trim_end_matches('0')
         .trim_end_matches('.')
@@ -496,7 +512,7 @@ async fn page(
                         title: offer.project.title,
                         url: project_url,
                         kind: if kind == Kind::Token {
-                            "Token offer"
+                            "NFT offer"
                         } else {
                             "Collection offer"
                         }
@@ -535,7 +551,12 @@ async fn page(
                     .unwrap_or_else(|| row.address.clone());
             }
             let snapshot = store.snapshot()?;
-            let coverage = market_coverage(store, &view)?;
+            // Coverage is agent data only; the page does not show it.
+            let coverage = if json_requested {
+                market_coverage(store, &view)?
+            } else {
+                Vec::new()
+            };
             let mut first = format!("/profile/{address}/market?view={view}");
             if let Some((contract, id)) = query.token_contract.as_ref().zip(query.token_id) {
                 first.push_str(&format!("&token_contract={contract}&token_id={id}"));
@@ -567,7 +588,6 @@ async fn page(
                 total,
                 counts,
                 contracts: TOKENS.to_vec(),
-                coverage,
                 trading_enabled,
                 accepts_enabled,
                 accepts_unavailable_reason,
@@ -582,7 +602,7 @@ async fn page(
                 value["record_key"]=serde_json::json!(format!("{}:{}:{}",value["action"]["marketplace"].as_str().unwrap_or(V2),value["action"]["kind"].as_str().unwrap_or_default(),row.id));
                 value
             }).collect();
-            let data=serde_json::json!({"address":page.address,"name":page.name,"view":page.view,"items":items,"total":page.total,"coverage":page.coverage,"trading_enabled":page.trading_enabled,"accepts_enabled":page.accepts_enabled,"accepts_unavailable_reason":page.accepts_unavailable_reason,"accepts_unavailable_message":page.accepts_unavailable_message,"platform_fee_bps":page.platform_fee_bps,"pagination":{"first":first,"next":page.pages.next}});
+            let data=serde_json::json!({"address":page.address,"name":page.name,"view":page.view,"items":items,"total":page.total,"coverage":coverage,"trading_enabled":page.trading_enabled,"accepts_enabled":page.accepts_enabled,"accepts_unavailable_reason":page.accepts_unavailable_reason,"accepts_unavailable_message":page.accepts_unavailable_message,"platform_fee_bps":page.platform_fee_bps,"pagination":{"first":first,"next":page.pages.next}});
             request.respond("market",data,None,None,|| page.render())
         })
         .await;
@@ -939,6 +959,38 @@ mod receipt_capacity_tests {
         assert_eq!(value["code"], "ReceiptCapacity");
         assert_eq!(value["retry_after_seconds"], 121);
         assert!(value.get("acceptance_applied").is_none());
+    }
+
+    #[tokio::test]
+    async fn error_body_and_journal_carry_the_error_number() {
+        let (_, body, journal) = error_parts(&TradingError::Changed);
+        assert_eq!(body["number"], 230);
+        assert_eq!(body["code"], "Permanent");
+        assert_eq!(
+            body["error"],
+            "This listing or offer changed; review it again (error 230)."
+        );
+        assert_eq!(journal, "error 230 Changed");
+        let (_, body, journal) = error_parts(&TradingError::NotHeld {
+            contract: TOKENS[2].into(),
+            token_id: 7,
+        });
+        assert_eq!(body["number"], 229);
+        assert!(!journal.contains(TOKENS[2]) && !journal.contains('7'));
+        let (_, body, _) = error_parts(&TradingError::TooLarge);
+        assert_eq!(body["code"], "TooLarge");
+        assert_eq!(body["number"], 236);
+        let (_, body, journal) = error_parts(&TradingError::Pending);
+        assert_eq!(body["error"], "Waiting for confirmation…");
+        assert_eq!(journal, "error 310 Pending");
+
+        let response = error(TradingError::Changed);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let value: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(value["number"], 230);
+        assert!(value["error"].as_str().unwrap().ends_with("(error 230)."));
     }
 
     #[tokio::test]
