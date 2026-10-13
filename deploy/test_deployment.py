@@ -461,7 +461,7 @@ class DeploymentTests(unittest.TestCase):
         # Usage statistics: GoatCounter on loopback, under /stats on the app host.
         caddy = (rendered / "Caddyfile").read_text()
         self.assertIn("@stats path /stats /stats/*", caddy)
-        self.assertIn("reverse_proxy @stats 127.0.0.1:3920", caddy)
+        self.assertIn("reverse_proxy 127.0.0.1:3920", caddy)
         stats = (rendered / "seeded-stats.service").read_text()
         self.assertIn("-listen 127.0.0.1:3920", stats)
         self.assertIn("-base-path /stats", stats)
@@ -720,7 +720,11 @@ class DeploymentTests(unittest.TestCase):
 
         def visit(value):
             if isinstance(value, dict):
-                if value.get("dial") in ("127.0.0.1:3918", "127.0.0.1:3919"):
+                if value.get("dial") in (
+                    "127.0.0.1:3918",
+                    "127.0.0.1:3919",
+                    "127.0.0.1:3920",
+                ):
                     value["dial"] = f"127.0.0.1:{upstream.server_port}"
                 for child in value.values():
                     visit(child)
@@ -777,7 +781,9 @@ class DeploymentTests(unittest.TestCase):
                     process.wait(timeout=5)
 
     @staticmethod
-    def connect_proxy(port, host, path, method="GET", body=b"", chunked=False):
+    def connect_proxy(
+        port, host, path, method="GET", body=b"", chunked=False, headers=None
+    ):
         sock = socket.socket()
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024)
         sock.settimeout(5)
@@ -793,14 +799,20 @@ class DeploymentTests(unittest.TestCase):
                 f"{length}\r\nContent-Type: application/json\r\n"
                 "Cookie: seeded_session=private-fixture\r\nAuthorization: Bearer private-fixture\r\n"
                 "X-Forwarded-For: 198.51.100.99\r\nForwarded: for=198.51.100.88\r\n"
-                "Origin: https://app.invalid\r\nX-CSRF-Token: fixture\r\n\r\n"
+                "Origin: https://app.invalid\r\nX-CSRF-Token: fixture\r\n"
+                + "".join(f"{k}: {v}\r\n" for k, v in (headers or {}).items())
+                + "\r\n"
             ).encode()
             + body
         )
         return sock
 
-    def request_proxy(self, port, host, path, method="GET", body=b"", chunked=False):
-        with self.connect_proxy(port, host, path, method, body, chunked) as sock:
+    def request_proxy(
+        self, port, host, path, method="GET", body=b"", chunked=False, headers=None
+    ):
+        with self.connect_proxy(
+            port, host, path, method, body, chunked, headers
+        ) as sock:
             response = http.client.HTTPResponse(sock, method=method)
             response.begin()
             result = response.status, dict(response.getheaders()), response.read()
@@ -1045,6 +1057,56 @@ class DeploymentTests(unittest.TestCase):
             status, headers, _ = self.request_proxy(port, "old.invalid", target)
             self.assertEqual(status, 308)
             self.assertEqual(headers["Location"], f"https://old.invalid{target}")
+
+    @unittest.skipUnless(Path(CADDY).is_file(), "native Caddy unavailable")
+    def test_stats_proxy_drops_client_ip_headers_refuses_reports_and_bounds_bodies(
+        self,
+    ):
+        upstream, records, _ = self.upstream()
+        with self.running_proxy(upstream) as (port, _):
+            # GoatCounter trusts these over X-Forwarded-For; only Caddy's value may arrive.
+            spoofed = {
+                "CF-Connecting-IP": "203.0.113.1",
+                "Fly-Client-IP": "203.0.113.2",
+                "X-Azure-SocketIP": "203.0.113.3",
+                "X-Real-IP": "203.0.113.4",
+            }
+            status, _, _ = self.request_proxy(
+                port, "app.invalid", "/stats/count?p=/x", headers=spoofed
+            )
+            self.assertEqual(status, 200)
+            path, sent = records["requests"][-1]
+            self.assertEqual(path, "/stats/count?p=/x")
+            sent = {k.lower(): v for k, v in sent.items()}
+            for header in spoofed:
+                self.assertNotIn(header.lower(), sent)
+            self.assertEqual(sent["x-forwarded-for"], "127.0.0.1")
+            # Unused report endpoints read unbounded bodies; they never reach GoatCounter.
+            for path in ("/stats/csp", "/stats/csp/", "/stats/jserr", "/stats/jserr/"):
+                self.assertEqual(
+                    self.request_proxy(port, "app.invalid", path, "POST", b"{}")[0],
+                    404,
+                    path,
+                )
+            self.assertEqual(records["received_posts"], [])
+            login = "/stats/user/requestlogin"
+            self.assertEqual(
+                self.request_proxy(port, "app.invalid", login, "POST", b"{}")[0], 204
+            )
+            excess = b"{}" + b" " * 16383
+            self.assertEqual(
+                self.request_proxy(port, "app.invalid", login, "POST", excess)[0], 413
+            )
+            self.assertEqual(
+                records["received_posts"], [login], "declared oversize never arrives"
+            )
+            self.assertEqual(
+                self.request_proxy(
+                    port, "app.invalid", login, "POST", excess, chunked=True
+                )[0],
+                413,
+            )
+            self.assertEqual(len(records["posts"]), 1, "chunked excess never completes")
 
     @unittest.skipUnless(Path(CADDY).is_file(), "native Caddy unavailable")
     def test_native_proxy_closes_incomplete_headers_after_five_seconds(self):

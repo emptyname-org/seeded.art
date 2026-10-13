@@ -105,8 +105,24 @@ __APP_HOST__ {
 		respond @health 404
 		# Usage statistics: GoatCounter on loopback serves its dashboard, script and counts here.
 		@stats path /stats /stats/*
-		reverse_proxy @stats 127.0.0.1:3920 {
-			import proxy_transport
+		handle @stats {
+			# Unused report endpoints that read unbounded bodies.
+			@stats_reports path /stats/csp* /stats/jserr*
+			respond @stats_reports 404
+			@oversized_stats expression `{http.request.header.Content-Length} != "" && int({http.request.header.Content-Length}) > 16384`
+			respond @oversized_stats 413
+			request_body {
+				max_size 16KiB
+			}
+			reverse_proxy 127.0.0.1:3920 {
+				import proxy_transport
+				request_buffers 17KiB
+				# GoatCounter prefers these client-supplied headers over the X-Forwarded-For Caddy sets.
+				header_up -CF-Connecting-IP
+				header_up -Fly-Client-IP
+				header_up -X-Azure-SocketIP
+				header_up -X-Real-IP
+			}
 		}
 		@unknown_api {
 			path /api/*
