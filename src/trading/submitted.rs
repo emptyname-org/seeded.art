@@ -15,7 +15,8 @@ use tokio::time::Instant;
 const OVERLAY_HOLD: Duration = Duration::from_secs(180);
 /// A failure stays reportable this long after it is known.
 const FAILED_KEEP: Duration = Duration::from_secs(600);
-/// Not on chain this long after submission: dropped from the mempool.
+/// Unconfirmed this long after submission without proof of failure: unverified, which a later
+/// valid confirmation can still turn into confirmed.
 const DROP_AFTER: Duration = Duration::from_secs(900);
 const MAX_SUBMITTED: usize = 1024;
 const MAX_SUBMITTED_PER_ADDRESS: usize = 16;
@@ -87,6 +88,11 @@ impl Submitted {
             Watch::Failed(at) | Watch::Unverified(at) => now.duration_since(at) < FAILED_KEEP,
         }
     }
+}
+
+/// Only these statuses prove failure; a missing, null or unknown one proves nothing.
+fn failed_status(status: &serde_json::Value) -> bool {
+    matches!(status.as_str(), Some("failed" | "backtracked" | "skipped"))
 }
 
 /// The records an operation group ends and the NFTs it moves away from its sender.
@@ -257,6 +263,21 @@ impl TradingState {
         }
     }
 
+    /// A later valid confirmation of an unverified submission.
+    pub(super) fn settle_confirmed(&self, ticket: &str, evasion: bool) {
+        if let Some(s) = self
+            .submitted
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .get_mut(ticket)
+        {
+            s.watch = Watch::Confirmed {
+                at: Instant::now(),
+                evasion,
+            };
+        }
+    }
+
     fn start_worker(self: &Arc<Self>) {
         if !self.watcher.swap(true, Ordering::AcqRel) {
             let state = Arc::clone(self);
@@ -342,10 +363,10 @@ impl TradingState {
                 | TradingError::RateLimited,
             ) => {
                 let age = now().duration_since(at);
-                match self.operation_status(hash).await {
-                    Ok(Some(status)) if status != "applied" => Watch::Failed(now()),
-                    Ok(None) if age > DROP_AFTER => Watch::Failed(now()),
-                    _ if age > RECEIPT_TTL => Watch::Unverified(now()),
+                match self.final_failure(hash).await {
+                    Ok(true) => Watch::Failed(now()),
+                    // Absent for long, or still not final: not proof of failure.
+                    _ if age > DROP_AFTER => Watch::Unverified(now()),
                     _ => return None,
                 }
             }
@@ -363,16 +384,26 @@ impl TradingState {
         Some(watch)
     }
 
-    /// The indexer's status for an operation group, `None` while it is not on chain.
-    async fn operation_status(&self, hash: &str) -> Result<Option<String>, TradingError> {
+    /// Whether the group is in a final block of the canonical chain and did not apply: the only
+    /// evidence that makes a submission failed.
+    async fn final_failure(&self, hash: &str) -> Result<bool, TradingError> {
         let value = self
             .chain
             .indexer(format!("/operations/transactions/{hash}?limit=100"))
             .await?;
-        Ok(value
-            .as_array()
-            .and_then(|rows| rows.first())
-            .and_then(|row| row["status"].as_str())
-            .map(str::to_owned))
+        let Some(row) = value.as_array().and_then(|rows| rows.first()) else {
+            return Ok(false);
+        };
+        if !failed_status(&row["status"]) {
+            return Ok(false);
+        }
+        let level = super::chain::number(&row["level"])?;
+        if self.chain.head().await?.level < level.saturating_add(2) {
+            return Ok(false);
+        }
+        let (_, contents) = self.canonical_contents(hash, level).await?;
+        Ok(contents
+            .iter()
+            .any(|c| failed_status(&c["metadata"]["operation_result"]["status"])))
     }
 }

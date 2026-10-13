@@ -205,18 +205,26 @@ impl TradingState {
         let mut unbound = self.unbound.lock().unwrap_or_else(|e| e.into_inner());
         unbound.retain(|_, (start, _)| now.duration_since(*start) < UNBOUND_WINDOW);
         let total: usize = unbound.values().map(|(_, hashes)| hashes.len()).sum();
-        let (_, hashes) = unbound.entry(actor.into()).or_insert((now, HashMap::new()));
-        if let Some(last) = hashes.get_mut(hash) {
-            if now.duration_since(*last) < UNBOUND_SPACING {
-                return Ok(false);
+        if let Some((_, hashes)) = unbound.get_mut(actor) {
+            if let Some(last) = hashes.get_mut(hash) {
+                if now.duration_since(*last) < UNBOUND_SPACING {
+                    return Ok(false);
+                }
+                *last = now;
+                return Ok(true);
             }
-            *last = now;
+            if hashes.len() >= UNBOUND_PER_ADDRESS || total >= UNBOUND_TOTAL {
+                return Err(TradingError::RateLimited);
+            }
+            hashes.insert(hash.into(), now);
             return Ok(true);
         }
-        if hashes.len() >= UNBOUND_PER_ADDRESS || total >= UNBOUND_TOTAL {
+        // Checked before anything is recorded: a refused address leaves no entry, so entries
+        // never outnumber admitted hashes.
+        if total >= UNBOUND_TOTAL {
             return Err(TradingError::RateLimited);
         }
-        hashes.insert(hash.into(), now);
+        unbound.insert(actor.into(), (now, HashMap::from([(hash.into(), now)])));
         Ok(true)
     }
     /// The signing lock after a check: installed for this ticket even if the checking slot
@@ -751,10 +759,32 @@ impl TradingState {
         {
             return Err(TradingError::Invalid);
         }
-        // The watcher's verdict on a submitted operation answers its page.
-        if let Some(verdict) = self.verdict(actor, ticket, hash) {
-            return verdict;
+        // The watcher's verdict answers the page; an unverified one still yields to a later
+        // valid confirmation.
+        let unverified = match self.verdict(actor, ticket, hash) {
+            Some(Err(TradingError::Unverified)) => true,
+            Some(verdict) => return verdict,
+            None => false,
+        };
+        let outcome = self.confirm_receipt(actor, ticket, hash, client).await;
+        if unverified {
+            return match outcome {
+                Ok(()) | Err(TradingError::FeeEvasion) => {
+                    self.settle_confirmed(ticket, outcome.is_err());
+                    outcome
+                }
+                _ => Err(TradingError::Unverified),
+            };
         }
+        outcome
+    }
+    async fn confirm_receipt(
+        &self,
+        actor: &str,
+        ticket: &str,
+        hash: &str,
+        client: Option<IpAddr>,
+    ) -> Result<(), TradingError> {
         let known = self
             .receipts
             .lock()
@@ -1558,6 +1588,24 @@ mod lifecycle_tests {
             state.confirm(ACTOR, "new-session", TICKET, &hash).await,
             Err(TradingError::Unavailable)
         ));
+    }
+    #[test]
+    fn refused_receipt_less_checks_leave_no_entries() {
+        let state = TradingState::with_transport(Arc::new(Unavailable));
+        let hash = |n: usize| format!("o{n:050}");
+        let actor = |n: usize| format!("tz1{n:033}");
+        for a in 0..12 {
+            for h in 0..10 {
+                assert!(state.admit_unbound(&actor(a), &hash(a * 10 + h)).unwrap());
+            }
+        }
+        for a in 12..5012 {
+            assert!(matches!(
+                state.admit_unbound(&actor(a), &hash(a)),
+                Err(TradingError::RateLimited)
+            ));
+        }
+        assert_eq!(state.unbound.lock().unwrap().len(), 12);
     }
     #[tokio::test]
     async fn a_check_installs_its_signing_lock_even_after_losing_its_slot() {

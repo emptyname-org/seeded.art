@@ -729,9 +729,18 @@ impl Mock {
                     return Ok(json!([op_hash()]));
                 }
                 if path.ends_with("/operations/3/0") {
-                    return Ok(
-                        json!({"hash":op_hash(),"contents":self.receipt.lock().unwrap().clone().unwrap_or_else(||json!(self.last.lock().unwrap().clone()))}),
-                    );
+                    let given = self.receipt.lock().unwrap().clone();
+                    let explicit = given.is_some();
+                    let mut contents =
+                        given.unwrap_or_else(|| json!(self.last.lock().unwrap().clone()));
+                    let status = *self.op_status.lock().unwrap();
+                    // An explicit test group is returned as given.
+                    if status != "applied" && !explicit {
+                        for c in contents.as_array_mut().into_iter().flatten() {
+                            c["metadata"]["operation_result"]["status"] = json!(status);
+                        }
+                    }
+                    return Ok(json!({"hash":op_hash(),"contents":contents}));
                 }
             }
         }
@@ -1865,17 +1874,89 @@ async fn an_upstream_outage_is_never_reported_as_a_failed_operation() {
     s.check(OTHER, "s", &r.ticket).await.unwrap();
     s.submitted(OTHER, "s", &r.ticket, &op_hash()).unwrap();
     m.fail.store(true, Ordering::SeqCst);
-    tokio::time::sleep(Duration::from_secs(20 * 60)).await;
+    tokio::time::sleep(Duration::from_secs(10 * 60)).await;
     assert!(
         !s.overlay(OTHER).is_empty(),
         "still pending while upstream is down"
     );
-    tokio::time::sleep(Duration::from_secs(12 * 60)).await;
+    tokio::time::sleep(Duration::from_secs(6 * 60)).await;
     assert!(s.overlay(OTHER).is_empty());
     assert!(matches!(
         s.confirm(OTHER, "s", &r.ticket, &op_hash()).await,
         Err(TradingError::Unverified)
     ));
+}
+
+#[tokio::test(start_paused = true)]
+async fn a_failure_in_a_block_that_is_not_final_is_not_a_verdict() {
+    let m = Mock::new();
+    let s = Arc::new(state(&m));
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Token)])
+        .await
+        .unwrap();
+    s.check(OTHER, "s", &r.ticket).await.unwrap();
+    // Reported failed in a block that two more blocks have not followed yet.
+    *m.op_status.lock().unwrap() = "failed";
+    m.height.store(19_999_998, Ordering::SeqCst);
+    s.submitted(OTHER, "s", &r.ticket, &op_hash()).unwrap();
+    tokio::time::sleep(Duration::from_secs(60)).await;
+    assert!(!s.overlay(OTHER).is_empty(), "still pending");
+    // The block was replaced and the operation applied.
+    *m.op_status.lock().unwrap() = "applied";
+    m.height.store(20_000_000, Ordering::SeqCst);
+    tokio::time::sleep(Duration::from_secs(60)).await;
+    s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn an_operation_unseen_for_long_is_unverified_and_can_still_confirm() {
+    let m = Mock::new();
+    let s = Arc::new(state(&m));
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Token)])
+        .await
+        .unwrap();
+    s.check(OTHER, "s", &r.ticket).await.unwrap();
+    *m.sender.lock().unwrap() = None;
+    s.submitted(OTHER, "s", &r.ticket, &op_hash()).unwrap();
+    tokio::time::sleep(Duration::from_secs(16 * 60)).await;
+    assert!(s.overlay(OTHER).is_empty());
+    assert!(matches!(
+        s.confirm(OTHER, "s", &r.ticket, &op_hash()).await,
+        Err(TradingError::Unverified)
+    ));
+    // The operation turns up applied after all: the page's next check confirms it.
+    *m.sender.lock().unwrap() = Some(OTHER.into());
+    s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.unwrap();
+    s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.unwrap();
+}
+
+#[tokio::test(start_paused = true)]
+async fn a_canonical_group_without_a_failure_status_is_not_a_verdict() {
+    let m = Mock::new();
+    let s = Arc::new(state(&m));
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Token)])
+        .await
+        .unwrap();
+    s.check(OTHER, "s", &r.ticket).await.unwrap();
+    // The indexer says failed, but the final canonical group carries no result status.
+    *m.op_status.lock().unwrap() = "failed";
+    *m.receipt.lock().unwrap() = Some(
+        json!([{"kind":"transaction","source":OTHER,"destination":V2,"amount":"0","counter":"1","metadata":{}}]),
+    );
+    s.submitted(OTHER, "s", &r.ticket, &op_hash()).unwrap();
+    tokio::time::sleep(Duration::from_secs(60)).await;
+    assert!(
+        !s.overlay(OTHER).is_empty(),
+        "missing evidence keeps it pending"
+    );
+    // Then the reviewed group is seen applied.
+    *m.op_status.lock().unwrap() = "applied";
+    *m.receipt.lock().unwrap() = None;
+    tokio::time::sleep(Duration::from_secs(60)).await;
+    s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.unwrap();
 }
 
 #[tokio::test(start_paused = true)]
