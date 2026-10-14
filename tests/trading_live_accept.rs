@@ -49,7 +49,11 @@ const CASES: &[(Kind, u64, &str, u64, &str)] = &[
 #[tokio::test]
 #[ignore = "explicit public mainnet reads and read-only simulation; never injects"]
 async fn live_accepts_pay_the_platform_fee_to_the_configured_address() {
-    let transport = Http::new("https://rpc.tzkt.io/mainnet", "https://api.tzkt.io/v1").unwrap();
+    let transport = Http::new(
+        "https://prod.tcinfra.net/rpc/mainnet",
+        "https://api.tzkt.io/v1",
+    )
+    .unwrap();
     let fee = PlatformFee {
         bps: 250,
         address: Some(FEE_ADDRESS.into()),

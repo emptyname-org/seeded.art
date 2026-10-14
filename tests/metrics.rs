@@ -392,10 +392,21 @@ async fn app_database_admission_is_reported_without_error_text() {
             .status(),
         StatusCode::SERVICE_UNAVAILABLE
     );
-    let data = snapshot(app).await;
+    // The page and its background site-facts refresh are both refused; the refresh may
+    // finish after the response.
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(5);
+    let data = loop {
+        let data = snapshot(app.clone()).await;
+        if data["database_admission"]["query_unavailable"] == 2
+            || tokio::time::Instant::now() >= deadline
+        {
+            break data;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+    };
     let counters = data["database_admission"].as_object().unwrap();
     assert_eq!(counters.len(), 4);
-    assert_eq!(counters["query_unavailable"], 1);
+    assert_eq!(counters["query_unavailable"], 2);
     assert_eq!(counters["query_timeout"], 0);
     assert!(!data.to_string().contains("absent.sqlite"));
     assert!(!data.to_string().contains("Archive"));

@@ -212,7 +212,7 @@ impl Config {
         }
         let tzkt_url = upstream(&value("SEEDED_TZKT_URL", TZKT_MAINNET), false)?;
         let trading_rpc = upstream(
-            &value("SEEDED_TRADING_RPC", "https://rpc.tzkt.io/mainnet"),
+            &value("SEEDED_TRADING_RPC", "https://prod.tcinfra.net/rpc/mainnet"),
             false,
         )?;
         let trading_tzkt = upstream(

@@ -1082,7 +1082,7 @@ async fn live_readonly_cancel_simulation_never_broadcasts() {
         }
     }
     let transport = seeded_archive::trading::http::Http::new(
-        "https://rpc.tzkt.io/mainnet",
+        "https://prod.tcinfra.net/rpc/mainnet",
         "https://api.tzkt.io/v1",
     )
     .unwrap();
