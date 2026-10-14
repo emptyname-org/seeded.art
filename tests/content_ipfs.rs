@@ -198,6 +198,46 @@ async fn verified_car_survives_restart_and_corruption_triggers_refetch() {
 }
 
 #[tokio::test]
+async fn objects_above_the_cache_limit_are_served_verified_but_not_cached() {
+    let small = block(0x55, vec![b's'; 1024]);
+    let large = block(0x55, vec![b'l'; 4096]);
+    let mock = mock(vec![
+        car_reply(car(large.0, std::slice::from_ref(&large))),
+        car_reply(car(large.0, std::slice::from_ref(&large))),
+        car_reply(car(small.0, std::slice::from_ref(&small))),
+    ])
+    .await;
+    let root = temp("cache_object_limit");
+    let mut cfg = config(&root, &[&mock]);
+    cfg.max_cached_object_bytes = 2048;
+    let store = ContentStore::new(cfg.clone()).unwrap();
+    for _ in 0..2 {
+        let content = store.get_ipfs(&large.0.to_string(), "").await.unwrap();
+        assert_eq!(content.verification, Verification::IpfsCar);
+        assert_eq!(content.body.as_ref(), large.1);
+        assert!(!content.from_cache);
+    }
+    assert_eq!(
+        mock.calls.load(Ordering::SeqCst),
+        2,
+        "large object refetched"
+    );
+    store.get_ipfs(&small.0.to_string(), "").await.unwrap();
+    let again = ContentStore::new(cfg)
+        .unwrap()
+        .get_ipfs(&small.0.to_string(), "")
+        .await
+        .unwrap();
+    assert!(again.from_cache, "small object cached");
+    assert_eq!(mock.calls.load(Ordering::SeqCst), 3);
+    let cached: usize = std::fs::read_dir(root.join("ipfs-car-v1"))
+        .unwrap()
+        .map(|dir| std::fs::read_dir(dir.unwrap().path()).unwrap().count())
+        .sum();
+    assert_eq!(cached, 1, "only the small object is on disk");
+}
+
+#[tokio::test]
 async fn full_preview_cache_rotates_verified_images_and_serves_them_offline_after_restart() {
     let first = block(0x55, b"\x89PNG\r\n\x1a\nfirst".to_vec());
     let second = block(0x55, b"\x89PNG\r\n\x1a\nsecond".to_vec());

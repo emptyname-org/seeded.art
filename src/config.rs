@@ -34,6 +34,7 @@ const CONTENT_SETTINGS: &[&str] = &[
     "SEEDED_KUBO_TIMEOUT_SECS",
     "SEEDED_CACHE",
     "SEEDED_CACHE_BYTES",
+    "SEEDED_CACHE_OBJECT_BYTES",
     "SEEDED_MIRROR",
     "SEEDED_MIRROR_BYTES",
     "SEEDED_MAX_OBJECT_BYTES",
@@ -87,6 +88,8 @@ pub struct Config {
     pub assets: PathBuf,
     pub cache: PathBuf,
     pub cache_bytes: u64,
+    /// Larger IPFS objects are served but not cached.
+    pub cache_object_bytes: u64,
     /// Preservation mirror; an empty `SEEDED_MIRROR` disables it.
     pub mirror: Option<PathBuf>,
     pub mirror_bytes: u64,
@@ -315,6 +318,7 @@ impl Config {
             assets: PathBuf::from(value("SEEDED_ASSETS", "assets")),
             cache: PathBuf::from(value("SEEDED_CACHE", "var/cache")),
             cache_bytes: number("SEEDED_CACHE_BYTES", 2 << 30, 1 << 50)?,
+            cache_object_bytes: number("SEEDED_CACHE_OBJECT_BYTES", 384 << 10, 1 << 40)?,
             mirror: Some(value("SEEDED_MIRROR", "var/mirror"))
                 .filter(|path| !path.is_empty())
                 .map(PathBuf::from),
@@ -338,6 +342,7 @@ impl Config {
     pub fn content_config(&self) -> ContentConfig {
         let mut config = ContentConfig::mainnet(&self.cache);
         config.max_cache_bytes = self.cache_bytes;
+        config.max_cached_object_bytes = self.cache_object_bytes;
         config.mirror_dir = self.mirror.clone();
         config.max_object_bytes = self.object_bytes;
         config.max_concurrent_assemblies = self.assemblies;
@@ -454,6 +459,8 @@ mod tests {
         let config = config(&[]).unwrap();
         assert_ne!(config.app_origin, config.content_origin);
         assert_eq!(config.cache_bytes, 2 << 30);
+        assert_eq!(config.cache_object_bytes, 384 << 10);
+        assert_eq!(config.content_config().max_cached_object_bytes, 384 << 10);
         assert_eq!(config.mirror, Some(PathBuf::from("var/mirror")));
         assert_eq!(config.mirror_bytes, 50 << 30);
         assert_eq!(

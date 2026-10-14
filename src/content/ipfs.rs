@@ -39,6 +39,8 @@ pub(crate) struct IpfsResolver {
     breaker_config: BreakerConfig,
     kubo: Option<KuboConfig>,
     pub(super) cap: u64,
+    /// Objects above this size are served but not cached.
+    cache_limit: u64,
     pub(super) wait: Duration,
 }
 
@@ -164,6 +166,7 @@ impl IpfsResolver {
             breaker_config: config.breaker.clone(),
             kubo: config.kubo.clone(),
             cap: config.max_object_bytes,
+            cache_limit: config.max_cached_object_bytes,
             wait: config.request_timeout,
         })
     }
@@ -416,7 +419,7 @@ impl IpfsResolver {
                     self.success(index);
                     if let Some(car) = car {
                         *fallback = Some(content.clone());
-                        let _ = self.cache.put_parts(CACHE_NS, &key, vec![car]).await;
+                        self.keep(&key, &content, car).await;
                         return Ok(content);
                     }
                     if fallback.is_none() {
@@ -462,7 +465,7 @@ impl IpfsResolver {
                     self.success(index);
                     if let Some(car) = car {
                         *fallback = Some(content.clone());
-                        let _ = self.cache.put_parts(CACHE_NS, &key, vec![car]).await;
+                        self.keep(&key, &content, car).await;
                     }
                     return Ok(content);
                 }
@@ -524,6 +527,13 @@ impl IpfsResolver {
             + self
                 .wait
                 .min(remaining / u32::try_from(attempts.max(1)).unwrap_or(u32::MAX))
+    }
+
+    /// Caches a verified object unless it is larger than the cache limit.
+    async fn keep(&self, key: &str, content: &Content, car: Bytes) {
+        if content.body.len() as u64 <= self.cache_limit {
+            let _ = self.cache.put_parts(CACHE_NS, key, vec![car]).await;
+        }
     }
 
     async fn acquire(

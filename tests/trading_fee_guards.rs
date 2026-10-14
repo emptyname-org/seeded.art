@@ -1,6 +1,6 @@
 use seeded_archive::trading::{
     Operation, TradingError,
-    chain::{Chain, Head},
+    chain::{Chain, Head, Inputs},
     http::{Endpoint, Reply, Transport},
     types::{Action, FXHASH_TREASURY, Kind, PlatformFee, TOKENS, Token, V2, operation_group},
 };
@@ -82,17 +82,17 @@ impl Transport for Mock {
 }
 
 fn chain(price: u64, treasury: u64, seller: u64, bps: u16) -> Chain {
-    Chain {
-        transport: Arc::new(Mock {
+    Chain::new(
+        Arc::new(Mock {
             treasury,
             royalty: price.saturating_sub(treasury).saturating_sub(seller),
             seller,
         }),
-        fee: PlatformFee {
+        PlatformFee {
             bps,
             address: Some(FEE_ADDRESS.into()),
         },
-    }
+    )
 }
 
 fn accept_ops() -> Vec<Operation> {
@@ -126,6 +126,11 @@ async fn simulate(
                 level: 20_000_000,
             },
             operations,
+            &Inputs {
+                counter: 4,
+                filter: json!({"minimal_fees":"100","minimal_nanotez_per_gas_unit":["100","1"],"minimal_nanotez_per_byte":["1000","1"]}),
+                cost_per_byte: Some(250),
+            },
         )
         .await
 }

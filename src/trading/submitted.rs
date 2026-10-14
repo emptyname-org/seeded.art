@@ -281,7 +281,7 @@ impl TradingState {
     fn start_worker(self: &Arc<Self>) {
         if !self.watcher.swap(true, Ordering::AcqRel) {
             let state = Arc::clone(self);
-            tokio::spawn(async move { state.work().await });
+            tokio::spawn(super::chain::background(async move { state.work().await }));
         }
     }
 
@@ -387,17 +387,19 @@ impl TradingState {
     /// Whether the group is in a final block of the canonical chain and did not apply: the only
     /// evidence that makes a submission failed.
     async fn final_failure(&self, hash: &str) -> Result<bool, TradingError> {
-        let value = self
-            .chain
-            .indexer(format!("/operations/transactions/{hash}?limit=100"))
-            .await?;
-        let Some(row) = value.as_array().and_then(|rows| rows.first()) else {
-            return Ok(false);
+        let level = {
+            let value = self
+                .chain
+                .indexer(format!("/operations/transactions/{hash}?limit=100"))
+                .await?;
+            let Some(row) = value.as_array().and_then(|rows| rows.first()) else {
+                return Ok(false);
+            };
+            if !failed_status(&row["status"]) {
+                return Ok(false);
+            }
+            super::chain::number(&row["level"])?
         };
-        if !failed_status(&row["status"]) {
-            return Ok(false);
-        }
-        let level = super::chain::number(&row["level"])?;
         if self.chain.head().await?.level < level.saturating_add(2) {
             return Ok(false);
         }

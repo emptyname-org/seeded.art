@@ -382,6 +382,7 @@ mod tests {
                 reviews: vec![],
                 proof: String::new(),
                 operations: vec![],
+                protocols: (String::new(), String::new()),
             },
             simulation: Simulation {
                 operations: vec![accept.clone(), transfer],
@@ -401,6 +402,7 @@ mod tests {
                     platform_fee_address: actor.into(),
                     seller_net_mutez: 100,
                 }),
+                cost_per_byte: 0,
             },
         };
         let content = json!({

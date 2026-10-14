@@ -586,12 +586,13 @@ fn token_card(
         render_url: None,
         title,
         url: token_url(token),
+        // Cards show the small thumbnail; the NFT page's stage uses the display image.
         preview: image_preview(
             token.preview.as_deref(),
             token
-                .display_uri
+                .thumbnail_uri
                 .as_deref()
-                .or(token.thumbnail_uri.as_deref()),
+                .or(token.display_uri.as_deref()),
             origin,
         ),
         iteration: token.iteration,
@@ -630,6 +631,14 @@ fn playable_card(
     origin: Option<&str>,
 ) -> TokenCard {
     let mut card = token_card(token, Some(title), project_artists, origin);
+    card.preview = image_preview(
+        token.preview.as_deref(),
+        token
+            .display_uri
+            .as_deref()
+            .or(token.thumbnail_uri.as_deref()),
+        origin,
+    );
     card.render_url = origin
         .filter(|_| !token.seed.is_empty())
         .and_then(|origin| crate::player::render_url(origin, token).ok());
@@ -1188,7 +1197,58 @@ pub fn render_error(page: ErrorPage) -> askama::Result<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{ErrorPage, preview, render_error, website};
+    use super::{ErrorPage, playable_card, preview, render_error, token_card, website};
+    use crate::model::{Source, Token, Verification};
+
+    fn token(display: Option<&str>, thumbnail: Option<&str>) -> Token {
+        Token {
+            contract: "KT1test".into(),
+            token_id: 4,
+            project_id: 1,
+            iteration: 9,
+            seed: "ooSeed".into(),
+            minter: "tz1Minter".into(),
+            minted: String::new(),
+            artifact_uri: "ipfs://QmX/index.html?fxhash=ooSeed".into(),
+            preview: None,
+            features: Vec::new(),
+            owner: None,
+            display_uri: display.map(Into::into),
+            thumbnail_uri: thumbnail.map(Into::into),
+            params: None,
+            verification: Verification::Unverified,
+            source: Source::Fixture,
+        }
+    }
+
+    #[test]
+    fn cards_show_thumbnails_and_the_nft_stage_shows_the_display_image() {
+        let origin = Some("https://art.example/");
+        let both = token(Some("ipfs://QmDisplay"), Some("ipfs://QmThumb"));
+        assert_eq!(
+            token_card(&both, Some("T"), &[], origin).preview.as_deref(),
+            Some("https://art.example/content/ipfs/QmThumb/")
+        );
+        assert_eq!(
+            playable_card(&both, "T", &[], origin).preview.as_deref(),
+            Some("https://art.example/content/ipfs/QmDisplay/")
+        );
+        // Each falls back to the other image when its own is missing.
+        let display_only = token(Some("ipfs://QmDisplay"), None);
+        assert_eq!(
+            token_card(&display_only, Some("T"), &[], origin)
+                .preview
+                .as_deref(),
+            Some("https://art.example/content/ipfs/QmDisplay/")
+        );
+        let thumbnail_only = token(None, Some("ipfs://QmThumb"));
+        assert_eq!(
+            playable_card(&thumbnail_only, "T", &[], origin)
+                .preview
+                .as_deref(),
+            Some("https://art.example/content/ipfs/QmThumb/")
+        );
+    }
 
     #[test]
     fn external_text_is_escaped_in_html_and_titles() {

@@ -231,6 +231,9 @@ pub struct ContentConfig {
     pub max_object_bytes: u64,
     /// Maximum temporary cache bytes; least-recently-used objects may be evicted.
     pub max_cache_bytes: u64,
+    /// Larger IPFS objects are served but not kept in the cache, so large display images
+    /// don't evict the thumbnails that cards use.
+    pub max_cached_object_bytes: u64,
     /// Outbound HTTP requests in flight across the store.
     pub max_concurrent_requests: usize,
     /// Network resolutions holding object bytes in memory at once.
@@ -261,6 +264,7 @@ impl ContentConfig {
             request_timeout: Duration::from_secs(30),
             max_object_bytes: 32 * 1024 * 1024,
             max_cache_bytes: 2 * 1024 * 1024 * 1024,
+            max_cached_object_bytes: 384 * 1024,
             max_concurrent_requests: 4,
             max_concurrent_assemblies: 8,
             chunk_batch: 16,
@@ -288,6 +292,8 @@ pub struct ContentStore {
     local_delivery: Arc<local::Delivery>,
     local_scratch: Arc<local::Delivery>,
     upstream_copies: Arc<tokio::sync::Semaphore>,
+    /// Fetched IPFS objects above this size are kept neither in memory nor on disk.
+    cached_object_limit: u64,
     #[cfg(test)]
     local_read_delay: Duration,
     #[cfg(test)]
@@ -433,6 +439,7 @@ impl ContentStore {
             mirror,
             verified: Arc::new(local::Verified::default()),
             counters,
+            cached_object_limit: config.max_cached_object_bytes,
             local_reads: Arc::new(tokio::sync::Semaphore::new(16)),
             local_flights: Arc::new(flight::Flights::default()),
             local_read_wait: Arc::new(local::Delivery::new(0, 256, Duration::from_secs(2))),
@@ -902,7 +909,11 @@ impl ContentStore {
                 } else {
                     &self.ipfs
                 };
-                (resolver.resolve(cid, path).await?, Vec::new())
+                let content = resolver.resolve(cid, path).await?;
+                if content.body.len() as u64 > self.cached_object_limit {
+                    return Ok(content);
+                }
+                (content, Vec::new())
             }
             "onchfs" => {
                 let resolver = if passive {

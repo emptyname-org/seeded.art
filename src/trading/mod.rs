@@ -185,7 +185,7 @@ impl TradingState {
     ) -> Result<Self, TradingError> {
         fee.validate()?;
         Ok(Self {
-            chain: Chain { transport, fee },
+            chain: Chain::new(transport, fee),
             slots: Arc::new(Mutex::new(HashMap::new())),
             admission: admission::Admission::new(),
             receipts: Mutex::new(HashMap::new()),
@@ -272,6 +272,9 @@ impl TradingState {
     }
     /// Recover fee evidence without a browser callback. One bounded page per binding.
     pub async fn reconcile_fees(&self) -> Result<(), TradingError> {
+        chain::background(self.reconcile_due()).await
+    }
+    async fn reconcile_due(&self) -> Result<(), TradingError> {
         let Some(audit) = &self.audit else {
             return Ok(());
         };
@@ -300,13 +303,16 @@ impl TradingState {
         }
         // TzKT has no counter filter: scan bounded, persistent id pages, then match
         // the manager counter against the canonical RPC operation group.
-        let rows = self.chain.indexer(format!("/operations/transactions?sender={}&target={}&entrypoint.in=offer_accept,collection_offer_accept&status=applied&level.ge={}&level.le={}&id.gt={}&sort.asc=id&limit=100", binding.actor, types::V2, binding.level, finalized, due.cursor)).await?;
-        let rows = rows
+        // Keep only the fields read below, so the page isn't held across later requests.
+        let rows: Vec<Value> = self.chain.indexer(format!("/operations/transactions?sender={}&target={}&entrypoint.in=offer_accept,collection_offer_accept&status=applied&level.ge={}&level.le={}&id.gt={}&sort.asc=id&limit=100", binding.actor, types::V2, binding.level, finalized, due.cursor)).await?
             .as_array()
             .filter(|rows| rows.len() <= 100)
-            .ok_or(TradingError::Unavailable)?;
+            .ok_or(TradingError::Unavailable)?
+            .iter()
+            .map(|row| serde_json::json!({"id":row["id"],"level":row["level"],"counter":row["counter"],"hash":row["hash"]}))
+            .collect();
         let mut cursor = due.cursor;
-        for row in rows {
+        for row in &rows {
             let id = chain::number(&row["id"])?;
             let level = chain::number(&row["level"])?;
             if id <= cursor || level < binding.level || level > finalized {
@@ -378,19 +384,18 @@ impl TradingState {
         }
         // Fetch the compact hash list, then only the matching group. A whole
         // manager pass with metadata can exceed the transport's 4 MiB bound.
-        let hashes = self
+        let index = self
             .chain
             .rpc(
                 format!("/chains/main/blocks/{block}/operation_hashes/3"),
                 None,
             )
-            .await?;
-        let index = hashes
+            .await?
             .as_array()
             .filter(|rows| rows.len() <= 65536)
             .and_then(|rows| rows.iter().position(|h| h == hash))
             .ok_or(TradingError::Changed)?;
-        let group = self
+        let mut group = self
             .chain
             .rpc(
                 format!("/chains/main/blocks/{block}/operations/3/{index}"),
@@ -400,11 +405,10 @@ impl TradingState {
         if group["hash"] != hash {
             return Err(TradingError::Changed);
         }
-        let contents = group["contents"]
-            .as_array()
-            .filter(|rows| rows.len() <= 100)
-            .ok_or(TradingError::Changed)?;
-        Ok((block.into(), contents.clone()))
+        match group["contents"].take() {
+            Value::Array(contents) if contents.len() <= 100 => Ok((block.into(), contents)),
+            _ => Err(TradingError::Changed),
+        }
     }
     pub fn platform_fee(&self) -> &types::PlatformFee {
         &self.chain.fee
@@ -493,15 +497,24 @@ impl TradingState {
         let started = Instant::now();
         let outcome = tokio::time::timeout(REVIEW_BUDGET, async {
             settled("prepare", || async {
-                let checked = self
+                let (mut checked, mut tail) = self
                     .chain
-                    .inspect_with_hint(actor, &actions, hint.as_ref())
+                    .inspect(actor, &actions, hint.as_ref(), None)
                     .await?;
-                let simulation = self
-                    .chain
-                    .simulate(actor, &checked.head, checked.operations.clone())
-                    .await?;
-                verify_accept_price(&checked, &simulation)?;
+                let inputs = tail.inputs().await;
+                tail.close().await;
+                let inputs = inputs?;
+                // Creation dates and the simulation don't depend on each other.
+                let (dates, simulation) = tokio::join!(
+                    self.chain.created_dates(&checked.reviews),
+                    self.chain
+                        .simulate(actor, &checked.head, checked.operations.clone(), &inputs),
+                );
+                for (review, date) in checked.reviews.iter_mut().zip(dates?) {
+                    review.created_at = date;
+                }
+                let simulation = simulation?;
+                verify_accept_price(&checked, &simulation.accept_fees)?;
                 Ok::<_, TradingError>((checked, simulation))
             })
             .await
@@ -644,34 +657,26 @@ impl TradingState {
                     .iter()
                     .map(|r| r.action.clone())
                     .collect();
-                let current = self.chain.inspect(actor, &actions).await?;
-                self.chain
-                    .ancestor(&plan.checked.head, &current.head)
-                    .await?;
-                if current.proof != plan.checked.proof {
-                    return Err(TradingError::Changed);
-                }
-                let simulated = self
+                let (current, mut tail) = self
                     .chain
-                    .simulate(actor, &current.head, current.operations.clone())
+                    .inspect(actor, &actions, None, Some(&plan.checked))
                     .await?;
-                verify_accept_price(&current, &simulated)?;
-                if simulated.counter != plan.simulation.counter
-                    || simulated.accept_fees != plan.simulation.accept_fees
-                    || simulated.fee_mutez > plan.simulation.fee_mutez
-                    || simulated.storage_burn_cap_mutez > plan.simulation.storage_burn_cap_mutez
-                    || simulated.proceeds_mutez != plan.simulation.proceeds_mutez
-                    || simulated
-                        .operations
-                        .iter()
-                        .zip(&plan.simulation.operations)
-                        .any(|(new, old)| {
-                            new.gas_limit.parse::<u64>().unwrap_or(u64::MAX)
-                                > old.gas_limit.parse::<u64>().unwrap_or(0)
-                                || new.storage_limit.parse::<u64>().unwrap_or(u64::MAX)
-                                    > old.storage_limit.parse::<u64>().unwrap_or(0)
-                        })
-                {
+                let inputs = async {
+                    tail.ancestor(&plan.checked.head).await?;
+                    if current.proof != plan.checked.proof {
+                        return Err(TradingError::Changed);
+                    }
+                    tail.inputs().await
+                }
+                .await;
+                tail.close().await;
+                let inputs = inputs?;
+                let rechecked = self
+                    .chain
+                    .recheck(actor, &current, &plan.simulation, &inputs)
+                    .await?;
+                verify_accept_price(&current, &rechecked.accept_fees)?;
+                if !rechecked.unchanged {
                     return Err(TradingError::Changed);
                 }
                 Ok(Ready {
@@ -862,17 +867,17 @@ impl TradingState {
             permit.start_work();
         }
         let (evasion, durable_log) = tokio::time::timeout(Duration::from_secs(20), async {
-            let value = self
-                .chain
-                .indexer(format!(
-                    "/operations/transactions/{hash}?status=applied&limit=100"
-                ))
-                .await?;
-            let rows = value
-                .as_array()
-                .filter(|a| !a.is_empty())
-                .ok_or(TradingError::Pending)?;
-            let level = chain::number(&rows[0]["level"])?;
+            let level = chain::number(
+                &self
+                    .chain
+                    .indexer(format!(
+                        "/operations/transactions/{hash}?status=applied&limit=100"
+                    ))
+                    .await?
+                    .as_array()
+                    .filter(|a| !a.is_empty())
+                    .ok_or(TradingError::Pending)?[0]["level"],
+            )?;
             let head = self.chain.head().await.map_err(lagging)?;
             if head.level < level.checked_add(2).ok_or(TradingError::Changed)? {
                 return Err(TradingError::Pending);
@@ -953,20 +958,22 @@ impl TradingState {
         let mut permit = self.admission.acquire(actor, client, 1).await?;
         permit.start_work();
         tokio::time::timeout(Duration::from_secs(20), async {
-            let value = self
-                .chain
-                .indexer(format!(
-                    "/operations/transactions/{hash}?status=applied&limit=100"
-                ))
-                .await?;
-            let rows = value
-                .as_array()
-                .filter(|a| !a.is_empty())
-                .ok_or(TradingError::Pending)?;
-            if rows[0]["sender"]["address"] != actor {
-                return Err(TradingError::Unauthorized);
-            }
-            let level = chain::number(&rows[0]["level"])?;
+            let level = {
+                let value = self
+                    .chain
+                    .indexer(format!(
+                        "/operations/transactions/{hash}?status=applied&limit=100"
+                    ))
+                    .await?;
+                let rows = value
+                    .as_array()
+                    .filter(|a| !a.is_empty())
+                    .ok_or(TradingError::Pending)?;
+                if rows[0]["sender"]["address"] != actor {
+                    return Err(TradingError::Unauthorized);
+                }
+                chain::number(&rows[0]["level"])?
+            };
             let head = self.chain.head().await.map_err(lagging)?;
             if head.level < level.checked_add(2).ok_or(TradingError::Changed)? {
                 return Err(TradingError::Pending);
@@ -1141,13 +1148,16 @@ fn valid_actor(actor: &str) -> bool {
         && actor.bytes().all(|c| c.is_ascii_alphanumeric())
 }
 
-fn verify_accept_price(checked: &Checked, simulation: &Simulation) -> Result<(), TradingError> {
+fn verify_accept_price(
+    checked: &Checked,
+    accept_fees: &Option<types::AcceptFees>,
+) -> Result<(), TradingError> {
     match (
         checked
             .reviews
             .iter()
             .find(|r| matches!(r.action, Action::Accept { .. })),
-        &simulation.accept_fees,
+        accept_fees,
     ) {
         (Some(review), Some(fees)) if review.price_mutez == fees.price_mutez => Ok(()),
         (None, None) => Ok(()),
@@ -1200,6 +1210,7 @@ mod lifecycle_tests {
                 reviews: vec![],
                 proof: String::new(),
                 operations: vec![],
+                protocols: (String::new(), String::new()),
             },
             simulation: Simulation {
                 operations: vec![],
@@ -1210,6 +1221,7 @@ mod lifecycle_tests {
                 counter: 0,
                 proceeds_mutez: "0".into(),
                 accept_fees: None,
+                cost_per_byte: 0,
             },
         }
     }

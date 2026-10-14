@@ -481,8 +481,26 @@ struct Mock {
     receipt: Mutex<Option<Value>>,
     last: Mutex<Vec<Value>>,
     calls: Mutex<Vec<String>>,
+    // `next_protocol` of the pinned block.
+    next_protocol: Mutex<&'static str>,
+    // Main-operation consumption reported by every simulation, and the node's minimal fee.
+    milligas: AtomicU64,
+    paid_storage: AtomicU64,
+    minimal_fees: AtomicU64,
+    // Accept-lambda row level; 0 means its pinned level.
+    lambda_level: AtomicU64,
+    // Paths that answer only after this delay.
+    delays: Mutex<Vec<(&'static str, Duration)>>,
+    // Response body limit requested per call.
+    limits: Mutex<Vec<(String, usize)>>,
+    // Bytes of filler added to canonical groups and indexer transaction rows.
+    padding: AtomicU64,
 }
+const PROTOCOL: &str = "PsUshuai9QapM5TGj1JpuVGkdxz5GykdnEvS6Rh8SUVrARvZLCY";
 impl Mock {
+    fn filler(&self) -> String {
+        "x".repeat(self.padding.load(Ordering::SeqCst) as usize)
+    }
     fn new() -> Arc<Self> {
         Arc::new(Self {
             price: AtomicU64::new(1_000_000),
@@ -509,6 +527,14 @@ impl Mock {
             receipt: Mutex::new(None),
             last: Mutex::new(vec![]),
             calls: Mutex::new(vec![]),
+            next_protocol: Mutex::new(PROTOCOL),
+            milligas: AtomicU64::new(1_000_000),
+            paid_storage: AtomicU64::new(0),
+            minimal_fees: AtomicU64::new(100),
+            lambda_level: AtomicU64::new(0),
+            delays: Mutex::new(vec![]),
+            limits: Mutex::new(vec![]),
+            padding: AtomicU64::new(0),
         })
     }
     fn response(
@@ -538,7 +564,11 @@ impl Mock {
                     return Ok(json!([{"balance":"1"}]));
                 }
                 if path.starts_with("/operations/transactions?") {
-                    return Ok(json!(self.audit_rows.lock().unwrap().clone()));
+                    let mut rows = self.audit_rows.lock().unwrap().clone();
+                    if let Some(row) = rows.first_mut() {
+                        row["padding"] = json!(self.filler());
+                    }
+                    return Ok(json!(rows));
                 }
                 if path.starts_with("/operations/transactions/") {
                     let status = *self.op_status.lock().unwrap();
@@ -547,7 +577,7 @@ impl Mock {
                     }
                     return Ok(match self.sender.lock().unwrap().clone() {
                         Some(sender) => {
-                            json!([{"level":19_999_997,"status":status,"sender":{"address":sender}}])
+                            json!([{"level":19_999_997,"status":status,"sender":{"address":sender},"padding":self.filler()}])
                         }
                         None => json!([]),
                     });
@@ -558,7 +588,10 @@ impl Mock {
                     let level = if parts[2] == "149790" {
                         let pins: Value =
                             serde_json::from_str(include_str!("../src/trading/pins.json")).unwrap();
-                        pins[key]["level"].as_u64().unwrap()
+                        match self.lambda_level.load(Ordering::SeqCst) {
+                            0 => pins[key]["level"].as_u64().unwrap(),
+                            level => level,
+                        }
                     } else {
                         1
                     };
@@ -577,7 +610,13 @@ impl Mock {
                         .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |n| n.checked_sub(1))
                         .is_ok();
                     let level = self.height.load(Ordering::SeqCst) - u64::from(behind);
-                    return Ok(json!({"level":level,"timestamp":now()}));
+                    return Ok(
+                        json!({"level":level,"timestamp":now(),"hash":block(),"chain_id":"NetXdQprcVkpaWU","protocol":PROTOCOL}),
+                    );
+                }
+                if path.ends_with("/protocols") {
+                    let next = *self.next_protocol.lock().unwrap();
+                    return Ok(json!({"protocol":PROTOCOL,"next_protocol":next}));
                 }
                 if path.ends_with("/hash")
                     && self.lagging.load(Ordering::SeqCst)
@@ -667,7 +706,7 @@ impl Mock {
                 }
                 if path.ends_with("/mempool/filter") {
                     return Ok(
-                        json!({"minimal_fees":"100","minimal_nanotez_per_gas_unit":["100","1"],"minimal_nanotez_per_byte":["1000","1"]}),
+                        json!({"minimal_fees":self.minimal_fees.load(Ordering::SeqCst).to_string(),"minimal_nanotez_per_gas_unit":["100","1"],"minimal_nanotez_per_byte":["1000","1"]}),
                     );
                 }
                 if path.ends_with("/constants") {
@@ -679,7 +718,7 @@ impl Mock {
                         .unwrap()
                         .clone();
                     for c in &mut contents {
-                        c["metadata"] = json!({"operation_result":{"status":"applied","consumed_milligas":"1000000","paid_storage_size_diff":"0"}});
+                        c["metadata"] = json!({"operation_result":{"status":"applied","consumed_milligas":self.milligas.load(Ordering::SeqCst).to_string(),"paid_storage_size_diff":self.paid_storage.load(Ordering::SeqCst).to_string()}});
                         if c["parameters"].is_null() && self.fee_returned.load(Ordering::SeqCst) > 0
                         {
                             c["metadata"]["internal_operation_results"] = json!([{"kind":"transaction","source":c["destination"],"destination":c["source"],"amount":self.fee_returned.load(Ordering::SeqCst).to_string(),"result":{"status":"applied","consumed_milligas":"100000","paid_storage_size_diff":"0"}}]);
@@ -740,7 +779,9 @@ impl Mock {
                             c["metadata"]["operation_result"]["status"] = json!(status);
                         }
                     }
-                    return Ok(json!({"hash":op_hash(),"contents":contents}));
+                    return Ok(
+                        json!({"hash":op_hash(),"contents":contents,"padding":self.filler()}),
+                    );
                 }
             }
         }
@@ -749,11 +790,42 @@ impl Mock {
 }
 struct MockTransport(Arc<Mock>);
 impl Transport for MockTransport {
+    /// Enforces the requested body limit on the serialized response, as `Http` does.
+    fn request_capped(
+        &self,
+        endpoint: Endpoint,
+        path: String,
+        body: Option<Value>,
+        limit: usize,
+    ) -> Reply {
+        self.0.limits.lock().unwrap().push((path.clone(), limit));
+        let reply = self.request(endpoint, path, body);
+        Box::pin(async move {
+            let value = reply.await?;
+            if serde_json::to_vec(&value).unwrap().len() > limit {
+                return Err(TradingError::TooLarge);
+            }
+            Ok(value)
+        })
+    }
     fn request(&self, endpoint: Endpoint, path: String, body: Option<Value>) -> Reply {
         let mock = self.0.clone();
         Box::pin(async move {
+            let delay = mock
+                .delays
+                .lock()
+                .unwrap()
+                .iter()
+                .find(|(part, _)| path.contains(part))
+                .map(|(_, delay)| *delay);
+            if let Some(delay) = delay {
+                tokio::time::sleep(delay).await;
+            }
             if mock.stall.load(Ordering::SeqCst) {
-                mock.started.notify_one();
+                // Each step starts with the header read; its other reads start alongside.
+                if path.ends_with("/header") {
+                    mock.started.notify_one();
+                }
                 std::future::pending::<()>().await;
             }
             mock.response(endpoint, &path, body)
@@ -2398,4 +2470,401 @@ async fn matching_evasion_upgrades_legacy_unmatched_sibling_evidence_once() {
         Err(TradingError::FeeEvasion)
     ));
     assert_eq!(db.count("outcomes"), 1);
+}
+
+#[tokio::test]
+async fn review_and_check_read_in_parallel_rounds_and_check_simulates_once() {
+    let m = Mock::new();
+    let s = state(&m);
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Collection)])
+        .await
+        .unwrap();
+    assert_eq!(r.items[0].created_at, "2024-01-01T00:00:00Z");
+    let review: Vec<String> = m.calls.lock().unwrap().drain(..).collect();
+    s.check(OTHER, "s", &r.ticket).await.unwrap();
+    let check: Vec<String> = m.calls.lock().unwrap().drain(..).collect();
+    let count = |calls: &[String], part: &str| {
+        calls
+            .iter()
+            .filter(|c| match part {
+                "/script" => c.ends_with(part),
+                _ => c.contains(part),
+            })
+            .count()
+    };
+    // Header, indexer head; 19 reads at the pinned block; the creation date beside the first
+    // simulation; forging beside the final simulation.
+    assert_eq!(review.len(), 25, "{review:#?}");
+    for (part, n) in [
+        ("chain_id", 0),
+        ("/protocols", 1),
+        ("/script", 1),
+        ("/constants", 1),
+        ("select=timestamp", 1),
+        ("/simulate_operation", 2),
+        ("/forge/", 1),
+    ] {
+        assert_eq!(count(&review, part), n, "review {part}");
+    }
+    // Check re-reads what can change, the ancestor and one simulation of the reviewed group.
+    assert_eq!(check.len(), 22, "{check:#?}");
+    for (part, n) in [
+        ("chain_id", 0),
+        ("/protocols", 1),
+        ("~", 1),
+        ("/constants", 0),
+        ("select=timestamp", 0),
+        ("/simulate_operation", 1),
+        ("/forge/", 0),
+    ] {
+        assert_eq!(count(&check, part), n, "check {part}");
+    }
+}
+
+#[tokio::test]
+async fn review_reads_are_bounded_small_while_simulation_and_confirmation_keep_four_mib() {
+    const SMALL: usize = 64 * 1024;
+    const MEDIUM: usize = 256 * 1024;
+    const LARGE: usize = 4 * 1024 * 1024;
+    let m = Mock::new();
+    let s = state(&m);
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Token)])
+        .await
+        .unwrap();
+    s.check(OTHER, "s", &r.ticket).await.unwrap();
+    let review: Vec<_> = m.limits.lock().unwrap().drain(..).collect();
+    assert!(!review.is_empty());
+    for (path, limit) in review {
+        let expected = if path.ends_with("/simulate_operation") {
+            LARGE
+        } else if path.ends_with("/script") || path.ends_with("/forge/operations") {
+            MEDIUM
+        } else {
+            SMALL
+        };
+        assert_eq!(limit, expected, "{path}");
+    }
+    // Confirmation reads canonical groups, hash lists and indexer transactions with the
+    // full limit; only its head reads are small.
+    s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.unwrap();
+    let confirmation: Vec<_> = m.limits.lock().unwrap().drain(..).collect();
+    assert!(
+        confirmation
+            .iter()
+            .any(|(path, _)| path.contains("/operations/"))
+    );
+    for (path, limit) in confirmation {
+        let expected = if path.ends_with("/header") || path == "/head" {
+            SMALL
+        } else {
+            LARGE
+        };
+        assert_eq!(limit, expected, "{path}");
+    }
+}
+
+#[tokio::test]
+async fn a_governance_row_ahead_of_the_node_is_reread_then_refused_as_a_code_change() {
+    let m = Mock::new();
+    let s = state(&m);
+    // The indexer already has a newer accept lambda than the node's pinned block.
+    m.lambda_level.store(20_000_001, Ordering::SeqCst);
+    assert!(matches!(
+        s.prepare(OTHER, "s", vec![accept(Kind::Collection)]).await,
+        Err(TradingError::Changed)
+    ));
+    assert!(
+        m.calls
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|c| c.ends_with("/header"))
+            .count()
+            >= 3,
+        "re-read before reporting"
+    );
+    // Once the node has caught up, the lambda no longer matches its pin.
+    m.lambda_level.store(19_999_000, Ordering::SeqCst);
+    assert!(matches!(
+        s.prepare(OTHER, "s", vec![accept(Kind::Collection)]).await,
+        Err(TradingError::CodeChanged)
+    ));
+    // A change between review and check never yields a ready operation.
+    m.lambda_level.store(0, Ordering::SeqCst);
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Collection)])
+        .await
+        .unwrap();
+    m.lambda_level.store(20_000_001, Ordering::SeqCst);
+    assert!(matches!(
+        s.check(OTHER, "s", &r.ticket).await,
+        Err(TradingError::Changed)
+    ));
+}
+
+#[tokio::test]
+async fn check_keeps_the_reviewed_gas_storage_and_fee_reserves() {
+    for change in ["gas", "storage", "fee"] {
+        let m = Mock::new();
+        let s = state(&m);
+        // Reviewed: 1000 gas used → limit 1500; no storage → limit 64.
+        let r = s.prepare(ACTOR, "s", vec![action()]).await.unwrap();
+        assert_eq!(r.simulation.operations[0].gas_limit, "1500");
+        assert_eq!(r.simulation.operations[0].storage_limit, "64");
+        match change {
+            // 1200 still fits the reviewed limit, but not with its 500 reserve.
+            "gas" => m.milligas.store(1_200_000, Ordering::SeqCst),
+            "storage" => m.paid_storage.store(1, Ordering::SeqCst),
+            _ => m.minimal_fees.store(1_000, Ordering::SeqCst),
+        }
+        assert!(
+            matches!(
+                s.check(ACTOR, "s", &r.ticket).await,
+                Err(TradingError::Changed)
+            ),
+            "{change}"
+        );
+    }
+    let m = Mock::new();
+    let s = state(&m);
+    let r = s.prepare(ACTOR, "s", vec![action()]).await.unwrap();
+    m.milligas.store(900_000, Ordering::SeqCst);
+    s.check(ACTOR, "s", &r.ticket).await.unwrap();
+}
+
+#[tokio::test]
+async fn a_protocol_change_requires_a_new_review_and_missing_protocols_fail_closed() {
+    let m = Mock::new();
+    let s = state(&m);
+    let r = s.prepare(ACTOR, "s", vec![action()]).await.unwrap();
+    *m.next_protocol.lock().unwrap() = "PtNextProtocoLxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1";
+    assert!(matches!(
+        s.check(ACTOR, "s", &r.ticket).await,
+        Err(TradingError::Changed)
+    ));
+    let m = Mock::new();
+    let s = state(&m);
+    *m.next_protocol.lock().unwrap() = "";
+    assert!(matches!(
+        s.prepare(ACTOR, "s", vec![action()]).await,
+        Err(TradingError::Unavailable)
+    ));
+}
+
+#[tokio::test]
+async fn the_earlier_failure_in_validation_order_wins_whatever_answers_first() {
+    let m = Mock::new();
+    let s = state(&m);
+    // The lambda row (validated before the balance) fails slowly; the balance fails at once.
+    m.lambda_level.store(20_000_001, Ordering::SeqCst);
+    m.delays
+        .lock()
+        .unwrap()
+        .push(("/bigmaps/149790/", Duration::from_millis(200)));
+    m.unheld.store(true, Ordering::SeqCst);
+    assert!(matches!(
+        s.prepare(OTHER, "s", vec![accept(Kind::Collection)]).await,
+        Err(TradingError::Changed)
+    ));
+}
+
+// Regression tests from Codex review of 8bea3cf (tmp/review/codex-review-8bea3cf.md).
+
+struct ActiveRequest(Arc<AtomicU64>);
+impl Drop for ActiveRequest {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::SeqCst);
+    }
+}
+struct HangingTransport(Arc<AtomicU64>);
+impl Transport for HangingTransport {
+    fn request(&self, _: Endpoint, _: String, _: Option<Value>) -> Reply {
+        let active = self.0.clone();
+        Box::pin(async move {
+            active.fetch_add(1, Ordering::SeqCst);
+            let _guard = ActiveRequest(active);
+            std::future::pending().await
+        })
+    }
+}
+
+#[tokio::test]
+async fn cancelling_a_head_read_drops_every_started_request() {
+    let active = Arc::new(AtomicU64::new(0));
+    let chain = Arc::new(seeded_archive::trading::chain::Chain::new(
+        Arc::new(HangingTransport(active.clone())),
+        PlatformFee::default(),
+    ));
+    let task = tokio::spawn(async move { chain.head().await });
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while active.load(Ordering::SeqCst) != 2 {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    task.abort();
+    assert!(task.await.unwrap_err().is_cancelled());
+    for _ in 0..100 {
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(
+        active.load(Ordering::SeqCst),
+        0,
+        "the awaited request must be cancelled together with the queued one"
+    );
+}
+
+struct ProbeTransport {
+    mock: Arc<Mock>,
+    mode: &'static str,
+}
+impl Transport for ProbeTransport {
+    fn request(&self, endpoint: Endpoint, path: String, body: Option<Value>) -> Reply {
+        let mock = self.mock.clone();
+        let mode = self.mode;
+        Box::pin(async move {
+            let slow = match mode {
+                "later" => path.ends_with("/manager_key"),
+                "unused" => path.starts_with("/bigmaps/149786/keys/0?"),
+                _ => false,
+            };
+            if slow {
+                tokio::time::sleep(Duration::from_secs(8)).await;
+                return Err(TradingError::Unavailable);
+            }
+            if mode == "counter" && path.ends_with("/simulate_operation") {
+                let counter = body.as_ref().unwrap()["operation"]["contents"][0]["counter"]
+                    .as_str()
+                    .unwrap()
+                    .parse::<u64>()
+                    .unwrap();
+                if counter != mock.counter.load(Ordering::SeqCst) + 1 {
+                    return Err(TradingError::Simulation);
+                }
+            }
+            mock.response(endpoint, &path, body)
+        })
+    }
+}
+fn probe_state(mock: &Arc<Mock>, mode: &'static str) -> TradingState {
+    TradingState::with_transport_and_fee(
+        Arc::new(ProbeTransport {
+            mock: mock.clone(),
+            mode,
+        }),
+        PlatformFee {
+            bps: 250,
+            address: Some(FEE_ADDRESS.into()),
+        },
+    )
+    .unwrap()
+}
+
+#[tokio::test(start_paused = true)]
+async fn a_known_code_change_does_not_wait_for_a_later_read() {
+    let mock = Mock::new();
+    mock.bad_code.store(true, Ordering::SeqCst);
+    let state = probe_state(&mock, "later");
+    let result = tokio::time::timeout(
+        Duration::from_secs(1),
+        state.prepare(ACTOR, "s", vec![action()]),
+    )
+    .await;
+    let result = result.map(|r| r.map(|_| ()));
+    assert!(
+        matches!(result, Ok(Err(TradingError::CodeChanged))),
+        "got {result:?}"
+    );
+}
+
+#[tokio::test(start_paused = true)]
+async fn an_unselected_mapping_timeout_does_not_delay_a_valid_cancel() {
+    let mock = Mock::new();
+    let state = probe_state(&mock, "unused");
+    let result = tokio::time::timeout(
+        Duration::from_secs(1),
+        state.prepare(ACTOR, "s", vec![action()]),
+    )
+    .await;
+    let result = result.map(|r| r.map(|_| ()));
+    assert!(matches!(result, Ok(Ok(_))), "got {result:?}");
+}
+
+#[tokio::test]
+async fn a_used_counter_requests_a_new_review_before_simulating() {
+    let mock = Mock::new();
+    let state = probe_state(&mock, "counter");
+    let review = state.prepare(ACTOR, "s", vec![action()]).await.unwrap();
+    mock.counter.store(5, Ordering::SeqCst);
+    let result = state.check(ACTOR, "s", &review.ticket).await;
+    let result = result.map(|_| ());
+    assert!(
+        matches!(result, Err(TradingError::Changed)),
+        "got {result:?}"
+    );
+}
+
+#[tokio::test(start_paused = true)]
+async fn near_limit_groups_and_transaction_pages_confirm_through_every_path() {
+    // Just under the 4 MiB limit after the group's own fields.
+    const NEAR: u64 = 4 * 1024 * 1024 - 64 * 1024;
+    let fetched = |m: &Mock, part: &str| m.calls.lock().unwrap().iter().any(|c| c.contains(part));
+    for path in ["watcher", "browser", "reconciliation"] {
+        let db = AuditFile::new();
+        let request = db.0.join("sync.request");
+        let m = Mock::new();
+        m.padding.store(NEAR, Ordering::SeqCst);
+        let s = Arc::new(
+            state(&m)
+                .with_fee_audit(&db.path())
+                .unwrap()
+                .with_sync_request(request.clone()),
+        );
+        let r = s
+            .prepare(OTHER, "s", vec![accept(Kind::Token)])
+            .await
+            .unwrap();
+        s.check(OTHER, "s", &r.ticket).await.unwrap();
+        m.calls.lock().unwrap().clear();
+        match path {
+            "watcher" => {
+                s.submitted(OTHER, "s", &r.ticket, &op_hash()).unwrap();
+                tokio::time::sleep(Duration::from_secs(6)).await;
+                assert!(request.exists(), "watcher confirmed a near-limit group");
+            }
+            "browser" => s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.unwrap(),
+            _ => {
+                let counter = m.last.lock().unwrap()[1]["counter"]
+                    .as_str()
+                    .unwrap()
+                    .parse()
+                    .unwrap();
+                audit_candidate(&m, counter);
+                db.due();
+                s.reconcile_fees().await.unwrap();
+                assert_eq!(db.count("outcomes"), 1);
+                assert!(fetched(&m, "/operations/transactions?"), "{path}");
+            }
+        }
+        assert!(fetched(&m, "/operations/3/0"), "{path} read the group");
+        if path != "reconciliation" {
+            assert!(
+                fetched(&m, "/operations/transactions/"),
+                "{path} read the page"
+            );
+        }
+    }
+    // One byte over the limit is refused rather than read.
+    let m = Mock::new();
+    m.padding.store(4 * 1024 * 1024 + 1, Ordering::SeqCst);
+    let s = state(&m);
+    let r = s
+        .prepare(OTHER, "s", vec![accept(Kind::Token)])
+        .await
+        .unwrap();
+    s.check(OTHER, "s", &r.ticket).await.unwrap();
+    assert!(s.confirm(OTHER, "s", &r.ticket, &op_hash()).await.is_err());
 }
